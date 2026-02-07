@@ -1,0 +1,82 @@
+/* Bulk actions toolbar */
+.bulk-actions {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--border-secondary);
+  background: var(--bg-secondary);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.bulk-actions__btn {
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--border-primary);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: var(--font-size-xs);
+  font-family: var(--font-sans);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.bulk-actions__btn:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.bulk-actions__btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.bulk-actions__btn--active {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+}
+
+.bulk-actions__separator {
+  width: 1px;
+  height: 1.2em;
+  background: var(--border-primary);
+  margin: 0 var(--space-1);
+}
+
+/* Ghost view for deleted messages */
+.session-viewer__deleted-ghost {
+  opacity: 0.4;
+  position: relative;
+  border-left: 3px solid var(--text-tertiary);
+  transition: opacity 0.15s;
+}
+
+.session-viewer__deleted-ghost:hover {
+  opacity: 0.7;
+}
+
+.session-viewer__restore-btn {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--border-primary);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: var(--font-size-xs);
+  font-family: var(--font-sans);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.session-viewer__deleted-ghost:hover .session-viewer__restore-btn {
+  opacity: 1;
+}
+
+.session-viewer__restore-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
