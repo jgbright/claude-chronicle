@@ -1,3 +1,6 @@
+# Generated AI agent docs (CLAUDE.md is the source of truth)
+AGENTS.md
+
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,go,node
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,go,node
 
@@ -184,3 +187,7 @@ dist
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,go,node
+
+# Storybook
+web/storybook-static/
+web/gallery/
