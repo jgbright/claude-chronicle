@@ -1,0 +1,33 @@
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 2%
+    patch:
+      default:
+        target: 80%
+
+flags:
+  frontend:
+    paths:
+      - web/src/
+    carryforward: true
+  backend:
+    paths:
+      - internal/
+      - cmd/
+    carryforward: true
+
+comment:
+  layout: "reach,diff,flags,components"
+  behavior: default
+  require_changes: true
+
+ignore:
+  - "web/dist/**"
+  - "web/dist-export/**"
+  - "web/src/test/**"
+  - "web/src/vite-env.d.ts"
+  - "embed.go"
+  - "samples/**"

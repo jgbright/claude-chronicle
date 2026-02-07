@@ -1,0 +1,201 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install web dependencies
+        run: cd web && npm ci
+
+      - name: Lint
+        run: cd web && npm run lint
+
+      - name: Test with coverage
+        run: cd web && npm run test:coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: web/coverage/lcov.info
+          flags: frontend
+          fail_ci_if_error: false
+
+  build-and-deploy:
+    needs: frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+
+      - name: Install web dependencies
+        run: cd web && npm ci
+
+      - name: Build web assets
+        run: cd web && npm run build && npm run build:export
+
+      - name: Go vet
+        run: go vet ./...
+
+      - name: Go tests
+        run: go test -race -coverprofile=coverage.out -covermode=atomic ./...
+
+      - name: Upload Go coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage.out
+          flags: backend
+          fail_ci_if_error: false
+
+      - name: Build Go binary
+        run: go build -ldflags "-X main.version=ci-${GITHUB_SHA::7}" -o claude-chronicle ./cmd/chronicle
+
+      - name: Smoke test
+        run: ./claude-chronicle version
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-chronicle-linux
+          path: claude-chronicle
+          retention-days: 7
+
+      - name: Determine output filename
+        id: filename
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "name=pr-${{ github.event.pull_request.number }}.html" >> "$GITHUB_OUTPUT"
+            echo "url=https://jgbright.github.io/claude-chronicle-demo/pr-${{ github.event.pull_request.number }}.html" >> "$GITHUB_OUTPUT"
+          else
+            SHORT_SHA="${GITHUB_SHA::7}"
+            echo "name=${SHORT_SHA}.html" >> "$GITHUB_OUTPUT"
+            echo "url=https://jgbright.github.io/claude-chronicle-demo/" >> "$GITHUB_OUTPUT"
+            echo "permalink=https://jgbright.github.io/claude-chronicle-demo/${SHORT_SHA}.html" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Export demo session
+        run: |
+          mkdir _site
+          ./claude-chronicle export -file samples/sample_session.jsonl -theme claude -o "_site/${{ steps.filename.outputs.name }}"
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            cp "_site/${{ steps.filename.outputs.name }}" _site/index.html
+          fi
+
+      - name: Build Storybook
+        working-directory: web
+        run: npm run build-storybook
+
+      - name: Install Playwright Chromium
+        working-directory: web
+        run: npx playwright install --with-deps chromium
+
+      - name: Capture Storybook screenshots
+        working-directory: web
+        run: npm run capture-screenshots
+
+      - name: Generate screenshot gallery
+        working-directory: web
+        run: npm run generate-gallery
+
+      - name: Stage storybook gallery for deploy
+        run: |
+          mkdir -p _site/storybook/screenshots
+          cp web/gallery/index.html _site/storybook/index.html
+          cp web/gallery/screenshots/*.png _site/storybook/screenshots/
+
+      - name: Upload exported HTML
+        uses: actions/upload-artifact@v4
+        with:
+          name: exported-html
+          path: _site/${{ steps.filename.outputs.name }}
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          deploy_key: ${{ secrets.PAGES_DEPLOY_KEY }}
+          external_repository: jgbright/claude-chronicle-demo
+          publish_branch: gh-pages
+          publish_dir: ./_site
+          keep_files: true
+
+      - name: Write job summary
+        run: |
+          echo "### Deployed to GitHub Pages" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "${{ steps.filename.outputs.permalink }}" ]; then
+            echo "**Latest:** ${{ steps.filename.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
+            echo "**Permalink:** ${{ steps.filename.outputs.permalink }}" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "**Preview:** ${{ steps.filename.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "**File:** \`${{ steps.filename.outputs.name }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Storybook Gallery:** https://jgbright.github.io/claude-chronicle-demo/storybook/" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment on PR with preview URL
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = `### 📄 Pages Preview
+
+            **Preview:** ${{ steps.filename.outputs.url }}
+            **Storybook Gallery:** https://jgbright.github.io/claude-chronicle-demo/storybook/
+
+            Built from ${context.sha.substring(0, 7)}`;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(c =>
+              c.user.type === 'Bot' && c.body.includes('Pages Preview')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }

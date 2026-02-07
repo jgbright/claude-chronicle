@@ -1,0 +1,20 @@
+version: 2
+builds:
+  - main: ./cmd/chronicle
+    binary: claude-chronicle
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+archives:
+  - formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+release:
+  mode: replace
+  extra_files:
+    - glob: demo-session.html
+changelog:
+  sort: asc
+  footer: |
+    ---
+    **[Live Demo](https://jgbright.github.io/claude-chronicle-demo/)** | Export your own sessions with `claude-chronicle export`
