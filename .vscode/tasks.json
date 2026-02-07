@@ -1,0 +1,80 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Dev",
+      "dependsOn": ["Dev: Vite", "Dev: Go server"],
+      "dependsOrder": "parallel",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build",
+      "type": "shell",
+      "command": "make build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Dev: Vite",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": { "cwd": "${workspaceFolder}/web" },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Dev: Go server",
+      "type": "shell",
+      "command": "go run ./cmd/chronicle serve -dev",
+      "isBackground": true,
+      "dependsOn": ["Dev: Vite"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Lint",
+      "type": "shell",
+      "command": "cd web && npm run lint",
+      "problemMatcher": [
+        "$eslint-stylish"
+      ]
+    },
+    {
+      "label": "Serve",
+      "type": "shell",
+      "command": "go run ./cmd/chronicle serve",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Clean",
+      "type": "shell",
+      "command": "make clean",
+      "problemMatcher": []
+    },
+    {
+      "label": "Storybook",
+      "type": "shell",
+      "command": "npm run storybook",
+      "options": { "cwd": "${workspaceFolder}/web" },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Storybook: Build",
+      "type": "shell",
+      "command": "npm run build-storybook",
+      "options": { "cwd": "${workspaceFolder}/web" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Storybook: Screenshots",
+      "type": "shell",
+      "command": "npm run build-storybook && npm run capture-screenshots && npm run generate-gallery",
+      "options": { "cwd": "${workspaceFolder}/web" },
+      "problemMatcher": []
+    }
+  ]
+}

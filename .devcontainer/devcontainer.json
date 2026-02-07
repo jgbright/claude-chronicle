@@ -1,0 +1,33 @@
+{
+  "name": "Claude Chronicle",
+  "image": "mcr.microsoft.com/devcontainers/go:1.25-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "24"
+    }
+  },
+  "containerEnv": {
+    "GOTOOLCHAIN": "auto"
+  },
+  "postCreateCommand": "go version && cd web && npm install && npm run build && npm run build:export",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "golang.go",
+        "dbaeumer.vscode-eslint"
+      ]
+    }
+  },
+  "forwardPorts": [8080, 5173],
+  "portsAttributes": {
+    "8080": {
+      "label": "Chronicle API",
+      "onAutoForward": "notify"
+    },
+    "5173": {
+      "label": "Vite Dev Server",
+      "onAutoForward": "notify"
+    }
+  },
+  "remoteUser": "vscode"
+}
