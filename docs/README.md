@@ -8,6 +8,7 @@ Onboarding guides for engineers working on Claude Chronicle.
 | [**Architecture**](ARCHITECTURE.md) | System overview — Go backend packages, React frontend, API routes, key types |
 | [**Data Flow**](DATA-FLOW.md) | End-to-end trace from JSONL files on disk to rendered pixels, covering both SPA and export paths |
 | [**FAQ**](FAQ.md) | Top 5 questions new engineers ask, with code references and "why it matters" context |
+| [**Competitor Matrix**](COMPETITOR-MATRIX.md) | Capability comparison across adjacent tools, plus differentiation notes |
 
 ## Where to start
 
