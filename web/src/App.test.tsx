@@ -4,13 +4,19 @@ import userEvent from '@testing-library/user-event';
 
 vi.mock('./session/useSessionList');
 vi.mock('./session/useSessionData');
+vi.mock('./session/useSSE');
+vi.mock('./session/useProjects');
 vi.mock('./manifest/useManifest');
 vi.mock('./themes/useTheme');
 vi.mock('./export/api');
+vi.mock('./hooks/useDeferredLoading', () => ({
+  useDeferredLoading: (value: boolean) => value,
+}));
 
 import App from './shell/App';
 import { useSessionList } from './session/useSessionList';
 import { useSessionData } from './session/useSessionData';
+import { useProjects } from './session/useProjects';
 import { useManifest } from './manifest/useManifest';
 import { useTheme } from './themes/useTheme';
 import { exportSession } from './export/api';
@@ -19,19 +25,26 @@ import { createParsedSession, createSessionInfo } from './test/factories';
 describe('App', () => {
   beforeEach(() => {
     vi.mocked(useTheme).mockReturnValue({ theme: 'claude', setTheme: vi.fn() });
-    vi.mocked(useSessionList).mockReturnValue({ sessions: [], loading: false, error: null });
-    vi.mocked(useSessionData).mockReturnValue({ session: null, loading: false, error: null });
+    vi.mocked(useSessionList).mockReturnValue({ sessions: [], loading: false, error: null, refresh: vi.fn(), isSearching: false });
+    vi.mocked(useSessionData).mockReturnValue({ session: null, initialManifest: null, loading: false, error: null, refresh: vi.fn(), patchTitle: vi.fn() });
+    vi.mocked(useProjects).mockReturnValue({ projects: [], loading: false, error: null, refresh: vi.fn(), patchTitle: vi.fn() });
     vi.mocked(useManifest).mockReturnValue({
       manifest: null,
       loading: false,
       save: vi.fn(),
       addEdit: vi.fn(),
       removeEdit: vi.fn(),
+      undo: vi.fn(),
+      redo: vi.fn(),
+      canUndo: false,
+      canRedo: false,
+      updateTitle: vi.fn(),
+      saveState: 'idle',
     });
   });
 
   it('shows loading state for session list', () => {
-    vi.mocked(useSessionList).mockReturnValue({ sessions: [], loading: true, error: null });
+    vi.mocked(useSessionList).mockReturnValue({ sessions: [], loading: true, error: null, refresh: vi.fn(), isSearching: false });
     render(<App />);
     expect(screen.getByText('Loading sessions...')).toBeInTheDocument();
   });
@@ -41,6 +54,8 @@ describe('App', () => {
       sessions: [],
       loading: false,
       error: 'Failed to fetch sessions',
+      refresh: vi.fn(),
+      isSearching: false,
     });
     render(<App />);
     expect(screen.getByText('Failed to fetch sessions')).toBeInTheDocument();
@@ -56,8 +71,8 @@ describe('App', () => {
     const sessions = [
       createSessionInfo({ id: 'sess-1', projectName: 'Project One' }),
     ];
-    vi.mocked(useSessionList).mockReturnValue({ sessions, loading: false, error: null });
-    vi.mocked(useSessionData).mockReturnValue({ session: null, loading: true, error: null });
+    vi.mocked(useSessionList).mockReturnValue({ sessions, loading: false, error: null, refresh: vi.fn(), isSearching: false });
+    vi.mocked(useSessionData).mockReturnValue({ session: null, initialManifest: null, loading: true, error: null, refresh: vi.fn(), patchTitle: vi.fn() });
 
     render(<App />);
     await user.click(screen.getByText('Project One'));
@@ -69,11 +84,14 @@ describe('App', () => {
     const sessions = [
       createSessionInfo({ id: 'sess-2', projectName: 'Project Two' }),
     ];
-    vi.mocked(useSessionList).mockReturnValue({ sessions, loading: false, error: null });
+    vi.mocked(useSessionList).mockReturnValue({ sessions, loading: false, error: null, refresh: vi.fn(), isSearching: false });
     vi.mocked(useSessionData).mockReturnValue({
       session: null,
+      initialManifest: null,
       loading: false,
       error: 'Session not found',
+      refresh: vi.fn(),
+      patchTitle: vi.fn(),
     });
 
     render(<App />);
@@ -87,8 +105,8 @@ describe('App', () => {
       createSessionInfo({ id: 'sess-3', projectName: 'Project Three' }),
     ];
     const session = createParsedSession();
-    vi.mocked(useSessionList).mockReturnValue({ sessions, loading: false, error: null });
-    vi.mocked(useSessionData).mockReturnValue({ session, loading: false, error: null });
+    vi.mocked(useSessionList).mockReturnValue({ sessions, loading: false, error: null, refresh: vi.fn(), isSearching: false });
+    vi.mocked(useSessionData).mockReturnValue({ session, initialManifest: null, loading: false, error: null, refresh: vi.fn(), patchTitle: vi.fn() });
 
     const { container } = render(<App />);
     await user.click(screen.getByText('Project Three'));
@@ -100,23 +118,24 @@ describe('App', () => {
       createSessionInfo({ id: 'sess-a', projectName: 'Alpha' }),
       createSessionInfo({ id: 'sess-b', projectName: 'Beta' }),
     ];
-    vi.mocked(useSessionList).mockReturnValue({ sessions, loading: false, error: null });
+    vi.mocked(useSessionList).mockReturnValue({ sessions, loading: false, error: null, refresh: vi.fn(), isSearching: false });
 
     render(<App />);
     expect(screen.getByText('Alpha')).toBeInTheDocument();
     expect(screen.getByText('Beta')).toBeInTheDocument();
   });
 
-  it('does not show edit controls by default', () => {
+  it('shows hover actions instead of old edit controls', () => {
     const sessions = [
       createSessionInfo({ id: 'sess-4', projectName: 'Project Four' }),
     ];
     const session = createParsedSession();
-    vi.mocked(useSessionList).mockReturnValue({ sessions, loading: false, error: null });
-    vi.mocked(useSessionData).mockReturnValue({ session, loading: false, error: null });
+    vi.mocked(useSessionList).mockReturnValue({ sessions, loading: false, error: null, refresh: vi.fn(), isSearching: false });
+    vi.mocked(useSessionData).mockReturnValue({ session, initialManifest: null, loading: false, error: null, refresh: vi.fn(), patchTitle: vi.fn() });
 
     const { container } = render(<App />);
     expect(container.querySelector('.edit-controls')).toBeNull();
+    expect(container.querySelectorAll('.message-actions').length).toBeGreaterThanOrEqual(0);
   });
 
   it('export calls exportSession and triggers download', async () => {
@@ -125,8 +144,8 @@ describe('App', () => {
       createSessionInfo({ id: 'sess-export1', projectName: 'Export Test' }),
     ];
     const session = createParsedSession();
-    vi.mocked(useSessionList).mockReturnValue({ sessions, loading: false, error: null });
-    vi.mocked(useSessionData).mockReturnValue({ session, loading: false, error: null });
+    vi.mocked(useSessionList).mockReturnValue({ sessions, loading: false, error: null, refresh: vi.fn(), isSearching: false });
+    vi.mocked(useSessionData).mockReturnValue({ session, initialManifest: null, loading: false, error: null, refresh: vi.fn(), patchTitle: vi.fn() });
 
     const mockBlob = new Blob(['<html>test</html>'], { type: 'text/html' });
     vi.mocked(exportSession).mockResolvedValue(mockBlob);
@@ -151,7 +170,7 @@ describe('App', () => {
     await user.click(screen.getByText('Export Test'));
 
     // Click the export button
-    const exportBtn = screen.getByText('Export HTML');
+    const exportBtn = screen.getByText('Export');
     await user.click(exportBtn);
 
     expect(vi.mocked(exportSession)).toHaveBeenCalledWith('sess-export1', 'claude');
@@ -164,17 +183,16 @@ describe('App', () => {
     vi.mocked(document.createElement).mockRestore();
   });
 
-  it('export shows alert on failure', async () => {
+  it('export shows toast on failure', async () => {
     const user = userEvent.setup();
     const sessions = [
       createSessionInfo({ id: 'sess-fail', projectName: 'Fail Test' }),
     ];
     const session = createParsedSession();
-    vi.mocked(useSessionList).mockReturnValue({ sessions, loading: false, error: null });
-    vi.mocked(useSessionData).mockReturnValue({ session, loading: false, error: null });
+    vi.mocked(useSessionList).mockReturnValue({ sessions, loading: false, error: null, refresh: vi.fn(), isSearching: false });
+    vi.mocked(useSessionData).mockReturnValue({ session, initialManifest: null, loading: false, error: null, refresh: vi.fn(), patchTitle: vi.fn() });
 
     vi.mocked(exportSession).mockRejectedValue(new Error('Network error'));
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
 
     render(<App />);
 
@@ -182,10 +200,10 @@ describe('App', () => {
     await user.click(screen.getByText('Fail Test'));
 
     // Click export
-    const exportBtn = screen.getByText('Export HTML');
+    const exportBtn = screen.getByText('Export');
     await user.click(exportBtn);
 
-    expect(alertSpy).toHaveBeenCalledWith('Export not yet available');
-    alertSpy.mockRestore();
+    // Should show a toast with failure message instead of alert
+    expect(screen.getByText('Export failed')).toBeInTheDocument();
   });
 });

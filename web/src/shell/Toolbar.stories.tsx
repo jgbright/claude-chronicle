@@ -12,10 +12,17 @@ export const ClaudeTheme: Story = {
     theme: 'claude',
     onThemeChange: () => {},
     sessionTitle: 'My Session',
-    editMode: false,
-    onEditModeChange: () => {},
     onExport: () => {},
     hasSession: true,
+    isCollapsed: false,
+    onToggleCollapsed: () => {},
+    onUndo: () => {},
+    onRedo: () => {},
+    canUndo: true,
+    canRedo: false,
+    onToggleCollapseThinking: () => {},
+    onToggleCollapseToolResults: () => {},
+    onToggleShowHidden: () => {},
   },
   parameters: { theme: 'claude' },
 };
@@ -25,33 +32,42 @@ export const CopilotTheme: Story = {
     theme: 'copilot',
     onThemeChange: () => {},
     sessionTitle: 'My Session',
-    editMode: false,
-    onEditModeChange: () => {},
     onExport: () => {},
     hasSession: true,
+    isCollapsed: false,
+    onToggleCollapsed: () => {},
+    onUndo: () => {},
+    onRedo: () => {},
+    canUndo: false,
+    canRedo: false,
   },
   parameters: { theme: 'copilot' },
-};
-
-export const EditMode: Story = {
-  args: {
-    theme: 'claude',
-    onThemeChange: () => {},
-    editMode: true,
-    onEditModeChange: () => {},
-    onExport: () => {},
-    hasSession: true,
-  },
-  parameters: { theme: 'claude' },
 };
 
 export const NoSession: Story = {
   args: {
     theme: 'claude',
     onThemeChange: () => {},
-    editMode: false,
-    onEditModeChange: () => {},
     hasSession: false,
+    isCollapsed: false,
+    onToggleCollapsed: () => {},
+  },
+  parameters: { theme: 'claude' },
+};
+
+export const WithSaveState: Story = {
+  args: {
+    theme: 'claude',
+    onThemeChange: () => {},
+    sessionTitle: 'Saved Session',
+    hasSession: true,
+    isCollapsed: false,
+    onToggleCollapsed: () => {},
+    onUndo: () => {},
+    onRedo: () => {},
+    canUndo: true,
+    canRedo: false,
+    saveState: 'saved',
   },
   parameters: { theme: 'claude' },
 };

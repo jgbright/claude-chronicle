@@ -7,9 +7,9 @@ function renderToolbar(overrides = {}) {
   const props = {
     theme: 'claude' as const,
     onThemeChange: vi.fn(),
-    editMode: false,
-    onEditModeChange: vi.fn(),
     hasSession: true,
+    isCollapsed: false,
+    onToggleCollapsed: vi.fn(),
     ...overrides,
   };
   const result = render(<Toolbar {...props} />);
@@ -43,7 +43,6 @@ describe('Toolbar', () => {
     const onThemeChange = vi.fn();
     const { container } = renderToolbar({ theme: 'copilot', onThemeChange });
     const themeButtons = container.querySelectorAll('.toolbar__theme-btn');
-    // First theme button is Claude
     await user.click(themeButtons[0]);
     expect(onThemeChange).toHaveBeenCalledWith('claude');
   });
@@ -53,7 +52,6 @@ describe('Toolbar', () => {
     const onThemeChange = vi.fn();
     const { container } = renderToolbar({ onThemeChange });
     const themeButtons = container.querySelectorAll('.toolbar__theme-btn');
-    // Second theme button is Copilot
     await user.click(themeButtons[1]);
     expect(onThemeChange).toHaveBeenCalledWith('copilot');
   });
@@ -72,72 +70,104 @@ describe('Toolbar', () => {
     expect(themeButtons[1].className).toContain('toolbar__theme-btn--active');
   });
 
-  it('renders View/Edit mode buttons when hasSession', () => {
-    const { container } = renderToolbar({ hasSession: true });
-    const modeButtons = container.querySelectorAll('.toolbar__mode-btn');
-    expect(modeButtons).toHaveLength(2);
+  it('renders Undo and Redo buttons when provided', () => {
+    renderToolbar({ onUndo: vi.fn(), onRedo: vi.fn() });
+    expect(screen.getByText('Undo')).toBeInTheDocument();
+    expect(screen.getByText('Redo')).toBeInTheDocument();
   });
 
-  it('does not render View/Edit buttons when hasSession is false', () => {
-    const { container } = renderToolbar({ hasSession: false });
-    const modeButtons = container.querySelectorAll('.toolbar__mode-btn');
-    expect(modeButtons).toHaveLength(0);
+  it('Undo button is disabled when canUndo is false', () => {
+    renderToolbar({ onUndo: vi.fn(), canUndo: false });
+    expect(screen.getByText('Undo')).toBeDisabled();
   });
 
-  it('calls onEditModeChange(true) when Edit button is clicked', async () => {
+  it('Undo button is enabled when canUndo is true', () => {
+    renderToolbar({ onUndo: vi.fn(), canUndo: true });
+    expect(screen.getByText('Undo')).not.toBeDisabled();
+  });
+
+  it('calls onUndo when Undo is clicked', async () => {
     const user = userEvent.setup();
-    const onEditModeChange = vi.fn();
-    const { container } = renderToolbar({ onEditModeChange });
-    const modeButtons = container.querySelectorAll('.toolbar__mode-btn');
-    // Second mode button is Edit
-    await user.click(modeButtons[1]);
-    expect(onEditModeChange).toHaveBeenCalledWith(true);
+    const onUndo = vi.fn();
+    renderToolbar({ onUndo, canUndo: true });
+    await user.click(screen.getByText('Undo'));
+    expect(onUndo).toHaveBeenCalledTimes(1);
   });
 
-  it('calls onEditModeChange(false) when View button is clicked', async () => {
-    const user = userEvent.setup();
-    const onEditModeChange = vi.fn();
-    const { container } = renderToolbar({ editMode: true, onEditModeChange });
-    const modeButtons = container.querySelectorAll('.toolbar__mode-btn');
-    // First mode button is View
-    await user.click(modeButtons[0]);
-    expect(onEditModeChange).toHaveBeenCalledWith(false);
-  });
-
-  it('marks View button active when editMode is false', () => {
-    const { container } = renderToolbar({ editMode: false });
-    const modeButtons = container.querySelectorAll('.toolbar__mode-btn');
-    expect(modeButtons[0].className).toContain('toolbar__mode-btn--active');
-    expect(modeButtons[1].className).not.toContain('toolbar__mode-btn--active');
-  });
-
-  it('marks Edit button active when editMode is true', () => {
-    const { container } = renderToolbar({ editMode: true });
-    const modeButtons = container.querySelectorAll('.toolbar__mode-btn');
-    expect(modeButtons[0].className).not.toContain('toolbar__mode-btn--active');
-    expect(modeButtons[1].className).toContain('toolbar__mode-btn--active');
-  });
-
-  it('renders Export HTML button when onExport is provided', () => {
+  it('renders Export button when onExport is provided', () => {
     renderToolbar({ onExport: vi.fn() });
-    expect(screen.getByText('Export HTML')).toBeInTheDocument();
+    expect(screen.getByText('Export')).toBeInTheDocument();
   });
 
-  it('does not render Export HTML button when onExport is not provided', () => {
-    const { container } = renderToolbar();
-    expect(container.querySelector('.toolbar__export-btn')).toBeNull();
+  it('does not render Export button when onExport is not provided', () => {
+    renderToolbar();
+    expect(screen.queryByText('Export')).not.toBeInTheDocument();
   });
 
-  it('calls onExport when Export HTML button is clicked', async () => {
+  it('does not render Export button when hasSession is false', () => {
+    renderToolbar({ hasSession: false, onExport: vi.fn() });
+    expect(screen.queryByText('Export')).not.toBeInTheDocument();
+  });
+
+  it('calls onExport when Export button is clicked', async () => {
     const user = userEvent.setup();
     const onExport = vi.fn();
-    const { container } = renderToolbar({ onExport });
-    await user.click(container.querySelector('.toolbar__export-btn')!);
+    renderToolbar({ onExport });
+    await user.click(screen.getByText('Export'));
     expect(onExport).toHaveBeenCalledTimes(1);
   });
 
-  it('does not render Export HTML button when hasSession is false', () => {
-    const { container } = renderToolbar({ hasSession: false, onExport: vi.fn() });
-    expect(container.querySelector('.toolbar__export-btn')).toBeNull();
+  it('shows branch name as descriptor for non-main branch', () => {
+    const { container } = renderToolbar({ branch: 'feat/my-feature', version: '0.1.0' });
+    const desc = container.querySelector('.toolbar__descriptor');
+    expect(desc).not.toBeNull();
+    expect(desc!.textContent).toBe('feat/my-feature');
+  });
+
+  it('shows version as descriptor when branch is "main"', () => {
+    const { container } = renderToolbar({ branch: 'main', version: '0.1.1' });
+    const desc = container.querySelector('.toolbar__descriptor');
+    expect(desc).not.toBeNull();
+    expect(desc!.textContent).toBe('v0.1.1');
+  });
+
+  it('shows version as descriptor when branch is undefined', () => {
+    const { container } = renderToolbar({ version: '0.2.0' });
+    const desc = container.querySelector('.toolbar__descriptor');
+    expect(desc).not.toBeNull();
+    expect(desc!.textContent).toBe('v0.2.0');
+  });
+
+  it('shows "dev" without v prefix for non-semver version', () => {
+    const { container } = renderToolbar({ version: 'dev' });
+    const desc = container.querySelector('.toolbar__descriptor');
+    expect(desc).not.toBeNull();
+    expect(desc!.textContent).toBe('dev');
+  });
+
+  it('shows CI version without v prefix', () => {
+    const { container } = renderToolbar({ version: 'ci-abc1234' });
+    const desc = container.querySelector('.toolbar__descriptor');
+    expect(desc).not.toBeNull();
+    expect(desc!.textContent).toBe('ci-abc1234');
+  });
+
+  it('shows no descriptor when both version and branch are undefined', () => {
+    const { container } = renderToolbar();
+    expect(container.querySelector('.toolbar__descriptor')).toBeNull();
+  });
+
+  it('renders Collapse dropdown when toggle handlers provided', () => {
+    renderToolbar({
+      onToggleCollapseThinking: vi.fn(),
+      onToggleCollapseToolResults: vi.fn(),
+      onToggleShowHidden: vi.fn(),
+    });
+    expect(screen.getByText(/Collapse/)).toBeInTheDocument();
+  });
+
+  it('shows save state indicator', () => {
+    renderToolbar({ saveState: 'saved' });
+    expect(screen.getByText(/Saved/)).toBeInTheDocument();
   });
 });
