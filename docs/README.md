@@ -7,7 +7,7 @@ Onboarding guides for engineers working on Claude Chronicle.
 | [**Getting Started**](GETTING-STARTED.md) | Prerequisites, build commands, two-terminal dev workflow, running tests, CLI reference |
 | [**Architecture**](ARCHITECTURE.md) | System overview — Go backend packages, React frontend, API routes, key types |
 | [**Data Flow**](DATA-FLOW.md) | End-to-end trace from JSONL files on disk to rendered pixels, covering both SPA and export paths |
-| [**FAQ**](FAQ.md) | Top 5 questions new engineers ask, with code references and "why it matters" context |
+| [**FAQ**](FAQ.md) | Common engineering questions, with code references and "why it matters" context |
 
 ## Where to start
 

@@ -16,18 +16,91 @@ Think of it like a Loom recording for your AI sessions. You pick a session, trim
 ## Features
 
 - **Session discovery** — automatically finds sessions from `~/.claude/projects/`
-- **Rich rendering** — syntax-highlighted code, collapsible tool calls and thinking blocks, file diffs
 - **Non-destructive editing** — delete blocks, collapse ranges, add commentary without modifying the original session
+- **Static export** — single self-contained HTML file, no server needed to view
+- **Single binary** — local Go binary with the React frontend embedded
+- **Rich rendering** — syntax-highlighted code, collapsible tool calls and thinking blocks, file diffs
 - **Annotations** — add your own narrative to explain prompting decisions, highlight what worked, or call out lessons learned
 - **Dual themes** — Claude (warm/light) and Copilot (dark)
-- **Static export** — single self-contained HTML file, no server needed to view
-- **Single binary** — Go binary with the React frontend embedded; nothing else to install
 
 ## Quick Start
 
 ### Install
 
-Download a pre-built binary from the [Releases](https://github.com/jgbright/claude-chronicle/releases) page — available for Linux, macOS, and Windows (amd64 + arm64).
+Download a pre-built binary from the [Releases](https://github.com/jgbright/claude-chronicle/releases) page.
+If the latest release does not include binary assets yet, use the Go-based install option below.
+
+Linux (amd64):
+
+```bash
+curl -fL https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_linux_amd64.tar.gz | tar xz
+./claude-chronicle version
+```
+
+Linux (arm64):
+
+```bash
+curl -fL https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_linux_arm64.tar.gz | tar xz
+./claude-chronicle version
+```
+
+macOS (Apple Silicon / arm64):
+
+```bash
+curl -fL https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_darwin_arm64.tar.gz | tar xz
+./claude-chronicle version
+```
+
+macOS (Intel / amd64):
+
+```bash
+curl -fL https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_darwin_amd64.tar.gz | tar xz
+./claude-chronicle version
+```
+
+Windows PowerShell (amd64):
+
+```powershell
+Invoke-WebRequest https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_windows_amd64.zip -OutFile claude-chronicle_windows_amd64.zip
+Expand-Archive .\claude-chronicle_windows_amd64.zip -DestinationPath .
+.\claude-chronicle.exe version
+```
+
+Windows PowerShell (arm64):
+
+```powershell
+Invoke-WebRequest https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_windows_arm64.zip -OutFile claude-chronicle_windows_arm64.zip
+Expand-Archive .\claude-chronicle_windows_arm64.zip -DestinationPath .
+.\claude-chronicle.exe version
+```
+
+If release binaries are unavailable, use one of the Go-based options below.
+
+Alternative (separate option): auto-detect OS/arch on Linux/macOS:
+
+```bash
+OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+ARCH=$(uname -m)
+[ "$ARCH" = "x86_64" ] && ARCH=amd64
+[ "$ARCH" = "aarch64" ] && ARCH=arm64
+curl -fL "https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_${OS}_${ARCH}.tar.gz" | tar xz
+./claude-chronicle version
+```
+
+### Run directly with Go (no manual release download)
+
+Install the CLI from source:
+
+```bash
+go install github.com/jgbright/claude-chronicle/cmd/chronicle@latest
+chronicle version
+```
+
+Run once without installing:
+
+```bash
+go run github.com/jgbright/claude-chronicle/cmd/chronicle@latest serve
+```
 
 ### Build from source
 
@@ -131,7 +204,7 @@ Three GitHub Actions workflows chain together to automate building, testing, pre
 
 Every push to `main` and every PR triggers the [CI pipeline](.github/workflows/ci.yml). It runs frontend linting and tests in parallel with the full Go build-and-test cycle, uploads code coverage to Codecov, and builds a binary. But the interesting part is what happens next.
 
-**The pipeline exports a demo session, builds an Astro landing site, and deploys everything to [GitHub Pages](https://jgbright.github.io/claude-chronicle/).** Main pushes deploy the full site: landing page at `/`, demo export at `/demo/`, HTML coverage reports at `/coverage/`, and a Storybook screenshot gallery at `/storybook/`. Each main push also creates a `{short-sha}/demo.html` permalink that never gets overwritten.
+**The pipeline exports a demo session, builds an Astro landing site, and deploys everything to [GitHub Pages](https://jgbright.github.io/claude-chronicle/).** Main pushes deploy the full site: landing page at `/`, demo export at `/demo/`, HTML coverage reports at `/coverage/`, a static screenshot component gallery at `/component-gallery/`, and the full Storybook site at `/storybook/`. Each main push also creates a `{short-sha}/demo.html` permalink that never gets overwritten.
 
 - **Pull requests** deploy only a `pr-{number}/demo.html` preview and the bot posts a comment with the URL.
 
@@ -175,8 +248,8 @@ embed.go              Embeds web assets into the Go binary at compile time
 web/src/
   main.tsx            SPA entry point (fetches from API)
   export-main.tsx     Export entry point (reads window.__CHRONICLE_DATA__)
+  manifest/           Manifest types and session transform logic
   shared/             Shared rendering primitives (CodeBlock, MarkdownContent, etc.)
-  lib/                Session transform, utilities
   themes/             CSS custom properties (Claude + Copilot)
 ```
 

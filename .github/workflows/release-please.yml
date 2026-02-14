@@ -62,3 +62,20 @@ jobs:
           args: release --clean --config .github/.goreleaser.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify release assets were published
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: |
+          set -euo pipefail
+          if [ -z "${TAG:-}" ]; then
+            echo "Missing release tag output"
+            exit 1
+          fi
+          ASSET_COUNT="$(gh api repos/${{ github.repository }}/releases/tags/${TAG} --jq '.assets | length')"
+          if [ "${ASSET_COUNT}" -eq 0 ]; then
+            echo "Release ${TAG} has no binary assets attached."
+            exit 1
+          fi
+          echo "Release ${TAG} has ${ASSET_COUNT} assets."

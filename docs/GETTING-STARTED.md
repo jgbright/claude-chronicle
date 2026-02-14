@@ -67,6 +67,7 @@ This means you get:
 -addr    Listen address (default ":8080")
 -dev     Development mode -- proxy to Vite
 -dev-url Vite dev server URL (default "http://localhost:5173")
+-strict  Fail if the requested port is unavailable (no auto-fallback)
 ```
 
 ## Build Commands
@@ -113,12 +114,12 @@ cd web && npm test
 This runs Vitest with React Testing Library. To run a single test file:
 
 ```bash
-cd web && npx vitest run src/lib/sessionTransform.test.ts
+cd web && npx vitest run src/manifest/sessionTransform.test.ts
 ```
 
 ## CLI Commands
 
-Claude Chronicle provides four commands:
+Claude Chronicle provides five commands:
 
 ### `serve` -- Start the web viewer
 
@@ -157,6 +158,16 @@ e5f6g7h8..  D:/repos/other-project      1d ago    82.1 KB
 
 If `-o` is omitted, the output file defaults to `chronicle-<id>.html`.
 
+### `dump-fixtures` -- Generate smoke-test fixtures from real sessions
+
+```bash
+# Use default Claude projects dir (~/.claude/projects/)
+./claude-chronicle.exe dump-fixtures
+
+# Override input dir and output dir
+./claude-chronicle.exe dump-fixtures -dir D:/path/to/projects -out web/src/test/fixtures/smoke -max 50
+```
+
 ### `version` -- Print version info
 
 ```bash
@@ -169,7 +180,7 @@ If `-o` is omitted, the output file defaults to `chronicle-<id>.html`.
 | Problem | Cause | Fix |
 |---------|-------|-----|
 | `cannot find package` or `pattern web/dist/*: no matching files found` during `go build` or `go test` | The `embed.go` directives require built web assets | Run `make web-build` before `go build` or `go test ./...` |
-| `bind: address already in use` on serve | Port 8080 is occupied by another process | Use `-addr :3001` to pick a different port, or stop the other process |
+| `bind: address already in use` on serve | In `-strict` mode, Chronicle does not auto-fallback to the next port | Omit `-strict` to allow automatic fallback (up to 10 ports), or pick a free port with `-addr` |
 | `Cannot find module` or missing dependencies in `web/` | npm packages not installed | Run `cd web && npm install` |
 | Vite dev server not reachable in `-dev` mode | Terminal 1 is not running or is on a different port | Start `cd web && npm run dev` in another terminal; use `-dev-url` if the port differs |
 | `go test ./...` fails but individual packages pass | Embed errors from the root package | Run `make web-build` first, then `go test ./...` works |

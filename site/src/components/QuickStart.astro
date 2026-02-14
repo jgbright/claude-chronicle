@@ -3,15 +3,24 @@
 
 <section class="quickstart">
   <h2>Quick Start</h2>
+  <p class="option-label">Option A: explicit download (Linux amd64)</p>
   <div class="code-block">
     <pre><span class="comment"># Download the latest release</span>
-<span class="cmd">curl -L</span> https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_linux_amd64.tar.gz <span class="cmd">| tar xz</span>
+<span class="cmd">curl -fL</span> https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_linux_amd64.tar.gz <span class="cmd">| tar xz</span>
 
 <span class="comment"># Browse your sessions</span>
 <span class="cmd">./claude-chronicle serve</span>
 
 <span class="comment"># Export a session</span>
 <span class="cmd">./claude-chronicle export</span> -session &lt;id&gt; -o session.html</pre>
+  </div>
+  <p class="option-label">Option B: auto-detect OS/arch (compare this option)</p>
+  <div class="code-block">
+    <pre><span class="comment"># Auto-detect OS/arch and download matching release binary</span>
+<span class="cmd">OS=$(uname -s | tr '[:upper:]' '[:lower:]'); ARCH=$(uname -m); [ "$ARCH" = "x86_64" ] && ARCH=amd64; [ "$ARCH" = "aarch64" ] && ARCH=arm64; curl -fL "https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_${OS}_${ARCH}.tar.gz" | tar xz</span>
+
+<span class="comment"># If release assets are unavailable, run directly with Go</span>
+<span class="cmd">go run github.com/jgbright/claude-chronicle/cmd/chronicle@latest serve</span></pre>
   </div>
 </section>
 
@@ -28,6 +37,12 @@
     font-weight: 600;
     color: var(--color-text-bright);
     margin-bottom: 1.5rem;
+  }
+
+  .option-label {
+    margin: 1rem 0 0.6rem;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
   }
 
   .code-block {

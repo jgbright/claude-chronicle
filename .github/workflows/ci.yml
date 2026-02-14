@@ -146,7 +146,7 @@ jobs:
 
       - name: Assemble _site
         run: |
-          # Main pushes: deploy full site (landing page, demo, coverage, storybook)
+          # Main pushes: deploy full site (landing page, demo, coverage, storybook, component gallery)
           if [ "${{ github.event_name }}" != "pull_request" ]; then
             cp -r site/dist/* _site/
 
@@ -157,9 +157,12 @@ jobs:
             cp go-coverage.html _site/coverage/go/index.html
             cp -r web/coverage/* _site/coverage/frontend/
 
-            mkdir -p _site/storybook/screenshots
-            cp web/gallery/index.html _site/storybook/index.html
-            cp web/gallery/screenshots/*.png _site/storybook/screenshots/
+            mkdir -p _site/storybook
+            cp -r web/storybook-static/* _site/storybook/
+
+            mkdir -p _site/component-gallery/screenshots
+            cp web/gallery/index.html _site/component-gallery/index.html
+            cp web/gallery/screenshots/*.png _site/component-gallery/screenshots/
           fi
 
           # Remove copilot export (only used for screenshots)
@@ -193,6 +196,7 @@ jobs:
           fi
           echo "**Directory:** \`${{ steps.paths.outputs.dir }}/\`" >> "$GITHUB_STEP_SUMMARY"
           echo "**Storybook:** https://jgbright.github.io/claude-chronicle/storybook/" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Component Gallery:** https://jgbright.github.io/claude-chronicle/component-gallery/" >> "$GITHUB_STEP_SUMMARY"
           echo "**Coverage:** https://jgbright.github.io/claude-chronicle/coverage/frontend/" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Comment on PR with preview URL
@@ -205,6 +209,7 @@ jobs:
             **Landing:** ${{ steps.paths.outputs.url }}
             **Demo:** ${{ steps.paths.outputs.url }}demo.html
             **Storybook:** https://jgbright.github.io/claude-chronicle/storybook/
+            **Component Gallery:** https://jgbright.github.io/claude-chronicle/component-gallery/
 
             Built from ${context.sha.substring(0, 7)}`;
 
