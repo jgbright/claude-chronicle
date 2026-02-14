@@ -167,7 +167,7 @@ The `useTheme` hook manages theme state, sets the `data-theme` attribute on `doc
 
 `lib/sessionTransform.ts` exports `applyManifest()`, which takes a `Message[]` and an `EditManifest | null` and returns `TransformedMessage[]`. `TransformedMessage` extends `Message` with manifest-derived flags: `isCollapsed`, `collapseSummary`, `collapsedCount`, `isAnnotation`, and `isDeleted`.
 
-The function collects all edits into lookup maps (deleted set, collapsed map, annotations map, textEdits map) in a single pass, then iterates messages to produce the transformed output. This runs in the browser for both the live SPA and static exports. The Go backend stores and serves manifests but never applies them -- see [DATA-FLOW.md](DATA-FLOW.md) for the full pipeline.
+The function collects all edits into lookup maps (deleted set, collapsed map, annotations map, textEdits map) in a single pass, then iterates messages to produce the transformed output. This runs in the browser for both the live SPA and static exports. The Go backend stores and serves manifests but never applies them -- see [data-flow.md](data-flow.md) for the full pipeline.
 
 Other utility modules in `lib/`:
 - `formatUtils.ts` -- Date, time, and file size formatting helpers
@@ -221,15 +221,29 @@ Exported files are fully self-contained: all JS, CSS, and session data are inlin
 
 ## Key Design Decisions
 
-1. **Client-side-only manifest application** -- The Go backend stores manifests but never applies them. Both the SPA and export template run `applyManifest()` in the browser. This keeps the backend simple and ensures WYSIWYG parity between live preview and exported output. See [DATA-FLOW.md](DATA-FLOW.md) for the full data flow.
+1. **Client-side-only manifest application** -- The Go backend stores manifests but never applies them. Both the SPA and export template run `applyManifest()` in the browser. This keeps the backend simple and ensures WYSIWYG parity between live preview and exported output. See [data-flow.md](data-flow.md) for the full data flow.
 
 2. **Never modify `~/.claude/`** -- Chronicle treats Claude Code's session files as read-only. All Chronicle-specific data (manifests) lives under `~/.claude-chronicle/`. This prevents any risk of corrupting the source data.
 
-3. **Embed-dependent build** -- The Go binary embeds pre-built web assets at compile time. This means `web/dist/` and `web/dist-export/export.html` must exist before `go build`. The `Makefile` handles this ordering automatically. See [FAQ.md](FAQ.md) for troubleshooting embed errors.
+3. **Embed-dependent build** -- The Go binary embeds pre-built web assets at compile time. This means `web/dist/` and `web/dist-export/export.html` must exist before `go build`. The `Makefile` handles this ordering automatically. See [faq.md](faq.md) for troubleshooting embed errors.
 
 4. **Two separate Vite builds** -- The SPA and export template have fundamentally different requirements. The SPA is a standard multi-file build with code splitting. The export template uses `vite-plugin-singlefile` to inline everything into one HTML file, since exported sessions must work offline with no external dependencies.
 
 5. **Assistant record merging** -- Claude Code appends multiple JSONL records for a single assistant response as content blocks arrive (streaming output). The parser merges all records sharing the same `message.id` into one `Message` with the union of their content blocks, giving a clean conversation view. Records that don't represent renderable conversation turns (meta records, `file-history-snapshot`, `progress`, records with no role) are filtered out before merging.
+
+## Explicitly Rejected Proposals
+
+These were evaluated during an architecture review of seven independent proposals and rejected for the reasons given:
+
+| Proposal | Reason |
+|----------|--------|
+| SQLite for session or manifest storage | Adds C dependency, complicates cross-platform builds, creates sync problems. In-memory caching solves the performance concern without the complexity. |
+| API versioning (`/api/v1`) | Premature for a local-only tool where client and server are always co-deployed in the same binary. No external API consumers. |
+| `GET /api/theme` endpoint | Themes are a purely presentational concern handled client-side. No reason for server involvement. |
+| Remote/cloud deployment mode | Session data contains sensitive conversation content. The local-only constraint is a feature. |
+| Persistent session snapshots | Creates data duplication and staleness problems. An in-memory cache with mtime invalidation is strictly superior. |
+| Versioned/timestamped manifest mutations | Edit history adds persistence complexity without value for a single-user tool. Undo/redo belongs in frontend memory, not the storage layer. |
+| Removing `internal/` package convention | Exposes implementation details as public API. The current `internal/` prefix is idiomatic Go. |
 
 ## Key Types
 

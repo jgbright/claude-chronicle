@@ -1,6 +1,9 @@
 # Claude Chronicle
 
+[![CI](https://github.com/jgbright/claude-chronicle/actions/workflows/ci.yml/badge.svg)](https://github.com/jgbright/claude-chronicle/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/jgbright/claude-chronicle/graph/badge.svg)](https://codecov.io/gh/jgbright/claude-chronicle)
+[![GitHub release](https://img.shields.io/github/v/release/jgbright/claude-chronicle)](https://github.com/jgbright/claude-chronicle/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Turn your [Claude Code](https://claude.ai/code) sessions into shareable walkthroughs.
 
@@ -22,12 +25,13 @@ Think of it like a Loom recording for your AI sessions. You pick a session, trim
 
 ## Quick Start
 
-### Prerequisites
+### Install
 
-- [Go](https://go.dev/) 1.25+
-- [Node.js](https://nodejs.org/) 18+
+Download a pre-built binary from the [Releases](https://github.com/jgbright/claude-chronicle/releases) page — available for Linux, macOS, and Windows (amd64 + arm64).
 
-### Build
+### Build from source
+
+Requires [Go](https://go.dev/) 1.25+ and [Node.js](https://nodejs.org/) 18+.
 
 ```bash
 make build
@@ -67,7 +71,7 @@ The headline feature: export any session as a single HTML file that works offlin
 
 At this point the template is a fully functional React app — it just has no data to render.
 
-**Stage 2 — Inject the data.** When you run `chronicle export`, the Go engine reads the JSONL session, parses and merges the records, loads any curation manifest, and bundles it all into a JSON payload. Then it does a simple string replacement — swapping the empty `{}` with the real data:
+**Stage 2 — Sanitize and inject the data.** When you run `chronicle export`, the Go engine reads the JSONL session, parses and merges the records, loads any curation manifest, and runs the data through a three-stage PII sanitization pipeline: (1) manifest delete edits are applied server-side to physically remove deleted content, (2) sensitive metadata like `FilePath` and `ProjectDir` are stripped from session info, and (3) home directory paths (`C:\Users\name\`, `/home/name/`) are normalized to `~/` across all message content, tool results, and structured patches. The sanitized data is bundled into a JSON payload, then injected via string replacement — swapping the empty `{}` with the real data:
 
 ```go
 html = strings.Replace(html,
@@ -117,7 +121,7 @@ All curation happens through a manifest system. Manifests are JSON files stored 
 | **editText** | Replace a message's text content |
 | **reorder** | Move a message to a different position |
 
-A deliberate design choice: the Go backend only stores manifests — it never applies them. The same `applyManifest()` function in `sessionTransform.ts` runs client-side in both the live SPA and exported HTML files. This means the backend stays simple (just a file store) and the live preview is guaranteed to match the export.
+A deliberate design choice: the Go backend only stores manifests — it does not apply them for the live SPA. The same `applyManifest()` function in `sessionTransform.ts` runs client-side in both the live viewer and exported HTML files. The one exception is during export: `SanitizeForExport()` applies delete edits server-side to physically remove deleted content from the exported HTML, ensuring deleted messages can't be recovered even via browser dev tools.
 
 ### CI/CD: From Push to Release
 
@@ -140,7 +144,7 @@ The [release-please workflow](.github/workflows/release-please.yml) scans every 
 
 #### GoReleaser — cross-platform binaries
 
-Merging the release PR creates a version tag, which triggers the [release workflow](.github/workflows/release.yml). GoReleaser builds the full pipeline — web assets, Go binary — for six targets:
+Merging the release PR creates a version tag, which triggers the GoReleaser job chained in the same [release-please workflow](.github/workflows/release-please.yml). GoReleaser builds the full pipeline — web assets, Go binary — for six targets:
 
 | OS | Architectures |
 |----|--------------|
@@ -172,7 +176,7 @@ embed.go              Embeds web assets into the Go binary at compile time
 web/src/
   main.tsx            SPA entry point (fetches from API)
   export-main.tsx     Export entry point (reads window.__CHRONICLE_DATA__)
-  components/         React components
+  shared/             Shared rendering primitives (CodeBlock, MarkdownContent, etc.)
   lib/                Session transform, utilities
   themes/             CSS custom properties (Claude + Copilot)
 ```
@@ -181,10 +185,10 @@ web/src/
 
 See [docs/](docs/) for detailed guides:
 
-- [**Getting Started**](docs/GETTING-STARTED.md) — build, dev workflow, testing, CLI reference
-- [**Architecture**](docs/ARCHITECTURE.md) — package relationships, key types, design decisions
-- [**Data Flow**](docs/DATA-FLOW.md) — end-to-end trace from JSONL to rendered pixels
-- [**FAQ**](docs/FAQ.md) — common questions for new contributors
+- [**Getting Started**](docs/getting-started.md) — build, dev workflow, testing, CLI reference
+- [**Architecture**](docs/architecture.md) — package relationships, key types, design decisions
+- [**Data Flow**](docs/data-flow.md) — end-to-end trace from JSONL to rendered pixels
+- [**FAQ**](docs/faq.md) — common questions for new contributors
 
 ## Development
 
@@ -198,32 +202,13 @@ cd web && npm run dev
 go run ./cmd/chronicle serve -dev
 ```
 
-The Go server runs on `:8080` and proxies frontend requests to Vite on `:5173`. See [Getting Started](docs/GETTING-STARTED.md) for the full development guide.
+The Go server runs on `:8080` and proxies frontend requests to Vite on `:5173`. See [Getting Started](docs/getting-started.md) for the full development guide.
 
 ## AI Agent Environments
 
-### Devcontainer (recommended for local dev)
-
-The repo includes a [devcontainer](.devcontainer/devcontainer.json) configuration that provides a consistent Linux-based build environment matching CI.
-
-- **VS Code + WSL2**: Open the repo, then **Dev Containers: Reopen in Container** from the command palette
-- **GitHub Codespaces**: Click "Code > Codespaces > New codespace" on the repo page
-
-The container comes with Go 1.25, Node 22, and pre-built web assets. Ports 8080 and 5173 are forwarded automatically.
-
-VS Code tasks (`.vscode/tasks.json`) are included for common workflows — run them from **Terminal > Run Task**:
-
-| Task | Command | Notes |
-|------|---------|-------|
-| **Build** | `make build` | Full build (default build task) |
-| **Dev: Vite** | `cd web && npm run dev` | Vite dev server with HMR (background) |
-| **Dev: Go server** | `go run ./cmd/chronicle serve -dev` | Go server proxying to Vite (background) |
-| **Lint** | `cd web && npm run lint` | ESLint |
-| **Clean** | `make clean` | Remove build artifacts |
-
 ### OpenAI Codex
 
-[`.codex/setup-cloud-container.sh`](.codex/setup-cloud-container.sh) installs Go, Node dependencies, and pre-builds the web assets so `go build` succeeds out of the box. Use this for Codex cloud environments where a devcontainer isn't available.
+[`.codex/setup-cloud-container.sh`](.codex/setup-cloud-container.sh) installs Go, Node dependencies, and pre-builds the web assets so `go build` succeeds out of the box.
 
 To use it in Codex:
 
