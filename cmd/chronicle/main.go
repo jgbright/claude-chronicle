@@ -1,15 +1,18 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io/fs"
 	"log"
+	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
 	"sort"
+	"strconv"
 	"strings"
 	"text/tabwriter"
 	"time"
@@ -25,6 +28,7 @@ var (
 	version = "dev"
 	commit  = "none"
 	date    = "unknown"
+	branch  = ""
 )
 
 func main() {
@@ -40,8 +44,14 @@ func main() {
 		cmdList(os.Args[2:])
 	case "export":
 		cmdExport(os.Args[2:])
+	case "dump-fixtures":
+		cmdDumpFixtures(os.Args[2:])
 	case "version":
-		fmt.Printf("claude-chronicle %s (commit: %s, built: %s)\n", version, commit, date)
+		if branch != "" {
+			fmt.Printf("claude-chronicle %s (commit: %s, built: %s, branch: %s)\n", version, commit, date, branch)
+		} else {
+			fmt.Printf("claude-chronicle %s (commit: %s, built: %s)\n", version, commit, date)
+		}
 	default:
 		fmt.Fprintf(os.Stderr, "Unknown command: %s\n", os.Args[1])
 		printUsage()
@@ -56,10 +66,11 @@ Usage:
   chronicle <command> [options]
 
 Commands:
-  serve     Start the web viewer
-  list      List discovered sessions
-  export    Export a session to a static HTML file
-  version   Print version information
+  serve           Start the web viewer
+  list            List discovered sessions
+  export          Export a session to a static HTML file
+  dump-fixtures   Generate JSON fixtures from real sessions for smoke tests
+  version         Print version information
 
 Run 'chronicle <command> -help' for command-specific options.
 `)
@@ -70,6 +81,7 @@ func cmdServe(args []string) {
 	addr := flagSet.String("addr", ":8080", "Listen address")
 	dev := flagSet.Bool("dev", false, "Development mode (proxy to Vite)")
 	devURL := flagSet.String("dev-url", "http://localhost:5173", "Vite dev server URL")
+	strict := flagSet.Bool("strict", false, "Fail if the requested port is unavailable")
 	flagSet.Parse(args)
 
 	var webFS fs.FS
@@ -84,17 +96,91 @@ func cmdServe(args []string) {
 		}
 	}
 
-	server := api.NewServer(webFS, *dev, *devURL)
-	log.Printf("Claude Chronicle server starting on %s", *addr)
-
-	// Auto-open browser
-	if !*dev {
-		go openBrowser("http://localhost" + *addr)
+	ln, err := acquireListener(*addr, *strict)
+	if err != nil {
+		log.Fatalf("Failed to bind port: %v", err)
 	}
 
-	if err := server.ListenAndServe(*addr); err != nil {
+	server := api.NewServer(webFS, *dev, *devURL, api.BuildInfo{
+		Version: version,
+		Commit:  commit,
+		Date:    date,
+		Branch:  branch,
+	})
+
+	// Start filesystem watcher for real-time updates
+	if err := server.StartWatching(session.ClaudeProjectsDir()); err != nil {
+		log.Printf("Warning: filesystem watching unavailable: %v", err)
+	} else {
+		log.Println("Filesystem watcher started")
+	}
+	defer server.Close()
+
+	log.Printf("Claude Chronicle server starting on %s", ln.Addr())
+
+	// Auto-open browser using the actual bound port
+	if !*dev {
+		go openBrowser("http://localhost:" + portFromAddr(ln.Addr().String()))
+	}
+
+	if err := server.Serve(ln); err != nil {
 		log.Fatalf("Server error: %v", err)
 	}
+}
+
+// parsePort extracts the numeric port from an address string like ":8080" or "localhost:8080".
+func parsePort(addr string) (int, error) {
+	_, portStr, err := net.SplitHostPort(addr)
+	if err != nil {
+		return 0, fmt.Errorf("invalid address %q: %w", addr, err)
+	}
+	port, err := strconv.Atoi(portStr)
+	if err != nil {
+		return 0, fmt.Errorf("invalid port %q: %w", portStr, err)
+	}
+	return port, nil
+}
+
+// portFromAddr extracts just the port portion from an address like "[::]:8080" or "0.0.0.0:8080".
+func portFromAddr(addr string) string {
+	_, port, err := net.SplitHostPort(addr)
+	if err != nil {
+		return addr
+	}
+	return port
+}
+
+// acquireListener tries to bind the requested address. If strict is false and the port is
+// busy, it increments the port up to maxAttempts times.
+func acquireListener(addr string, strict bool) (net.Listener, error) {
+	const maxAttempts = 10
+
+	ln, err := net.Listen("tcp", addr)
+	if err == nil {
+		return ln, nil
+	}
+	if strict {
+		return nil, fmt.Errorf("port %s is unavailable (strict mode): %w", addr, err)
+	}
+
+	port, parseErr := parsePort(addr)
+	if parseErr != nil {
+		return nil, fmt.Errorf("cannot auto-find port: %w", parseErr)
+	}
+
+	host, _, _ := net.SplitHostPort(addr)
+
+	for i := 1; i < maxAttempts; i++ {
+		nextPort := port + i
+		nextAddr := net.JoinHostPort(host, strconv.Itoa(nextPort))
+		ln, err = net.Listen("tcp", nextAddr)
+		if err == nil {
+			log.Printf("Port %s in use, using %s", addr, nextAddr)
+			return ln, nil
+		}
+	}
+
+	return nil, fmt.Errorf("could not find an available port after %d attempts starting from %s", maxAttempts, addr)
 }
 
 func cmdList(args []string) {
@@ -248,4 +334,104 @@ func formatAge(t time.Time) string {
 		return fmt.Sprintf("%dh ago", int(d.Hours()))
 	}
 	return fmt.Sprintf("%dd ago", int(d.Hours()/24))
+}
+
+func cmdDumpFixtures(args []string) {
+	flagSet := flag.NewFlagSet("dump-fixtures", flag.ExitOnError)
+	dir := flagSet.String("dir", "", "Session directory (default: Claude projects dir)")
+	out := flagSet.String("out", filepath.Join("web", "src", "test", "fixtures", "smoke"), "Output directory for JSON fixtures")
+	max := flagSet.Int("max", 50, "Maximum number of fixtures to generate")
+	flagSet.Parse(args)
+
+	sessionDir := *dir
+	if sessionDir == "" {
+		sessionDir = session.ClaudeProjectsDir()
+	}
+
+	// Collect all .jsonl files
+	type fileEntry struct {
+		path    string
+		modTime time.Time
+		size    int64
+	}
+	var files []fileEntry
+
+	filepath.Walk(sessionDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return nil
+		}
+		if !info.IsDir() && filepath.Ext(path) == ".jsonl" {
+			files = append(files, fileEntry{
+				path:    path,
+				modTime: info.ModTime(),
+				size:    info.Size(),
+			})
+		}
+		return nil
+	})
+
+	if len(files) == 0 {
+		log.Fatalf("No .jsonl files found in %s", sessionDir)
+	}
+
+	// Sort by mod time descending (newest first)
+	sort.Slice(files, func(i, j int) bool {
+		return files[i].modTime.After(files[j].modTime)
+	})
+
+	// Limit count
+	if len(files) > *max {
+		files = files[:*max]
+	}
+
+	// Create output directory
+	if err := os.MkdirAll(*out, 0755); err != nil {
+		log.Fatalf("Error creating output directory: %v", err)
+	}
+
+	const maxFileSize = 10 * 1024 * 1024 // 10 MB
+	const maxMessages = 200
+	const keepEdge = 100 // keep first N + last N when truncating
+
+	generated := 0
+	for _, f := range files {
+		if f.size > maxFileSize {
+			continue
+		}
+
+		parsed, err := session.ParseFile(f.path)
+		if err != nil {
+			log.Printf("Skipping %s: %v", filepath.Base(f.path), err)
+			continue
+		}
+
+		// Truncate long sessions: keep first 100 + last 100 messages
+		if len(parsed.Messages) > maxMessages {
+			first := parsed.Messages[:keepEdge]
+			last := parsed.Messages[len(parsed.Messages)-keepEdge:]
+			truncated := make([]session.Message, 0, keepEdge*2)
+			truncated = append(truncated, first...)
+			truncated = append(truncated, last...)
+			parsed.Messages = truncated
+		}
+
+		// Use the session ID (filename without extension) as the fixture name
+		baseName := strings.TrimSuffix(filepath.Base(f.path), ".jsonl")
+		outPath := filepath.Join(*out, baseName+".json")
+
+		data, err := json.Marshal(parsed)
+		if err != nil {
+			log.Printf("Skipping %s: marshal error: %v", baseName, err)
+			continue
+		}
+
+		if err := os.WriteFile(outPath, data, 0644); err != nil {
+			log.Printf("Error writing %s: %v", outPath, err)
+			continue
+		}
+
+		generated++
+	}
+
+	fmt.Printf("Generated %d fixtures in %s\n", generated, *out)
 }

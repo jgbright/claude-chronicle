@@ -1,6 +1,8 @@
 package main
 
 import (
+	"net"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -139,5 +141,112 @@ func TestFormatAge(t *testing.T) {
 				t.Errorf("formatAge(now - %v) = %q, want %q", tt.offset, got, tt.want)
 			}
 		})
+	}
+}
+
+func TestParsePort(t *testing.T) {
+	tests := []struct {
+		name    string
+		addr    string
+		want    int
+		wantErr bool
+	}{
+		{name: "port only", addr: ":8080", want: 8080},
+		{name: "host and port", addr: "localhost:9090", want: 9090},
+		{name: "ipv4 and port", addr: "127.0.0.1:3000", want: 3000},
+		{name: "no port", addr: "localhost", wantErr: true},
+		{name: "empty", addr: "", wantErr: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := parsePort(tt.addr)
+			if tt.wantErr {
+				if err == nil {
+					t.Errorf("parsePort(%q) expected error, got %d", tt.addr, got)
+				}
+				return
+			}
+			if err != nil {
+				t.Errorf("parsePort(%q) unexpected error: %v", tt.addr, err)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("parsePort(%q) = %d, want %d", tt.addr, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestPortFromAddr(t *testing.T) {
+	tests := []struct {
+		name string
+		addr string
+		want string
+	}{
+		{name: "ipv6 format", addr: "[::]:8080", want: "8080"},
+		{name: "ipv4 format", addr: "0.0.0.0:9090", want: "9090"},
+		{name: "localhost", addr: "127.0.0.1:3000", want: "3000"},
+		{name: "no port (returns as-is)", addr: "invalid", want: "invalid"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := portFromAddr(tt.addr)
+			if got != tt.want {
+				t.Errorf("portFromAddr(%q) = %q, want %q", tt.addr, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestAcquireListener(t *testing.T) {
+	// Block a port, then verify acquireListener falls back to the next one
+	blocker, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("failed to create blocker listener: %v", err)
+	}
+	defer blocker.Close()
+
+	blockedPort := portFromAddr(blocker.Addr().String())
+	blockedAddr := "127.0.0.1:" + blockedPort
+
+	ln, err := acquireListener(blockedAddr, false)
+	if err != nil {
+		t.Fatalf("acquireListener(%q, false) returned error: %v", blockedAddr, err)
+	}
+	defer ln.Close()
+
+	actualPort := portFromAddr(ln.Addr().String())
+	if actualPort == blockedPort {
+		t.Errorf("expected a different port than %s, got the same", blockedPort)
+	}
+
+	// Verify the actual port is blockedPort+1 (or at least greater)
+	blocked, _ := strconv.Atoi(blockedPort)
+	actual, _ := strconv.Atoi(actualPort)
+	if actual <= blocked {
+		t.Errorf("expected port > %d, got %d", blocked, actual)
+	}
+	if actual > blocked+10 {
+		t.Errorf("expected port within 10 of %d, got %d", blocked, actual)
+	}
+}
+
+func TestAcquireListenerStrict(t *testing.T) {
+	// Block a port, then verify strict mode fails immediately
+	blocker, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("failed to create blocker listener: %v", err)
+	}
+	defer blocker.Close()
+
+	blockedPort := portFromAddr(blocker.Addr().String())
+	blockedAddr := "127.0.0.1:" + blockedPort
+
+	ln, err := acquireListener(blockedAddr, true)
+	if err == nil {
+		ln.Close()
+		t.Fatalf("acquireListener(%q, true) should have returned error", blockedAddr)
 	}
 }
