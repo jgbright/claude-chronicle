@@ -1,5 +1,5 @@
 import type { Message, ContentBlock, SessionInfo, ParsedSession, ToolResult, ToolUseResultData } from '../session/types';
-import type { EditManifest, Edit } from '../manifest/types';
+import type { EditManifest, Edit, ManifestMetadata } from '../manifest/types';
 
 let counter = 0;
 
@@ -61,6 +61,7 @@ export function createSessionInfo(overrides: Partial<SessionInfo> = {}): Session
     filePath: '/home/user/.claude/projects/my-project/session.jsonl',
     modTime: '2025-01-15T10:30:00Z',
     sizeBytes: 1024,
+    title: 'Test session title',
     ...overrides,
   };
 }
@@ -99,4 +100,11 @@ export function createAnnotateEdit(afterBlockId: string, content: string, id?: s
 
 export function createEditTextEdit(blockId: string, newContent: string): Edit {
   return { type: 'editText', blockId, newContent };
+}
+
+export function createMetadata(overrides: Partial<ManifestMetadata> = {}): ManifestMetadata {
+  return {
+    title: 'Custom Title',
+    ...overrides,
+  };
 }

@@ -49,9 +49,23 @@ body {
 .app__sidebar {
   width: var(--sidebar-width);
   border-right: 1px solid var(--sidebar-border);
+  box-shadow: var(--shadow-md);
   background: var(--sidebar-bg);
   overflow-y: auto;
   flex-shrink: 0;
+  z-index: 5;
+  transition: width 0.2s ease;
+}
+
+.app__main--dragging .app__sidebar {
+  transition: none;
+}
+
+.app__sidebar--collapsed {
+  width: 0 !important;
+  overflow: hidden;
+  border-right: none;
+  box-shadow: none;
 }
 
 .app__content {
@@ -194,15 +208,53 @@ body {
   border-color: var(--code-error-border);
 }
 
-.code-block__lang {
+.code-block__toolbar {
   position: absolute;
   top: 0;
   right: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
   padding: 2px var(--space-2);
-  font-size: var(--font-size-xs);
-  color: var(--text-tertiary);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  z-index: 1;
   background: var(--code-bg);
   border-bottom-left-radius: var(--border-radius-sm);
+}
+
+.code-block:hover .code-block__toolbar {
+  opacity: 1;
+}
+
+.code-block__lang {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.code-block__copy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.code-block__copy:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.code-block__copy:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: -2px;
 }
 
 .code-block__pre {
@@ -240,6 +292,7 @@ body {
   font-size: var(--font-size-sm);
   cursor: pointer;
   text-align: left;
+  transition: background var(--transition-fast);
 }
 
 .tool-use__header:hover {

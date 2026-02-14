@@ -3,6 +3,7 @@
 @import './themes/copilot/copilot.css';
 @import './themes/prism-chronicle.css';
 @import './shared/shared.css';
+@import './shared/Toast.css';
 @import './session/session.css';
 @import './manifest/manifest.css';
 @import './shell/shell.css';

@@ -18,6 +18,8 @@ export function toolSummary(name: string, input: Record<string, unknown>): strin
       return String(input.url || '');
     case 'WebSearch':
       return String(input.query || '');
+    case 'Skill':
+      return String(input.skill || '');
     default:
       return '';
   }
