@@ -8,7 +8,7 @@ Onboarding guides for engineers working on Claude Chronicle.
 | [**Architecture**](ARCHITECTURE.md) | System overview — Go backend packages, React frontend, API routes, key types |
 | [**Data Flow**](DATA-FLOW.md) | End-to-end trace from JSONL files on disk to rendered pixels, covering both SPA and export paths |
 | [**FAQ**](FAQ.md) | Common engineering questions, with code references and "why it matters" context |
-| [**Custom Domain**](custom-domain.md) | Required GitHub Pages and Hover DNS settings to enable TLS for `www.claudechronicle.com` |
+| [**Custom Domain**](custom-domain.md) | Required GitHub Pages and Hover DNS settings to enable TLS for `claudechronicle.com` |
 
 ## Where to start
 

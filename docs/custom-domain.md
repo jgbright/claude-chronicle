@@ -1,11 +1,11 @@
 # Custom Domain and HTTPS Checklist
 
-Use this checklist to enable GitHub Pages TLS for `https://www.claudechronicle.com`.
+Use this checklist to enable GitHub Pages TLS for `https://claudechronicle.com`.
 
 ## 1) GitHub Pages settings
 
 1. Go to the repo: `Settings` -> `Pages`.
-2. In `Custom domain`, set: `www.claudechronicle.com` and save.
+2. In `Custom domain`, set: `claudechronicle.com` and save.
 3. Wait for DNS verification and certificate provisioning.
 4. Enable `Enforce HTTPS` as soon as the toggle becomes available.
 
@@ -23,7 +23,7 @@ Required goal: GitHub Pages serves the domain directly (no Hover forwarding).
    - AAAA `2606:50c0:8001::153`
    - AAAA `2606:50c0:8002::153`
    - AAAA `2606:50c0:8003::153`
-3. Keep (or add) `www` as CNAME to `jgbright.github.io`.
+3. Keep (or add) `www` as CNAME to `jgbright.github.io` so `www` can resolve and redirect to apex.
 
 Note: Hover URL forwarding will not provide a valid GitHub-managed TLS certificate for your site. Use GitHub Pages custom domain mapping instead.
 

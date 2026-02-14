@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 const base = process.env.DEPLOY_BASE ?? '/';
 
 export default defineConfig({
-  site: 'https://www.claudechronicle.com',
+  site: 'https://claudechronicle.com',
   base,
   output: 'static',
   vite: {
