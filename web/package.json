@@ -15,8 +15,7 @@
     "build-storybook": "storybook build",
     "capture-screenshots": "node scripts/capture-screenshots.mjs",
     "generate-gallery": "node scripts/generate-gallery.mjs",
-    "capture-showcase": "node scripts/capture-showcase-screenshots.mjs",
-    "generate-showcase": "node scripts/generate-showcase.mjs"
+    "capture-showcase": "node scripts/capture-showcase-screenshots.mjs"
   },
   "dependencies": {
     "@primer/octicons-react": "^19.21.2",

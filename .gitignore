@@ -193,5 +193,8 @@ web/storybook-static/
 web/gallery/
 web/showcase/
 
+# Astro build cache
+.astro
+
 # Smoke test fixtures (contain private session content)
 web/src/test/fixtures/smoke/

@@ -1,4 +1,4 @@
-.PHONY: build dev clean web-build web-install test test-go test-web test-web-watch lint smoke smoke-fixtures smoke-go smoke-web
+.PHONY: build dev clean web-build web-install test test-go test-web test-web-watch lint smoke smoke-fixtures smoke-go smoke-web site-build
 
 VERSION ?= dev
 BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
@@ -58,3 +58,7 @@ smoke-go:
 # Frontend smoke test: render fixtures through SessionViewer
 smoke-web:
 	cd web && npx vitest run src/session/SessionViewer.smoke.test.tsx
+
+# Build the Astro landing site
+site-build:
+	cd site && npm install && npm run build
