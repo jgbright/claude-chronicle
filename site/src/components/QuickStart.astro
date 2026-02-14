@@ -17,7 +17,7 @@
   <p class="option-label">Option B: auto-detect OS/arch (compare this option)</p>
   <div class="code-block">
     <pre><span class="comment"># Auto-detect OS/arch and download matching release binary</span>
-<span class="cmd">OS=$(uname -s | tr '[:upper:]' '[:lower:]'); ARCH=$(uname -m); [ "$ARCH" = "x86_64" ] && ARCH=amd64; [ "$ARCH" = "aarch64" ] && ARCH=arm64; curl -fL "https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_${OS}_${ARCH}.tar.gz" | tar xz</span>
+<span class="cmd">OS=$(uname -s | tr '[:upper:]' '[:lower:]'); ARCH=$(uname -m); [ "$ARCH" = "x86_64" ] && ARCH=amd64; [ "$ARCH" = "aarch64" ] && ARCH=arm64; curl -fL "https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_$&#123;OS&#125;_$&#123;ARCH&#125;.tar.gz" | tar xz</span>
 
 <span class="comment"># If release assets are unavailable, run directly with Go</span>
 <span class="cmd">go run github.com/jgbright/claude-chronicle/cmd/chronicle@latest serve</span></pre>

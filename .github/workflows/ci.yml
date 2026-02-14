@@ -143,6 +143,7 @@ jobs:
         run: cd site && npm run build
         env:
           GITHUB_SHA: ${{ github.sha }}
+          DEPLOY_BASE: /
 
       - name: Assemble _site
         run: |

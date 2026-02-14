@@ -1,8 +1,10 @@
 import { defineConfig } from 'astro/config';
 
+const base = process.env.DEPLOY_BASE ?? '/';
+
 export default defineConfig({
-  site: 'https://jgbright.github.io',
-  base: '/claude-chronicle/',
+  site: 'https://www.claudechronicle.com',
+  base,
   output: 'static',
   vite: {
     define: {
