@@ -133,7 +133,7 @@ func TestGenerateHTML(t *testing.T) {
 				Version:   1,
 				SessionID: "with-manifest",
 				Edits: []manifest.Edit{
-					{Type: "delete", BlockID: "b1"},
+					{Type: "annotate", AfterBlockID: "b1", Content: "note", ID: "a1"},
 				},
 			},
 			Theme: "claude",
@@ -145,10 +145,10 @@ func TestGenerateHTML(t *testing.T) {
 		}
 
 		if !strings.Contains(string(html), "with-manifest") {
-			t.Error("expected manifest data in output")
+			t.Error("expected session data in output")
 		}
-		if !strings.Contains(string(html), "delete") {
-			t.Error("expected edit type in output")
+		if !strings.Contains(string(html), "annotate") {
+			t.Error("expected non-delete edit type in output")
 		}
 	})
 }

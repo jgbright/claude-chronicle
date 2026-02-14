@@ -1,0 +1,6 @@
+{"type":"human","uuid":"r1","sessionId":"integ-test","timestamp":"2024-01-15T10:00:00Z","cwd":"C:/Users/TestUser/projects/myapp","message":{"role":"user","id":"msg-user-1","content":"Hello, can you help me?"}}
+{"type":"assistant","uuid":"r2","parentUuid":"r1","sessionId":"integ-test","timestamp":"2024-01-15T10:00:05Z","message":{"role":"assistant","id":"msg-asst-1","content":[{"type":"text","text":"Sure! I can see your project at C:/Users/TestUser/projects/myapp. Let me help."}]}}
+{"type":"human","uuid":"r3","sessionId":"integ-test","timestamp":"2024-01-15T10:01:00Z","message":{"role":"user","id":"msg-user-2","content":"This message should be deleted"}}
+{"type":"assistant","uuid":"r4","parentUuid":"r3","sessionId":"integ-test","timestamp":"2024-01-15T10:01:05Z","message":{"role":"assistant","id":"msg-asst-2","content":[{"type":"text","text":"This response should also be deleted. Path: /home/testuser/secret/data.txt"}]}}
+{"type":"human","uuid":"r5","sessionId":"integ-test","timestamp":"2024-01-15T10:02:00Z","message":{"role":"user","id":"msg-user-3","content":"What about /home/testuser/notes.md?"}}
+{"type":"assistant","uuid":"r6","parentUuid":"r5","sessionId":"integ-test","timestamp":"2024-01-15T10:02:05Z","message":{"role":"assistant","id":"msg-asst-3","content":[{"type":"text","text":"I found the file at /Users/TestUser/Documents/notes.md"}]}}

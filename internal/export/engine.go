@@ -23,12 +23,17 @@ type ExportData struct {
 }
 
 // GenerateHTML takes the export template and injects session data.
+// It applies server-side sanitization: manifest deletes are physically
+// applied, metadata is stripped, and home directory paths are normalized.
 func GenerateHTML(template []byte, data *ExportData) ([]byte, error) {
 	if !ValidThemes[data.Theme] {
 		data.Theme = "claude"
 	}
 
-	jsonData, err := json.Marshal(data)
+	// Sanitize before marshaling: apply deletes, strip metadata, normalize paths
+	sanitized := SanitizeForExport(data)
+
+	jsonData, err := json.Marshal(sanitized)
 	if err != nil {
 		return nil, fmt.Errorf("marshaling export data: %w", err)
 	}
