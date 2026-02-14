@@ -1,0 +1,2796 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>chronicle: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/jgbright/claude-chronicle/cmd/chronicle/main.go (18.4%)</option>
+				
+				<option value="file1">github.com/jgbright/claude-chronicle/internal/api/handlers_export.go (78.0%)</option>
+				
+				<option value="file2">github.com/jgbright/claude-chronicle/internal/api/handlers_info.go (100.0%)</option>
+				
+				<option value="file3">github.com/jgbright/claude-chronicle/internal/api/handlers_manifest.go (70.3%)</option>
+				
+				<option value="file4">github.com/jgbright/claude-chronicle/internal/api/handlers_project.go (0.0%)</option>
+				
+				<option value="file5">github.com/jgbright/claude-chronicle/internal/api/handlers_session.go (64.4%)</option>
+				
+				<option value="file6">github.com/jgbright/claude-chronicle/internal/api/handlers_sse.go (0.0%)</option>
+				
+				<option value="file7">github.com/jgbright/claude-chronicle/internal/api/hub.go (7.1%)</option>
+				
+				<option value="file8">github.com/jgbright/claude-chronicle/internal/api/server.go (74.1%)</option>
+				
+				<option value="file9">github.com/jgbright/claude-chronicle/internal/export/engine.go (90.0%)</option>
+				
+				<option value="file10">github.com/jgbright/claude-chronicle/internal/export/sanitize.go (92.6%)</option>
+				
+				<option value="file11">github.com/jgbright/claude-chronicle/internal/manifest/storage.go (65.8%)</option>
+				
+				<option value="file12">github.com/jgbright/claude-chronicle/internal/manifest/types.go (100.0%)</option>
+				
+				<option value="file13">github.com/jgbright/claude-chronicle/internal/session/discovery.go (92.2%)</option>
+				
+				<option value="file14">github.com/jgbright/claude-chronicle/internal/session/parser.go (61.3%)</option>
+				
+				<option value="file15">github.com/jgbright/claude-chronicle/internal/session/search.go (100.0%)</option>
+				
+				<option value="file16">github.com/jgbright/claude-chronicle/internal/watcher/watcher.go (86.1%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">no coverage</span>
+				<span class="cov1">low coverage</span>
+				<span class="cov2">*</span>
+				<span class="cov3">*</span>
+				<span class="cov4">*</span>
+				<span class="cov5">*</span>
+				<span class="cov6">*</span>
+				<span class="cov7">*</span>
+				<span class="cov8">*</span>
+				<span class="cov9">*</span>
+				<span class="cov10">high coverage</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package main
+
+import (
+        "encoding/json"
+        "flag"
+        "fmt"
+        "io/fs"
+        "log"
+        "net"
+        "os"
+        "os/exec"
+        "path/filepath"
+        "runtime"
+        "sort"
+        "strconv"
+        "strings"
+        "text/tabwriter"
+        "time"
+
+        chronicle "github.com/jgbright/claude-chronicle"
+        "github.com/jgbright/claude-chronicle/internal/api"
+        "github.com/jgbright/claude-chronicle/internal/export"
+        "github.com/jgbright/claude-chronicle/internal/manifest"
+        "github.com/jgbright/claude-chronicle/internal/session"
+)
+
+var (
+        version = "dev"
+        commit  = "none"
+        date    = "unknown"
+        branch  = ""
+)
+
+func main() <span class="cov0" title="0">{
+        if len(os.Args) &lt; 2 </span><span class="cov0" title="0">{
+                printUsage()
+                os.Exit(1)
+        }</span>
+
+        <span class="cov0" title="0">switch os.Args[1] </span>{
+        case "serve":<span class="cov0" title="0">
+                cmdServe(os.Args[2:])</span>
+        case "list":<span class="cov0" title="0">
+                cmdList(os.Args[2:])</span>
+        case "export":<span class="cov0" title="0">
+                cmdExport(os.Args[2:])</span>
+        case "dump-fixtures":<span class="cov0" title="0">
+                cmdDumpFixtures(os.Args[2:])</span>
+        case "version":<span class="cov0" title="0">
+                if branch != "" </span><span class="cov0" title="0">{
+                        fmt.Printf("claude-chronicle %s (commit: %s, built: %s, branch: %s)\n", version, commit, date, branch)
+                }</span> else<span class="cov0" title="0"> {
+                        fmt.Printf("claude-chronicle %s (commit: %s, built: %s)\n", version, commit, date)
+                }</span>
+        default:<span class="cov0" title="0">
+                fmt.Fprintf(os.Stderr, "Unknown command: %s\n", os.Args[1])
+                printUsage()
+                os.Exit(1)</span>
+        }
+}
+
+func printUsage() <span class="cov0" title="0">{
+        fmt.Fprintf(os.Stderr, `Claude Chronicle - Share your Claude Code sessions
+
+Usage:
+  chronicle &lt;command&gt; [options]
+
+Commands:
+  serve           Start the web viewer
+  list            List discovered sessions
+  export          Export a session to a static HTML file
+  dump-fixtures   Generate JSON fixtures from real sessions for smoke tests
+  version         Print version information
+
+Run 'chronicle &lt;command&gt; -help' for command-specific options.
+`)
+}</span>
+
+func cmdServe(args []string) <span class="cov0" title="0">{
+        flagSet := flag.NewFlagSet("serve", flag.ExitOnError)
+        addr := flagSet.String("addr", ":8080", "Listen address")
+        dev := flagSet.Bool("dev", false, "Development mode (proxy to Vite)")
+        devURL := flagSet.String("dev-url", "http://localhost:5173", "Vite dev server URL")
+        strict := flagSet.Bool("strict", false, "Fail if the requested port is unavailable")
+        flagSet.Parse(args)
+
+        var webFS fs.FS
+        if *dev </span><span class="cov0" title="0">{
+                log.Println("Running in development mode")
+                webFS = nil // Not used in dev mode
+        }</span> else<span class="cov0" title="0"> {
+                var err error
+                webFS, err = getWebFS()
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Fatalf("Failed to load embedded web assets: %v", err)
+                }</span>
+        }
+
+        <span class="cov0" title="0">ln, err := acquireListener(*addr, *strict)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Fatalf("Failed to bind port: %v", err)
+        }</span>
+
+        <span class="cov0" title="0">server := api.NewServer(webFS, *dev, *devURL, api.BuildInfo{
+                Version: version,
+                Commit:  commit,
+                Date:    date,
+                Branch:  branch,
+        })
+
+        // Start filesystem watcher for real-time updates
+        if err := server.StartWatching(session.ClaudeProjectsDir()); err != nil </span><span class="cov0" title="0">{
+                log.Printf("Warning: filesystem watching unavailable: %v", err)
+        }</span> else<span class="cov0" title="0"> {
+                log.Println("Filesystem watcher started")
+        }</span>
+        <span class="cov0" title="0">defer server.Close()
+
+        log.Printf("Claude Chronicle server starting on %s", ln.Addr())
+
+        // Auto-open browser using the actual bound port
+        if !*dev </span><span class="cov0" title="0">{
+                go openBrowser("http://localhost:" + portFromAddr(ln.Addr().String()))
+        }</span>
+
+        <span class="cov0" title="0">if err := server.Serve(ln); err != nil </span><span class="cov0" title="0">{
+                log.Fatalf("Server error: %v", err)
+        }</span>
+}
+
+// parsePort extracts the numeric port from an address string like ":8080" or "localhost:8080".
+func parsePort(addr string) (int, error) <span class="cov7" title="6">{
+        _, portStr, err := net.SplitHostPort(addr)
+        if err != nil </span><span class="cov3" title="2">{
+                return 0, fmt.Errorf("invalid address %q: %w", addr, err)
+        }</span>
+        <span class="cov6" title="4">port, err := strconv.Atoi(portStr)
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, fmt.Errorf("invalid port %q: %w", portStr, err)
+        }</span>
+        <span class="cov6" title="4">return port, nil</span>
+}
+
+// portFromAddr extracts just the port portion from an address like "[::]:8080" or "0.0.0.0:8080".
+func portFromAddr(addr string) string <span class="cov8" title="7">{
+        _, port, err := net.SplitHostPort(addr)
+        if err != nil </span><span class="cov1" title="1">{
+                return addr
+        }</span>
+        <span class="cov7" title="6">return port</span>
+}
+
+// acquireListener tries to bind the requested address. If strict is false and the port is
+// busy, it increments the port up to maxAttempts times.
+func acquireListener(addr string, strict bool) (net.Listener, error) <span class="cov3" title="2">{
+        const maxAttempts = 10
+
+        ln, err := net.Listen("tcp", addr)
+        if err == nil </span><span class="cov0" title="0">{
+                return ln, nil
+        }</span>
+        <span class="cov3" title="2">if strict </span><span class="cov1" title="1">{
+                return nil, fmt.Errorf("port %s is unavailable (strict mode): %w", addr, err)
+        }</span>
+
+        <span class="cov1" title="1">port, parseErr := parsePort(addr)
+        if parseErr != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("cannot auto-find port: %w", parseErr)
+        }</span>
+
+        <span class="cov1" title="1">host, _, _ := net.SplitHostPort(addr)
+
+        for i := 1; i &lt; maxAttempts; i++ </span><span class="cov1" title="1">{
+                nextPort := port + i
+                nextAddr := net.JoinHostPort(host, strconv.Itoa(nextPort))
+                ln, err = net.Listen("tcp", nextAddr)
+                if err == nil </span><span class="cov1" title="1">{
+                        log.Printf("Port %s in use, using %s", addr, nextAddr)
+                        return ln, nil
+                }</span>
+        }
+
+        <span class="cov0" title="0">return nil, fmt.Errorf("could not find an available port after %d attempts starting from %s", maxAttempts, addr)</span>
+}
+
+func cmdList(args []string) <span class="cov0" title="0">{
+        flag.NewFlagSet("list", flag.ExitOnError).Parse(args)
+
+        sessions, err := session.DiscoverSessions()
+        if err != nil </span><span class="cov0" title="0">{
+                log.Fatalf("Error discovering sessions: %v", err)
+        }</span>
+
+        <span class="cov0" title="0">sort.Slice(sessions, func(i, j int) bool </span><span class="cov0" title="0">{
+                return sessions[i].ModTime.After(sessions[j].ModTime)
+        }</span>)
+
+        <span class="cov0" title="0">w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+        fmt.Fprintf(w, "ID\tPROJECT\tMODIFIED\tSIZE\n")
+        for _, s := range sessions </span><span class="cov0" title="0">{
+                size := formatSize(s.SizeBytes)
+                age := formatAge(s.ModTime)
+                shortID := s.ID
+                if len(shortID) &gt; 8 </span><span class="cov0" title="0">{
+                        shortID = shortID[:8]
+                }</span>
+                <span class="cov0" title="0">fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", shortID+"...", s.ProjectName, age, size)</span>
+        }
+        <span class="cov0" title="0">w.Flush()</span>
+}
+
+func cmdExport(args []string) <span class="cov0" title="0">{
+        flagSet := flag.NewFlagSet("export", flag.ExitOnError)
+        sessionID := flagSet.String("session", "", "Session ID to export")
+        filePath := flagSet.String("file", "", "Path to JSONL session file (bypasses discovery)")
+        theme := flagSet.String("theme", "claude", "Theme (claude or copilot)")
+        output := flagSet.String("o", "", "Output file path")
+        flagSet.Parse(args)
+
+        if *sessionID == "" &amp;&amp; *filePath == "" </span><span class="cov0" title="0">{
+                fmt.Fprintf(os.Stderr, "Error: -session or -file is required\n")
+                flagSet.Usage()
+                os.Exit(1)
+        }</span>
+
+        <span class="cov0" title="0">var parsed *session.ParsedSession
+        var m *manifest.Manifest
+
+        if *filePath != "" </span><span class="cov0" title="0">{
+                // Direct file mode — bypass discovery and manifests
+                var err error
+                parsed, err = session.ParseFile(*filePath)
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Fatalf("Error parsing session file: %v", err)
+                }</span>
+                // Populate info from file metadata
+                <span class="cov0" title="0">fi, err := os.Stat(*filePath)
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Fatalf("Error reading file info: %v", err)
+                }</span>
+                <span class="cov0" title="0">base := filepath.Base(*filePath)
+                name := strings.TrimSuffix(base, filepath.Ext(base))
+                parsed.Info = session.SessionInfo{
+                        ID:          name,
+                        ProjectName: "export",
+                        FilePath:    *filePath,
+                        ModTime:     fi.ModTime(),
+                        SizeBytes:   fi.Size(),
+                }</span>
+        } else<span class="cov0" title="0"> {
+                // Discovery mode
+                info, err := session.FindSession(*sessionID)
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Fatalf("Error finding session: %v", err)
+                }</span>
+                <span class="cov0" title="0">if info == nil </span><span class="cov0" title="0">{
+                        log.Fatalf("Session not found: %s", *sessionID)
+                }</span>
+
+                <span class="cov0" title="0">parsed, err = session.ParseFile(info.FilePath)
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Fatalf("Error parsing session: %v", err)
+                }</span>
+                <span class="cov0" title="0">parsed.Info = *info
+
+                // Load manifest
+                m, _ = manifest.Load(*sessionID)</span>
+        }
+
+        <span class="cov0" title="0">data := &amp;export.ExportData{
+                Session:  parsed,
+                Manifest: m,
+                Theme:    *theme,
+        }
+
+        html, err := export.GenerateHTML(chronicle.ExportTemplate, data)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Fatalf("Error generating export: %v", err)
+        }</span>
+
+        <span class="cov0" title="0">outPath := *output
+        if outPath == "" </span><span class="cov0" title="0">{
+                id := parsed.Info.ID
+                if len(id) &gt; 8 </span><span class="cov0" title="0">{
+                        id = id[:8]
+                }</span>
+                <span class="cov0" title="0">outPath = fmt.Sprintf("chronicle-%s.html", id)</span>
+        }
+
+        <span class="cov0" title="0">if err := os.WriteFile(outPath, html, 0644); err != nil </span><span class="cov0" title="0">{
+                log.Fatalf("Error writing output: %v", err)
+        }</span>
+
+        <span class="cov0" title="0">fmt.Printf("Exported to %s (%s)\n", outPath, formatSize(int64(len(html))))</span>
+}
+
+func getWebFS() (fs.FS, error) <span class="cov0" title="0">{
+        return fs.Sub(chronicle.WebDistFS, "web/dist")
+}</span>
+
+func formatSize(bytes int64) string <span class="cov10" title="11">{
+        if bytes &lt; 1024 </span><span class="cov5" title="3">{
+                return fmt.Sprintf("%d B", bytes)
+        }</span>
+        <span class="cov8" title="8">if bytes &lt; 1024*1024 </span><span class="cov6" title="4">{
+                return fmt.Sprintf("%.1f KB", float64(bytes)/1024)
+        }</span>
+        <span class="cov6" title="4">return fmt.Sprintf("%.1f MB", float64(bytes)/(1024*1024))</span>
+}
+
+func openBrowser(url string) <span class="cov0" title="0">{
+        time.Sleep(500 * time.Millisecond)
+        var cmd *exec.Cmd
+        switch runtime.GOOS </span>{
+        case "windows":<span class="cov0" title="0">
+                cmd = exec.Command("rundll32", "url.dll,FileProtocolHandler", url)</span>
+        case "darwin":<span class="cov0" title="0">
+                cmd = exec.Command("open", url)</span>
+        default:<span class="cov0" title="0">
+                cmd = exec.Command("xdg-open", url)</span>
+        }
+        <span class="cov0" title="0">cmd.Run()</span>
+}
+
+func formatAge(t time.Time) string <span class="cov9" title="9">{
+        d := time.Since(t)
+        if d &lt; time.Minute </span><span class="cov1" title="1">{
+                return "just now"
+        }</span>
+        <span class="cov8" title="8">if d &lt; time.Hour </span><span class="cov3" title="2">{
+                return fmt.Sprintf("%dm ago", int(d.Minutes()))
+        }</span>
+        <span class="cov7" title="6">if d &lt; 24*time.Hour </span><span class="cov5" title="3">{
+                return fmt.Sprintf("%dh ago", int(d.Hours()))
+        }</span>
+        <span class="cov5" title="3">return fmt.Sprintf("%dd ago", int(d.Hours()/24))</span>
+}
+
+func cmdDumpFixtures(args []string) <span class="cov0" title="0">{
+        flagSet := flag.NewFlagSet("dump-fixtures", flag.ExitOnError)
+        dir := flagSet.String("dir", "", "Session directory (default: Claude projects dir)")
+        out := flagSet.String("out", filepath.Join("web", "src", "test", "fixtures", "smoke"), "Output directory for JSON fixtures")
+        max := flagSet.Int("max", 50, "Maximum number of fixtures to generate")
+        flagSet.Parse(args)
+
+        sessionDir := *dir
+        if sessionDir == "" </span><span class="cov0" title="0">{
+                sessionDir = session.ClaudeProjectsDir()
+        }</span>
+
+        // Collect all .jsonl files
+        <span class="cov0" title="0">type fileEntry struct {
+                path    string
+                modTime time.Time
+                size    int64
+        }
+        var files []fileEntry
+
+        filepath.Walk(sessionDir, func(path string, info os.FileInfo, err error) error </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil
+                }</span>
+                <span class="cov0" title="0">if !info.IsDir() &amp;&amp; filepath.Ext(path) == ".jsonl" </span><span class="cov0" title="0">{
+                        files = append(files, fileEntry{
+                                path:    path,
+                                modTime: info.ModTime(),
+                                size:    info.Size(),
+                        })
+                }</span>
+                <span class="cov0" title="0">return nil</span>
+        })
+
+        <span class="cov0" title="0">if len(files) == 0 </span><span class="cov0" title="0">{
+                log.Fatalf("No .jsonl files found in %s", sessionDir)
+        }</span>
+
+        // Sort by mod time descending (newest first)
+        <span class="cov0" title="0">sort.Slice(files, func(i, j int) bool </span><span class="cov0" title="0">{
+                return files[i].modTime.After(files[j].modTime)
+        }</span>)
+
+        // Limit count
+        <span class="cov0" title="0">if len(files) &gt; *max </span><span class="cov0" title="0">{
+                files = files[:*max]
+        }</span>
+
+        // Create output directory
+        <span class="cov0" title="0">if err := os.MkdirAll(*out, 0755); err != nil </span><span class="cov0" title="0">{
+                log.Fatalf("Error creating output directory: %v", err)
+        }</span>
+
+        <span class="cov0" title="0">const maxFileSize = 10 * 1024 * 1024 // 10 MB
+        const maxMessages = 200
+        const keepEdge = 100 // keep first N + last N when truncating
+
+        generated := 0
+        for _, f := range files </span><span class="cov0" title="0">{
+                if f.size &gt; maxFileSize </span><span class="cov0" title="0">{
+                        continue</span>
+                }
+
+                <span class="cov0" title="0">parsed, err := session.ParseFile(f.path)
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Printf("Skipping %s: %v", filepath.Base(f.path), err)
+                        continue</span>
+                }
+
+                // Truncate long sessions: keep first 100 + last 100 messages
+                <span class="cov0" title="0">if len(parsed.Messages) &gt; maxMessages </span><span class="cov0" title="0">{
+                        first := parsed.Messages[:keepEdge]
+                        last := parsed.Messages[len(parsed.Messages)-keepEdge:]
+                        truncated := make([]session.Message, 0, keepEdge*2)
+                        truncated = append(truncated, first...)
+                        truncated = append(truncated, last...)
+                        parsed.Messages = truncated
+                }</span>
+
+                // Use the session ID (filename without extension) as the fixture name
+                <span class="cov0" title="0">baseName := strings.TrimSuffix(filepath.Base(f.path), ".jsonl")
+                outPath := filepath.Join(*out, baseName+".json")
+
+                data, err := json.Marshal(parsed)
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Printf("Skipping %s: marshal error: %v", baseName, err)
+                        continue</span>
+                }
+
+                <span class="cov0" title="0">if err := os.WriteFile(outPath, data, 0644); err != nil </span><span class="cov0" title="0">{
+                        log.Printf("Error writing %s: %v", outPath, err)
+                        continue</span>
+                }
+
+                <span class="cov0" title="0">generated++</span>
+        }
+
+        <span class="cov0" title="0">fmt.Printf("Generated %d fixtures in %s\n", generated, *out)</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package api
+
+import (
+        "encoding/json"
+        "fmt"
+        "log"
+        "net/http"
+
+        chronicle "github.com/jgbright/claude-chronicle"
+        "github.com/jgbright/claude-chronicle/internal/export"
+        "github.com/jgbright/claude-chronicle/internal/manifest"
+        "github.com/jgbright/claude-chronicle/internal/session"
+)
+
+type exportRequest struct {
+        Theme string `json:"theme"`
+}
+
+func (s *Server) handleExport(w http.ResponseWriter, r *http.Request) <span class="cov10" title="8">{
+        id := r.PathValue("id")
+        if id == "" </span><span class="cov0" title="0">{
+                http.Error(w, "Missing session ID", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov10" title="8">var req exportRequest
+        if err := json.NewDecoder(r.Body).Decode(&amp;req); err != nil </span><span class="cov1" title="1">{
+                req.Theme = "claude"
+        }</span>
+        <span class="cov10" title="8">if req.Theme == "" </span><span class="cov1" title="1">{
+                req.Theme = "claude"
+        }</span>
+
+        // Load session
+        <span class="cov10" title="8">info, err := session.FindSession(id)
+        if err != nil </span><span class="cov1" title="1">{
+                log.Printf("Error finding session: %v", err)
+                http.Error(w, "Failed to find session", http.StatusInternalServerError)
+                return
+        }</span>
+        <span class="cov9" title="7">if info == nil </span><span class="cov1" title="1">{
+                http.Error(w, "Session not found", http.StatusNotFound)
+                return
+        }</span>
+
+        <span class="cov8" title="6">parsed, err := session.ParseFileWithCache(info.FilePath)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Printf("Error parsing session: %v", err)
+                http.Error(w, "Failed to parse session", http.StatusInternalServerError)
+                return
+        }</span>
+        <span class="cov8" title="6">parsed.Info = *info
+
+        // Load manifest
+        m, err := manifest.Load(id)
+        if err != nil </span><span class="cov1" title="1">{
+                log.Printf("Error loading manifest: %v", err)
+                // Continue without manifest
+        }</span>
+
+        // Apply manifest title override before export
+        <span class="cov8" title="6">if m != nil &amp;&amp; m.Metadata != nil &amp;&amp; m.Metadata.Title != "" </span><span class="cov0" title="0">{
+                parsed.Info.Title = m.Metadata.Title
+        }</span>
+
+        <span class="cov8" title="6">data := &amp;export.ExportData{
+                Session:  parsed,
+                Manifest: m,
+                Theme:    req.Theme,
+        }
+
+        html, err := export.GenerateHTML(chronicle.ExportTemplate, data)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Printf("Error generating export: %v", err)
+                http.Error(w, "Failed to generate export", http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov8" title="6">shortID := id
+        if len(shortID) &gt; 8 </span><span class="cov8" title="6">{
+                shortID = shortID[:8]
+        }</span>
+        <span class="cov8" title="6">filename := fmt.Sprintf("chronicle-%s.html", shortID)
+        w.Header().Set("Content-Type", "text/html; charset=utf-8")
+        w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s"`, filename))
+        w.Write(html)</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package api
+
+import (
+        "encoding/json"
+        "net/http"
+)
+
+func (s *Server) handleInfo(w http.ResponseWriter, r *http.Request) <span class="cov10" title="2">{
+        w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(s.buildInfo)
+}</span>
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package api
+
+import (
+        "encoding/json"
+        "log"
+        "net/http"
+        "strconv"
+
+        "github.com/jgbright/claude-chronicle/internal/manifest"
+)
+
+func (s *Server) handleGetManifest(w http.ResponseWriter, r *http.Request) <span class="cov7" title="3">{
+        id := r.PathValue("id")
+        if id == "" </span><span class="cov0" title="0">{
+                http.Error(w, "Missing session ID", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov7" title="3">m, err := manifest.Load(id)
+        if err != nil </span><span class="cov1" title="1">{
+                log.Printf("Error loading manifest: %v", err)
+                http.Error(w, "Failed to load manifest", http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov4" title="2">if m == nil </span><span class="cov1" title="1">{
+                // Return empty manifest
+                m = &amp;manifest.Manifest{
+                        Version:   1,
+                        SessionID: id,
+                        Edits:     []manifest.Edit{},
+                }
+        }</span>
+
+        <span class="cov4" title="2">w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(m)</span>
+}
+
+func (s *Server) handlePutManifest(w http.ResponseWriter, r *http.Request) <span class="cov4" title="2">{
+        id := r.PathValue("id")
+        if id == "" </span><span class="cov0" title="0">{
+                http.Error(w, "Missing session ID", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov4" title="2">var m manifest.Manifest
+        if err := json.NewDecoder(r.Body).Decode(&amp;m); err != nil </span><span class="cov1" title="1">{
+                http.Error(w, "Invalid request body", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov1" title="1">m.SessionID = id
+        if m.Version == 0 </span><span class="cov1" title="1">{
+                m.Version = 1
+        }</span>
+
+        <span class="cov1" title="1">for i := range m.Edits </span><span class="cov1" title="1">{
+                if err := m.Edits[i].Validate(); err != nil </span><span class="cov0" title="0">{
+                        http.Error(w, err.Error(), http.StatusBadRequest)
+                        return
+                }</span>
+        }
+
+        <span class="cov1" title="1">if err := manifest.Save(&amp;m); err != nil </span><span class="cov0" title="0">{
+                log.Printf("Error saving manifest: %v", err)
+                http.Error(w, "Failed to save manifest", http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov1" title="1">w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(m)</span>
+}
+
+func (s *Server) handleAddEdit(w http.ResponseWriter, r *http.Request) <span class="cov8" title="4">{
+        id := r.PathValue("id")
+        if id == "" </span><span class="cov0" title="0">{
+                http.Error(w, "Missing session ID", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov8" title="4">var edit manifest.Edit
+        if err := json.NewDecoder(r.Body).Decode(&amp;edit); err != nil </span><span class="cov1" title="1">{
+                http.Error(w, "Invalid request body", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov7" title="3">m, err := manifest.Load(id)
+        if err != nil </span><span class="cov1" title="1">{
+                log.Printf("Error loading manifest: %v", err)
+                http.Error(w, "Failed to load manifest", http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov4" title="2">if m == nil </span><span class="cov1" title="1">{
+                m = &amp;manifest.Manifest{
+                        Version:   1,
+                        SessionID: id,
+                        Edits:     []manifest.Edit{},
+                }
+        }</span>
+
+        <span class="cov4" title="2">if err := edit.Validate(); err != nil </span><span class="cov0" title="0">{
+                http.Error(w, err.Error(), http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov4" title="2">m.Edits = append(m.Edits, edit)
+
+        if err := manifest.Save(m); err != nil </span><span class="cov0" title="0">{
+                log.Printf("Error saving manifest: %v", err)
+                http.Error(w, "Failed to save manifest", http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov4" title="2">w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(m)</span>
+}
+
+func (s *Server) handlePatchMetadata(w http.ResponseWriter, r *http.Request) <span class="cov7" title="3">{
+        id := r.PathValue("id")
+        if id == "" </span><span class="cov0" title="0">{
+                http.Error(w, "Missing session ID", http.StatusBadRequest)
+                return
+        }</span>
+
+        // Decode into a raw map so we only update fields that were actually sent.
+        <span class="cov7" title="3">var patch map[string]json.RawMessage
+        if err := json.NewDecoder(r.Body).Decode(&amp;patch); err != nil </span><span class="cov0" title="0">{
+                http.Error(w, "Invalid request body", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov7" title="3">m, err := manifest.Load(id)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Printf("Error loading manifest: %v", err)
+                http.Error(w, "Failed to load manifest", http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov7" title="3">if m == nil </span><span class="cov1" title="1">{
+                m = &amp;manifest.Manifest{
+                        Version:   1,
+                        SessionID: id,
+                        Edits:     []manifest.Edit{},
+                }
+        }</span>
+
+        <span class="cov7" title="3">if m.Metadata == nil </span><span class="cov1" title="1">{
+                m.Metadata = &amp;manifest.Metadata{}
+        }</span>
+
+        // Merge only the fields present in the patch.
+        <span class="cov7" title="3">if raw, ok := patch["title"]; ok </span><span class="cov4" title="2">{
+                var title string
+                if err := json.Unmarshal(raw, &amp;title); err != nil </span><span class="cov0" title="0">{
+                        http.Error(w, "Invalid title value", http.StatusBadRequest)
+                        return
+                }</span>
+                <span class="cov4" title="2">m.Metadata.Title = title</span>
+        }
+        <span class="cov7" title="3">if raw, ok := patch["deleted"]; ok </span><span class="cov1" title="1">{
+                var deleted bool
+                if err := json.Unmarshal(raw, &amp;deleted); err != nil </span><span class="cov0" title="0">{
+                        http.Error(w, "Invalid deleted value", http.StatusBadRequest)
+                        return
+                }</span>
+                <span class="cov1" title="1">m.Metadata.Deleted = deleted</span>
+        }
+
+        <span class="cov7" title="3">if err := manifest.Save(m); err != nil </span><span class="cov0" title="0">{
+                log.Printf("Error saving manifest: %v", err)
+                http.Error(w, "Failed to save manifest", http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov7" title="3">w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(m)</span>
+}
+
+func (s *Server) handleDeleteEdit(w http.ResponseWriter, r *http.Request) <span class="cov10" title="5">{
+        id := r.PathValue("id")
+        indexStr := r.PathValue("index")
+        if id == "" || indexStr == "" </span><span class="cov0" title="0">{
+                http.Error(w, "Missing parameters", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov10" title="5">index, err := strconv.Atoi(indexStr)
+        if err != nil || index &lt; 0 </span><span class="cov1" title="1">{
+                http.Error(w, "Invalid index", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov8" title="4">m, err := manifest.Load(id)
+        if err != nil </span><span class="cov1" title="1">{
+                log.Printf("Error loading manifest: %v", err)
+                http.Error(w, "Failed to load manifest", http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov7" title="3">if m == nil || index &gt;= len(m.Edits) </span><span class="cov4" title="2">{
+                http.Error(w, "Edit not found", http.StatusNotFound)
+                return
+        }</span>
+
+        <span class="cov1" title="1">m.Edits = append(m.Edits[:index], m.Edits[index+1:]...)
+
+        if err := manifest.Save(m); err != nil </span><span class="cov0" title="0">{
+                log.Printf("Error saving manifest: %v", err)
+                http.Error(w, "Failed to save manifest", http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov1" title="1">w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(m)</span>
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package api
+
+import (
+        "encoding/json"
+        "log"
+        "net/http"
+        "sort"
+        "time"
+
+        "github.com/jgbright/claude-chronicle/internal/manifest"
+        "github.com/jgbright/claude-chronicle/internal/session"
+)
+
+// ProjectSummary represents a project with its session count.
+type ProjectSummary struct {
+        Name         string    `json:"name"`
+        Dir          string    `json:"dir"`
+        SessionCount int       `json:"sessionCount"`
+        LastActivity time.Time `json:"lastActivity"`
+}
+
+func (s *Server) handleListProjects(w http.ResponseWriter, r *http.Request) <span class="cov0" title="0">{
+        sessions, err := session.DiscoverSessions()
+        if err != nil </span><span class="cov0" title="0">{
+                log.Printf("Error discovering sessions: %v", err)
+                http.Error(w, "Failed to discover sessions", http.StatusInternalServerError)
+                return
+        }</span>
+
+        // Group by ProjectDir, counting only non-deleted sessions
+        <span class="cov0" title="0">groups := make(map[string]*ProjectSummary)
+        for _, sess := range sessions </span><span class="cov0" title="0">{
+                if _, ok := groups[sess.ProjectDir]; !ok </span><span class="cov0" title="0">{
+                        groups[sess.ProjectDir] = &amp;ProjectSummary{
+                                Name: sess.ProjectName,
+                                Dir:  sess.ProjectDir,
+                        }
+                }</span>
+
+                // Check manifest to see if this session is soft-deleted
+                <span class="cov0" title="0">deleted := false
+                m, err := manifest.Load(sess.ID)
+                if err == nil &amp;&amp; m != nil &amp;&amp; m.Metadata != nil &amp;&amp; m.Metadata.Deleted </span><span class="cov0" title="0">{
+                        deleted = true
+                }</span>
+
+                <span class="cov0" title="0">if !deleted </span><span class="cov0" title="0">{
+                        groups[sess.ProjectDir].SessionCount++
+                }</span>
+                <span class="cov0" title="0">if sess.ModTime.After(groups[sess.ProjectDir].LastActivity) </span><span class="cov0" title="0">{
+                        groups[sess.ProjectDir].LastActivity = sess.ModTime
+                }</span>
+        }
+
+        // Convert to slice, excluding projects with zero visible sessions,
+        // and sort by most recent activity (descending)
+        <span class="cov0" title="0">projects := make([]ProjectSummary, 0, len(groups))
+        for _, p := range groups </span><span class="cov0" title="0">{
+                if p.SessionCount == 0 </span><span class="cov0" title="0">{
+                        continue</span>
+                }
+                <span class="cov0" title="0">projects = append(projects, *p)</span>
+        }
+        <span class="cov0" title="0">sort.Slice(projects, func(i, j int) bool </span><span class="cov0" title="0">{
+                return projects[i].LastActivity.After(projects[j].LastActivity)
+        }</span>)
+
+        <span class="cov0" title="0">w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(projects)</span>
+}
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package api
+
+import (
+        "encoding/json"
+        "fmt"
+        "log"
+        "net/http"
+        "os/exec"
+        "path/filepath"
+        "runtime"
+        "sort"
+        "strings"
+
+        "github.com/jgbright/claude-chronicle/internal/manifest"
+        "github.com/jgbright/claude-chronicle/internal/session"
+)
+
+func (s *Server) handleListSessions(w http.ResponseWriter, r *http.Request) <span class="cov8" title="16">{
+        cached, err := session.DiscoverSessions()
+        if err != nil </span><span class="cov1" title="1">{
+                log.Printf("Error discovering sessions: %v", err)
+                http.Error(w, "Failed to discover sessions", http.StatusInternalServerError)
+                return
+        }</span>
+
+        // Copy cached slice so we don't mutate the discovery cache.
+        <span class="cov8" title="15">sessions := make([]session.SessionInfo, len(cached))
+        copy(sessions, cached)
+
+        // Apply manifest metadata overrides (title, deleted)
+        for i := range sessions </span><span class="cov10" title="29">{
+                m, err := manifest.Load(sessions[i].ID)
+                if err != nil </span><span class="cov0" title="0">{
+                        continue</span>
+                }
+                <span class="cov10" title="29">if m != nil &amp;&amp; m.Metadata != nil </span><span class="cov6" title="9">{
+                        if m.Metadata.Title != "" </span><span class="cov4" title="4">{
+                                sessions[i].Title = m.Metadata.Title
+                        }</span>
+                        <span class="cov6" title="9">if m.Metadata.Deleted </span><span class="cov5" title="5">{
+                                sessions[i].Deleted = true
+                        }</span>
+                }
+        }
+
+        // Parse optional filters
+        <span class="cov8" title="15">showDeleted := r.URL.Query().Get("deleted") == "true"
+        projectFilter := r.URL.Query().Get("project")
+        searchTerm := r.URL.Query().Get("q")
+        searchLower := strings.ToLower(searchTerm)
+
+        // Apply filters — use a new slice to avoid corrupting the copy.
+        filtered := make([]session.SessionInfo, 0, len(sessions))
+        for i := range sessions </span><span class="cov10" title="29">{
+                // Deleted filter: exclude deleted sessions unless ?deleted=true
+                if sessions[i].Deleted &amp;&amp; !showDeleted </span><span class="cov3" title="3">{
+                        continue</span>
+                }
+
+                // Project filter (cheap, metadata-only)
+                <span class="cov9" title="26">if projectFilter != "" &amp;&amp; sessions[i].ProjectDir != projectFilter </span><span class="cov2" title="2">{
+                        continue</span>
+                }
+
+                // Title search (cheap, already loaded)
+                <span class="cov9" title="24">if searchLower != "" </span><span class="cov5" title="5">{
+                        titleMatch := strings.Contains(strings.ToLower(sessions[i].Title), searchLower)
+
+                        // Full content search (expensive, requires parse)
+                        if !titleMatch </span><span class="cov3" title="3">{
+                                parsed, err := session.ParseFileWithCache(sessions[i].FilePath)
+                                if err != nil </span><span class="cov0" title="0">{
+                                        continue</span>
+                                }
+                                <span class="cov3" title="3">parsed.Info = sessions[i]
+                                if !session.SearchContent(parsed, searchLower) </span><span class="cov3" title="3">{
+                                        continue</span>
+                                }
+                        }
+                }
+
+                <span class="cov9" title="21">filtered = append(filtered, sessions[i])</span>
+        }
+
+        // Sort by modification time, newest first
+        <span class="cov8" title="15">sort.Slice(filtered, func(i, j int) bool </span><span class="cov6" title="8">{
+                return filtered[i].ModTime.After(filtered[j].ModTime)
+        }</span>)
+
+        <span class="cov8" title="15">w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(filtered)</span>
+}
+
+// sessionWithManifest is the combined response for GET /api/sessions/{id}.
+type sessionWithManifest struct {
+        *session.ParsedSession
+        Manifest *manifest.Manifest `json:"manifest"`
+}
+
+func (s *Server) handleGetSession(w http.ResponseWriter, r *http.Request) <span class="cov3" title="3">{
+        id := r.PathValue("id")
+        if id == "" </span><span class="cov0" title="0">{
+                http.Error(w, "Missing session ID", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov3" title="3">info, err := session.FindSession(id)
+        if err != nil </span><span class="cov1" title="1">{
+                log.Printf("Error finding session: %v", err)
+                http.Error(w, "Failed to find session", http.StatusInternalServerError)
+                return
+        }</span>
+        <span class="cov2" title="2">if info == nil </span><span class="cov1" title="1">{
+                http.Error(w, "Session not found", http.StatusNotFound)
+                return
+        }</span>
+
+        <span class="cov1" title="1">parsed, err := session.ParseFileWithCache(info.FilePath)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Printf("Error parsing session %s: %v", id, err)
+                http.Error(w, "Failed to parse session", http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov1" title="1">parsed.Info = *info
+
+        // Load manifest
+        m, err := manifest.Load(id)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Printf("Error loading manifest for session %s: %v", id, err)
+                // Continue without manifest
+        }</span>
+
+        // Apply manifest title override
+        <span class="cov1" title="1">if m != nil &amp;&amp; m.Metadata != nil &amp;&amp; m.Metadata.Title != "" </span><span class="cov0" title="0">{
+                parsed.Info.Title = m.Metadata.Title
+        }</span>
+
+        // Return empty manifest if none exists
+        <span class="cov1" title="1">if m == nil </span><span class="cov1" title="1">{
+                m = &amp;manifest.Manifest{
+                        Version:   1,
+                        SessionID: id,
+                        Edits:     []manifest.Edit{},
+                }
+        }</span>
+
+        <span class="cov1" title="1">w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(sessionWithManifest{
+                ParsedSession: parsed,
+                Manifest:      m,
+        })</span>
+}
+
+func (s *Server) handleRevealSession(w http.ResponseWriter, r *http.Request) <span class="cov0" title="0">{
+        id := r.PathValue("id")
+        if id == "" </span><span class="cov0" title="0">{
+                http.Error(w, "Missing session ID", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov0" title="0">info, err := session.FindSession(id)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Printf("Error finding session: %v", err)
+                http.Error(w, "Failed to find session", http.StatusInternalServerError)
+                return
+        }</span>
+        <span class="cov0" title="0">if info == nil </span><span class="cov0" title="0">{
+                http.Error(w, "Session not found", http.StatusNotFound)
+                return
+        }</span>
+
+        <span class="cov0" title="0">filePath := info.FilePath
+        var cmd *exec.Cmd
+        switch runtime.GOOS </span>{
+        case "windows":<span class="cov0" title="0">
+                cmd = exec.Command("explorer", fmt.Sprintf("/select,%s", filePath))</span>
+        case "darwin":<span class="cov0" title="0">
+                cmd = exec.Command("open", "-R", filePath)</span>
+        default:<span class="cov0" title="0">
+                // Linux: open the containing directory
+                cmd = exec.Command("xdg-open", filepath.Dir(filePath))</span>
+        }
+
+        <span class="cov0" title="0">if err := cmd.Start(); err != nil </span><span class="cov0" title="0">{
+                log.Printf("Error revealing session file: %v", err)
+                http.Error(w, "Failed to open file explorer", http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov0" title="0">w.WriteHeader(http.StatusNoContent)</span>
+}
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package api
+
+import (
+        "fmt"
+        "net/http"
+
+        "github.com/jgbright/claude-chronicle/internal/watcher"
+)
+
+// handleSSE streams server-sent events to the client.
+func (s *Server) handleSSE(w http.ResponseWriter, r *http.Request) <span class="cov0" title="0">{
+        flusher, ok := w.(http.Flusher)
+        if !ok </span><span class="cov0" title="0">{
+                http.Error(w, "streaming unsupported", http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov0" title="0">w.Header().Set("Content-Type", "text/event-stream")
+        w.Header().Set("Cache-Control", "no-cache")
+        w.Header().Set("Connection", "keep-alive")
+
+        client := s.hub.addClient()
+        defer s.hub.removeClient(client)
+
+        // Send initial connected event
+        fmt.Fprintf(w, "event: connected\ndata: {}\n\n")
+        flusher.Flush()
+
+        for </span><span class="cov0" title="0">{
+                select </span>{
+                case &lt;-r.Context().Done():<span class="cov0" title="0">
+                        return</span>
+                case &lt;-client.done:<span class="cov0" title="0">
+                        return</span>
+                case ev := &lt;-client.events:<span class="cov0" title="0">
+                        switch ev.Type </span>{
+                        case watcher.SessionsChanged:<span class="cov0" title="0">
+                                fmt.Fprintf(w, "data: {\"type\":\"sessions_changed\"}\n\n")</span>
+                        case watcher.SessionUpdated:<span class="cov0" title="0">
+                                fmt.Fprintf(w, "data: {\"type\":\"session_updated\",\"sessionId\":\"%s\"}\n\n", ev.SessionID)</span>
+                        }
+                        <span class="cov0" title="0">flusher.Flush()</span>
+                }
+        }
+}
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package api
+
+import (
+        "sync"
+
+        "github.com/jgbright/claude-chronicle/internal/watcher"
+)
+
+// sseClient represents a connected SSE client.
+type sseClient struct {
+        events chan watcher.Event
+        done   chan struct{}
+}
+
+// Hub manages connected SSE clients and broadcasts events to them.
+type Hub struct {
+        mu      sync.RWMutex
+        clients map[*sseClient]struct{}
+}
+
+// newHub creates a new Hub.
+func newHub() *Hub <span class="cov10" title="47">{
+        return &amp;Hub{
+                clients: make(map[*sseClient]struct{}),
+        }
+}</span>
+
+// addClient registers a new SSE client and returns it.
+func (h *Hub) addClient() *sseClient <span class="cov0" title="0">{
+        c := &amp;sseClient{
+                events: make(chan watcher.Event, 16),
+                done:   make(chan struct{}),
+        }
+        h.mu.Lock()
+        h.clients[c] = struct{}{}
+        h.mu.Unlock()
+        return c
+}</span>
+
+// removeClient unregisters an SSE client.
+func (h *Hub) removeClient(c *sseClient) <span class="cov0" title="0">{
+        h.mu.Lock()
+        delete(h.clients, c)
+        h.mu.Unlock()
+        close(c.done)
+}</span>
+
+// broadcast sends an event to all connected clients.
+// Non-blocking: drops events for clients with full buffers.
+func (h *Hub) broadcast(ev watcher.Event) <span class="cov0" title="0">{
+        h.mu.RLock()
+        defer h.mu.RUnlock()
+        for c := range h.clients </span><span class="cov0" title="0">{
+                select </span>{
+                case c.events &lt;- ev:<span class="cov0" title="0"></span>
+                default:<span class="cov0" title="0"></span>
+                        // Client buffer full — drop event
+                }
+        }
+}
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package api
+
+import (
+        "io/fs"
+        "log"
+        "net"
+        "net/http"
+        "strings"
+
+        "github.com/jgbright/claude-chronicle/internal/session"
+        "github.com/jgbright/claude-chronicle/internal/watcher"
+)
+
+// BuildInfo holds version metadata injected via ldflags.
+type BuildInfo struct {
+        Version string `json:"version"`
+        Commit  string `json:"commit"`
+        Date    string `json:"date"`
+        Branch  string `json:"branch,omitempty"`
+}
+
+// Server holds the HTTP server configuration.
+type Server struct {
+        mux       *http.ServeMux
+        webFS     fs.FS
+        devMode   bool
+        devURL    string
+        hub       *Hub
+        watcher   *watcher.Watcher
+        buildInfo BuildInfo
+}
+
+// NewServer creates a new API server.
+// webFS should be the embedded web/dist filesystem.
+// If devMode is true, non-API requests are proxied to devURL (Vite dev server).
+func NewServer(webFS fs.FS, devMode bool, devURL string, buildInfo BuildInfo) *Server <span class="cov9" title="47">{
+        s := &amp;Server{
+                mux:       http.NewServeMux(),
+                webFS:     webFS,
+                devMode:   devMode,
+                devURL:    devURL,
+                hub:       newHub(),
+                buildInfo: buildInfo,
+        }
+        s.registerRoutes()
+        return s
+}</span>
+
+func (s *Server) registerRoutes() <span class="cov9" title="47">{
+        s.mux.HandleFunc("GET /api/projects", s.handleListProjects)
+        s.mux.HandleFunc("GET /api/sessions", s.handleListSessions)
+        s.mux.HandleFunc("GET /api/sessions/{id}", s.handleGetSession)
+
+        // Manifest routes
+        s.mux.HandleFunc("GET /api/sessions/{id}/manifest", s.handleGetManifest)
+        s.mux.HandleFunc("PUT /api/sessions/{id}/manifest", s.handlePutManifest)
+        s.mux.HandleFunc("POST /api/sessions/{id}/manifest/edits", s.handleAddEdit)
+        s.mux.HandleFunc("DELETE /api/sessions/{id}/manifest/edits/{index}", s.handleDeleteEdit)
+        s.mux.HandleFunc("PATCH /api/sessions/{id}/manifest/metadata", s.handlePatchMetadata)
+
+        // Session actions
+        s.mux.HandleFunc("POST /api/sessions/{id}/reveal", s.handleRevealSession)
+
+        // Export
+        s.mux.HandleFunc("POST /api/sessions/{id}/export", s.handleExport)
+
+        // Build info
+        s.mux.HandleFunc("GET /api/info", s.handleInfo)
+
+        // SSE events
+        s.mux.HandleFunc("GET /api/events", s.handleSSE)
+
+        // SPA fallback: serve static files, fall back to index.html
+        if s.devMode </span><span class="cov1" title="1">{
+                s.mux.HandleFunc("/", s.handleDevProxy)
+        }</span> else<span class="cov9" title="46"> {
+                s.mux.HandleFunc("/", s.handleSPA)
+        }</span>
+}
+
+func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) <span class="cov10" title="54">{
+        s.mux.ServeHTTP(w, r)
+}</span>
+
+// isHashedAsset checks if a URL path looks like a Vite-hashed asset (e.g. /assets/index-abc123.js).
+func isHashedAsset(path string) bool <span class="cov3" title="3">{
+        return strings.HasPrefix(path, "/assets/")
+}</span>
+
+// handleSPA serves the embedded SPA files with index.html fallback.
+func (s *Server) handleSPA(w http.ResponseWriter, r *http.Request) <span class="cov4" title="5">{
+        path := r.URL.Path
+        if path == "/" </span><span class="cov2" title="2">{
+                path = "index.html"
+        }</span> else<span class="cov3" title="3"> {
+                path = strings.TrimPrefix(path, "/")
+        }</span>
+
+        // Try to serve the exact file
+        <span class="cov4" title="5">f, err := s.webFS.Open(path)
+        if err == nil </span><span class="cov3" title="3">{
+                f.Close()
+                // Set cache headers for hashed assets
+                if isHashedAsset(r.URL.Path) </span><span class="cov1" title="1">{
+                        w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+                }</span>
+                <span class="cov3" title="3">http.FileServerFS(s.webFS).ServeHTTP(w, r)
+                return</span>
+        }
+
+        // SPA fallback: serve index.html for any non-file path
+        <span class="cov2" title="2">data, err := fs.ReadFile(s.webFS, "index.html")
+        if err != nil </span><span class="cov1" title="1">{
+                http.Error(w, "SPA not found", http.StatusNotFound)
+                return
+        }</span>
+
+        <span class="cov1" title="1">w.Header().Set("Content-Type", "text/html; charset=utf-8")
+        w.Header().Set("Cache-Control", "no-cache")
+        w.Write(data)</span>
+}
+
+// handleDevProxy proxies requests to the Vite dev server.
+func (s *Server) handleDevProxy(w http.ResponseWriter, r *http.Request) <span class="cov3" title="3">{
+        target := s.devURL + r.URL.Path
+        if r.URL.RawQuery != "" </span><span class="cov1" title="1">{
+                target += "?" + r.URL.RawQuery
+        }</span>
+
+        <span class="cov3" title="3">log.Printf("dev proxy: %s -&gt; %s", r.URL.Path, target)
+        http.Redirect(w, r, target, http.StatusTemporaryRedirect)</span>
+}
+
+// StartWatching begins filesystem monitoring and forwards events to SSE clients.
+// If watching fails, the server still functions without real-time updates.
+func (s *Server) StartWatching(projectsDir string) error <span class="cov0" title="0">{
+        w, err := watcher.New(projectsDir)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov0" title="0">s.watcher = w
+
+        go func() </span><span class="cov0" title="0">{
+                for ev := range w.Events() </span><span class="cov0" title="0">{
+                        session.InvalidateDiscoveryCache()
+                        s.hub.broadcast(ev)
+                }</span>
+        }()
+
+        <span class="cov0" title="0">return nil</span>
+}
+
+// Close stops the filesystem watcher if running.
+func (s *Server) Close() error <span class="cov0" title="0">{
+        if s.watcher != nil </span><span class="cov0" title="0">{
+                return s.watcher.Close()
+        }</span>
+        <span class="cov0" title="0">return nil</span>
+}
+
+// ListenAndServe starts the HTTP server.
+func (s *Server) ListenAndServe(addr string) error <span class="cov0" title="0">{
+        log.Printf("Starting server on %s", addr)
+        return http.ListenAndServe(addr, s)
+}</span>
+
+// Serve accepts connections on the given listener and serves HTTP requests.
+func (s *Server) Serve(ln net.Listener) error <span class="cov0" title="0">{
+        return http.Serve(ln, s)
+}</span>
+</pre>
+		
+		<pre class="file" id="file9" style="display: none">package export
+
+import (
+        "encoding/json"
+        "fmt"
+        "strings"
+
+        "github.com/jgbright/claude-chronicle/internal/manifest"
+        "github.com/jgbright/claude-chronicle/internal/session"
+)
+
+// ValidThemes is the set of allowed theme names.
+var ValidThemes = map[string]bool{
+        "claude":  true,
+        "copilot": true,
+}
+
+// ExportData is the data structure injected into the HTML template.
+type ExportData struct {
+        Session  *session.ParsedSession `json:"session"`
+        Manifest *manifest.Manifest     `json:"manifest"`
+        Theme    string                 `json:"theme"`
+}
+
+// GenerateHTML takes the export template and injects session data.
+// It applies server-side sanitization: manifest deletes are physically
+// applied, metadata is stripped, and home directory paths are normalized.
+func GenerateHTML(template []byte, data *ExportData) ([]byte, error) <span class="cov10" title="13">{
+        if !ValidThemes[data.Theme] </span><span class="cov1" title="1">{
+                data.Theme = "claude"
+        }</span>
+
+        // Sanitize before marshaling: apply deletes, strip metadata, normalize paths
+        <span class="cov10" title="13">sanitized := SanitizeForExport(data)
+
+        jsonData, err := json.Marshal(sanitized)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("marshaling export data: %w", err)
+        }</span>
+
+        <span class="cov10" title="13">html := string(template)
+
+        // Replace the placeholder data
+        html = strings.Replace(
+                html,
+                "window.__CHRONICLE_DATA__={}",
+                "window.__CHRONICLE_DATA__="+string(jsonData),
+                1,
+        )
+
+        // Set the theme
+        html = strings.Replace(
+                html,
+                `data-theme="claude"`,
+                fmt.Sprintf(`data-theme="%s"`, data.Theme),
+                1,
+        )
+
+        return []byte(html), nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file10" style="display: none">package export
+
+import (
+        "encoding/json"
+        "regexp"
+        "strings"
+
+        "github.com/jgbright/claude-chronicle/internal/manifest"
+        "github.com/jgbright/claude-chronicle/internal/session"
+)
+
+// homePathPattern matches OS-specific home directory paths containing a username.
+// Captures: C:\Users\&lt;name&gt;\, C:/Users/&lt;name&gt;/, /home/&lt;name&gt;/, /Users/&lt;name&gt;/
+var homePathPattern = regexp.MustCompile(
+        `(?i)` +
+                `(?:[A-Z]:\\Users\\[^\\\/\s]+\\)` + // Windows backslash: C:\Users\name\
+                `|(?:[A-Z]:/Users/[^/\s]+/)` + // Windows forward slash: C:/Users/name/
+                `|(?:/home/[^/\s]+/)` + // Linux: /home/name/
+                `|(?:/Users/[^/\s]+/)`, // macOS: /Users/name/
+)
+
+// SanitizeForExport applies server-side sanitization to export data:
+// 1. Applies manifest delete edits (physically removes messages)
+// 2. Strips sensitive metadata from SessionInfo
+// 3. Normalizes home directory paths to ~/ or ~\
+//
+// The returned data is a deep copy safe for JSON serialization into HTML.
+// The original data is not modified.
+func SanitizeForExport(data *ExportData) *ExportData <span class="cov7" title="21">{
+        result := &amp;ExportData{
+                Theme: data.Theme,
+        }
+
+        if data.Session != nil </span><span class="cov7" title="20">{
+                sanitized := sanitizeSession(data.Session, data.Manifest)
+                result.Session = sanitized
+        }</span>
+
+        // Manifest is still included (for collapse/annotate/editText rendering),
+        // but delete edits are removed since they've been applied server-side.
+        <span class="cov7" title="21">result.Manifest = stripDeleteEdits(data.Manifest)
+
+        return result</span>
+}
+
+// sanitizeSession creates a sanitized copy of the session.
+func sanitizeSession(s *session.ParsedSession, m *manifest.Manifest) *session.ParsedSession <span class="cov7" title="20">{
+        result := &amp;session.ParsedSession{
+                Info: sanitizeSessionInfo(s.Info),
+        }
+
+        // Collect message IDs targeted by delete edits
+        deleted := collectDeletedIDs(m)
+
+        // Copy messages, skipping deleted ones
+        for _, msg := range s.Messages </span><span class="cov7" title="22">{
+                if deleted[msg.ID] </span><span class="cov5" title="7">{
+                        continue</span>
+                }
+                <span class="cov6" title="15">sanitizedMsg := sanitizeMessage(msg)
+                result.Messages = append(result.Messages, sanitizedMsg)</span>
+        }
+
+        <span class="cov7" title="20">if result.Messages == nil </span><span class="cov6" title="10">{
+                result.Messages = []session.Message{}
+        }</span>
+
+        <span class="cov7" title="20">return result</span>
+}
+
+// sanitizeSessionInfo strips sensitive fields from session metadata.
+func sanitizeSessionInfo(info session.SessionInfo) session.SessionInfo <span class="cov8" title="28">{
+        result := info
+
+        // FilePath is the absolute path to the JSONL file on disk — never needed in exports
+        result.FilePath = ""
+
+        // ProjectDir is the raw directory name — clear it
+        result.ProjectDir = ""
+
+        // Truncate ProjectName to just the leaf directory name
+        // e.g. "D:/repos/claude-chronicle" → "claude-chronicle"
+        if result.ProjectName != "" </span><span class="cov5" title="7">{
+                // Handle both forward and backslash separators
+                name := result.ProjectName
+                name = strings.ReplaceAll(name, "\\", "/")
+                if idx := strings.LastIndex(name, "/"); idx &gt;= 0 </span><span class="cov4" title="5">{
+                        name = name[idx+1:]
+                }</span>
+                <span class="cov5" title="7">result.ProjectName = name</span>
+        }
+
+        <span class="cov8" title="28">return result</span>
+}
+
+// sanitizeMessage creates a copy of the message with paths normalized.
+func sanitizeMessage(msg session.Message) session.Message <span class="cov6" title="15">{
+        result := msg
+
+        // Sanitize text content (user prompts may contain paths)
+        result.TextContent = normalizeHomePaths(msg.TextContent)
+
+        // Sanitize tool results
+        if len(msg.ToolResults) &gt; 0 </span><span class="cov2" title="2">{
+                result.ToolResults = make([]session.ToolResult, len(msg.ToolResults))
+                for i, tr := range msg.ToolResults </span><span class="cov2" title="2">{
+                        result.ToolResults[i] = sanitizeToolResult(tr)
+                }</span>
+        }
+
+        // Sanitize assistant content blocks
+        <span class="cov6" title="15">if len(msg.Blocks) &gt; 0 </span><span class="cov3" title="3">{
+                result.Blocks = make([]session.ContentBlock, len(msg.Blocks))
+                for i, block := range msg.Blocks </span><span class="cov3" title="3">{
+                        result.Blocks[i] = sanitizeContentBlock(block)
+                }</span>
+        }
+
+        <span class="cov6" title="15">return result</span>
+}
+
+// sanitizeToolResult normalizes paths in tool result data.
+func sanitizeToolResult(tr session.ToolResult) session.ToolResult <span class="cov2" title="2">{
+        result := tr
+        result.Content = normalizeHomePaths(tr.Content)
+
+        if tr.Result != nil </span><span class="cov2" title="2">{
+                sanitized := sanitizeToolUseResultData(*tr.Result)
+                result.Result = &amp;sanitized
+        }</span>
+
+        <span class="cov2" title="2">return result</span>
+}
+
+// sanitizeToolUseResultData normalizes paths in structured tool result metadata.
+func sanitizeToolUseResultData(data session.ToolUseResultData) session.ToolUseResultData <span class="cov3" title="3">{
+        result := data
+
+        result.FilePath = normalizeHomePaths(data.FilePath)
+        result.OriginalFile = normalizeHomePaths(data.OriginalFile)
+        result.File = normalizeHomePaths(data.File)
+        result.Content = normalizeHomePaths(data.Content)
+        result.Stdout = normalizeHomePaths(data.Stdout)
+        result.Stderr = normalizeHomePaths(data.Stderr)
+        result.Prompt = normalizeHomePaths(data.Prompt)
+
+        if len(data.Filenames) &gt; 0 </span><span class="cov1" title="1">{
+                result.Filenames = make([]string, len(data.Filenames))
+                for i, f := range data.Filenames </span><span class="cov2" title="2">{
+                        result.Filenames[i] = normalizeHomePaths(f)
+                }</span>
+        }
+
+        // Normalize paths in structured patches
+        <span class="cov3" title="3">if len(data.StructuredPatch) &gt; 0 </span><span class="cov1" title="1">{
+                result.StructuredPatch = make([]session.PatchFile, len(data.StructuredPatch))
+                for i, pf := range data.StructuredPatch </span><span class="cov1" title="1">{
+                        result.StructuredPatch[i] = session.PatchFile{
+                                OldFileName: normalizeHomePaths(pf.OldFileName),
+                                NewFileName: normalizeHomePaths(pf.NewFileName),
+                                Hunks:       pf.Hunks, // hunk content doesn't typically contain full paths
+                        }
+                }</span>
+        }
+
+        <span class="cov3" title="3">return result</span>
+}
+
+// sanitizeContentBlock normalizes paths in assistant content blocks.
+func sanitizeContentBlock(block session.ContentBlock) session.ContentBlock <span class="cov4" title="5">{
+        result := block
+
+        result.Text = normalizeHomePaths(block.Text)
+        result.Thinking = normalizeHomePaths(block.Thinking)
+
+        // Normalize paths in tool_use input JSON
+        if len(block.Input) &gt; 0 </span><span class="cov1" title="1">{
+                result.Input = normalizeHomePathsInJSON(block.Input)
+        }</span>
+
+        <span class="cov4" title="5">return result</span>
+}
+
+// normalizeHomePaths replaces OS-specific home directory paths with ~/ or ~\.
+func normalizeHomePaths(s string) string <span class="cov10" title="63">{
+        if s == "" </span><span class="cov8" title="27">{
+                return s
+        }</span>
+
+        <span class="cov8" title="36">return homePathPattern.ReplaceAllStringFunc(s, func(match string) string </span><span class="cov8" title="26">{
+                // Determine the separator used in the match
+                if strings.Contains(match, "\\") </span><span class="cov2" title="2">{
+                        return `~\`
+                }</span>
+                <span class="cov7" title="24">return "~/"</span>
+        })
+}
+
+// normalizeHomePathsInJSON normalizes home directory paths within JSON values.
+// It parses the JSON, walks string values, and re-marshals.
+func normalizeHomePathsInJSON(raw json.RawMessage) json.RawMessage <span class="cov1" title="1">{
+        if len(raw) == 0 </span><span class="cov0" title="0">{
+                return raw
+        }</span>
+
+        // Try as object (most common for tool_use input)
+        <span class="cov1" title="1">var obj map[string]interface{}
+        if err := json.Unmarshal(raw, &amp;obj); err == nil </span><span class="cov1" title="1">{
+                normalizeJSONValue(obj)
+                if result, err := json.Marshal(obj); err == nil </span><span class="cov1" title="1">{
+                        return result
+                }</span>
+        }
+
+        <span class="cov0" title="0">return raw</span>
+}
+
+// normalizeJSONValue recursively normalizes string values in a JSON structure.
+func normalizeJSONValue(v interface{}) <span class="cov1" title="1">{
+        switch val := v.(type) </span>{
+        case map[string]interface{}:<span class="cov1" title="1">
+                for k, v := range val </span><span class="cov2" title="2">{
+                        if s, ok := v.(string); ok </span><span class="cov2" title="2">{
+                                val[k] = normalizeHomePaths(s)
+                        }</span> else<span class="cov0" title="0"> {
+                                normalizeJSONValue(v)
+                        }</span>
+                }
+        case []interface{}:<span class="cov0" title="0">
+                for i, v := range val </span><span class="cov0" title="0">{
+                        if s, ok := v.(string); ok </span><span class="cov0" title="0">{
+                                val[i] = normalizeHomePaths(s)
+                        }</span> else<span class="cov0" title="0"> {
+                                normalizeJSONValue(v)
+                        }</span>
+                }
+        }
+}
+
+// collectDeletedIDs returns a set of message IDs targeted by delete edits.
+func collectDeletedIDs(m *manifest.Manifest) map[string]bool <span class="cov7" title="22">{
+        if m == nil || len(m.Edits) == 0 </span><span class="cov6" title="14">{
+                return nil
+        }</span>
+
+        <span class="cov5" title="8">deleted := make(map[string]bool)
+        for _, edit := range m.Edits </span><span class="cov6" title="13">{
+                if edit.Type == "delete" &amp;&amp; edit.BlockID != "" </span><span class="cov5" title="9">{
+                        deleted[edit.BlockID] = true
+                }</span>
+        }
+        <span class="cov5" title="8">return deleted</span>
+}
+
+// stripDeleteEdits returns a manifest copy without delete edits,
+// since they've been applied server-side. Returns nil if no edits or metadata remain.
+func stripDeleteEdits(m *manifest.Manifest) *manifest.Manifest <span class="cov7" title="24">{
+        if m == nil </span><span class="cov6" title="15">{
+                return nil
+        }</span>
+
+        <span class="cov5" title="9">var remaining []manifest.Edit
+        for _, edit := range m.Edits </span><span class="cov6" title="15">{
+                if edit.Type != "delete" </span><span class="cov4" title="5">{
+                        remaining = append(remaining, edit)
+                }</span>
+        }
+
+        <span class="cov5" title="9">if len(remaining) == 0 &amp;&amp; m.Metadata == nil </span><span class="cov4" title="5">{
+                return nil
+        }</span>
+
+        <span class="cov4" title="4">result := &amp;manifest.Manifest{
+                Version:   m.Version,
+                SessionID: m.SessionID,
+                Metadata:  m.Metadata,
+                Edits:     remaining,
+        }
+        if result.Edits == nil </span><span class="cov0" title="0">{
+                result.Edits = []manifest.Edit{}
+        }</span>
+        <span class="cov4" title="4">return result</span>
+}
+
+</pre>
+		
+		<pre class="file" id="file11" style="display: none">package manifest
+
+import (
+        "encoding/json"
+        "fmt"
+        "os"
+        "path/filepath"
+        "runtime"
+)
+
+// manifestDir returns the path to the manifest storage directory.
+func manifestDir() string <span class="cov10" title="14">{
+        var home string
+        if runtime.GOOS == "windows" </span><span class="cov0" title="0">{
+                home = os.Getenv("USERPROFILE")
+        }</span> else<span class="cov10" title="14"> {
+                home = os.Getenv("HOME")
+        }</span>
+        <span class="cov10" title="14">return filepath.Join(home, ".claude-chronicle", "manifests")</span>
+}
+
+func manifestPath(sessionID string) string <span class="cov8" title="9">{
+        return filepath.Join(manifestDir(), sessionID+".json")
+}</span>
+
+// Load reads a manifest for a session. Returns nil if none exists.
+func Load(sessionID string) (*Manifest, error) <span class="cov5" title="4">{
+        path := manifestPath(sessionID)
+        data, err := os.ReadFile(path)
+        if os.IsNotExist(err) </span><span class="cov1" title="1">{
+                return nil, nil
+        }</span>
+        <span class="cov4" title="3">if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("reading manifest: %w", err)
+        }</span>
+
+        <span class="cov4" title="3">var m Manifest
+        if err := json.Unmarshal(data, &amp;m); err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("parsing manifest: %w", err)
+        }</span>
+        <span class="cov4" title="3">return &amp;m, nil</span>
+}
+
+// Save writes a manifest for a session using atomic write (temp file + rename).
+func Save(m *Manifest) error <span class="cov6" title="5">{
+        dir := manifestDir()
+        if err := os.MkdirAll(dir, 0755); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("creating manifest dir: %w", err)
+        }</span>
+
+        <span class="cov6" title="5">data, err := json.MarshalIndent(m, "", "  ")
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("marshaling manifest: %w", err)
+        }</span>
+
+        <span class="cov6" title="5">path := manifestPath(m.SessionID)
+
+        tmp, err := os.CreateTemp(dir, ".manifest-*.tmp")
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("creating temp file: %w", err)
+        }</span>
+        <span class="cov6" title="5">tmpPath := tmp.Name()
+
+        if _, err := tmp.Write(data); err != nil </span><span class="cov0" title="0">{
+                tmp.Close()
+                os.Remove(tmpPath)
+                return fmt.Errorf("writing temp file: %w", err)
+        }</span>
+        <span class="cov6" title="5">if err := tmp.Close(); err != nil </span><span class="cov0" title="0">{
+                os.Remove(tmpPath)
+                return fmt.Errorf("closing temp file: %w", err)
+        }</span>
+        <span class="cov6" title="5">if err := os.Rename(tmpPath, path); err != nil </span><span class="cov0" title="0">{
+                os.Remove(tmpPath)
+                return fmt.Errorf("renaming manifest: %w", err)
+        }</span>
+        <span class="cov6" title="5">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file12" style="display: none">package manifest
+
+import "fmt"
+
+// Metadata holds optional session-level overrides.
+type Metadata struct {
+        Title   string `json:"title,omitempty"`
+        Deleted bool   `json:"deleted,omitempty"`
+}
+
+// Manifest holds the edit manifest for a session.
+type Manifest struct {
+        Version   int       `json:"version"`
+        SessionID string    `json:"sessionId"`
+        Metadata  *Metadata `json:"metadata,omitempty"`
+        Edits     []Edit    `json:"edits"`
+}
+
+// Edit represents a single curation operation.
+type Edit struct {
+        Type         string   `json:"type"`
+        BlockID      string   `json:"blockId,omitempty"`
+        BlockIDs     []string `json:"blockIds,omitempty"`
+        Summary      string   `json:"summary,omitempty"`
+        AfterBlockID string   `json:"afterBlockId,omitempty"`
+        Content      string   `json:"content,omitempty"`
+        ID           string   `json:"id,omitempty"`
+        NewContent   string   `json:"newContent,omitempty"`
+}
+
+// validEditTypes lists all recognized edit types.
+var validEditTypes = map[string]bool{
+        "delete":   true,
+        "collapse": true,
+        "annotate": true,
+        "editText": true,
+        "reorder":  true,
+}
+
+// Validate checks that the edit has a valid type and all required fields.
+func (e *Edit) Validate() error <span class="cov10" title="19">{
+        if !validEditTypes[e.Type] </span><span class="cov3" title="2">{
+                return fmt.Errorf("invalid edit type: %q", e.Type)
+        }</span>
+
+        <span class="cov9" title="17">switch e.Type </span>{
+        case "delete":<span class="cov3" title="2">
+                if e.BlockID == "" </span><span class="cov1" title="1">{
+                        return fmt.Errorf("delete edit requires blockId")
+                }</span>
+        case "collapse":<span class="cov5" title="4">
+                if len(e.BlockIDs) == 0 </span><span class="cov3" title="2">{
+                        return fmt.Errorf("collapse edit requires non-empty blockIds")
+                }</span>
+                <span class="cov3" title="2">if e.Summary == "" </span><span class="cov1" title="1">{
+                        return fmt.Errorf("collapse edit requires summary")
+                }</span>
+        case "annotate":<span class="cov4" title="3">
+                if e.AfterBlockID == "" </span><span class="cov1" title="1">{
+                        return fmt.Errorf("annotate edit requires afterBlockId")
+                }</span>
+                <span class="cov3" title="2">if e.Content == "" </span><span class="cov1" title="1">{
+                        return fmt.Errorf("annotate edit requires content")
+                }</span>
+        case "editText":<span class="cov4" title="3">
+                if e.BlockID == "" </span><span class="cov1" title="1">{
+                        return fmt.Errorf("editText edit requires blockId")
+                }</span>
+                <span class="cov3" title="2">if e.NewContent == "" </span><span class="cov1" title="1">{
+                        return fmt.Errorf("editText edit requires newContent")
+                }</span>
+        case "reorder":<span class="cov5" title="5">
+                // Support both payloads:
+                // 1) legacy: {blockIds:[...]}
+                // 2) frontend schema: {blockId:"...", afterBlockId:"..."}
+                if len(e.BlockIDs) == 0 </span><span class="cov5" title="4">{
+                        if e.BlockID == "" </span><span class="cov3" title="2">{
+                                return fmt.Errorf("reorder edit requires blockId or non-empty blockIds")
+                        }</span>
+                        <span class="cov3" title="2">if e.AfterBlockID == "" </span><span class="cov1" title="1">{
+                                return fmt.Errorf("reorder edit requires afterBlockId when using blockId")
+                        }</span>
+                }
+        }
+
+        <span class="cov6" title="6">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file13" style="display: none">package session
+
+import (
+        "bufio"
+        "encoding/json"
+        "os"
+        "path/filepath"
+        "runtime"
+        "strings"
+        "sync"
+        "time"
+)
+
+// ClaudeProjectsDir returns the path to Claude Code's projects directory.
+// If CHRONICLE_DATA_DIR is set, that value is used instead of the default.
+func ClaudeProjectsDir() string <span class="cov5" title="4">{
+        if override := os.Getenv("CHRONICLE_DATA_DIR"); override != "" </span><span class="cov0" title="0">{
+                return override
+        }</span>
+        <span class="cov5" title="4">var home string
+        if runtime.GOOS == "windows" </span><span class="cov0" title="0">{
+                home = os.Getenv("USERPROFILE")
+        }</span> else<span class="cov5" title="4"> {
+                home = os.Getenv("HOME")
+        }</span>
+        <span class="cov5" title="4">return filepath.Join(home, ".claude", "projects")</span>
+}
+
+// discoveryCache caches the result of DiscoverSessions to avoid
+// repeated filesystem walks within a short window.
+var discoveryCache struct {
+        sync.RWMutex
+        sessions []SessionInfo
+        expires  time.Time
+}
+
+const discoveryCacheTTL = 5 * time.Second
+
+// DiscoverSessions scans the Claude projects directory for session JSONL files.
+// Results are cached for a short TTL to avoid redundant filesystem walks.
+func DiscoverSessions() ([]SessionInfo, error) <span class="cov5" title="4">{
+        discoveryCache.RLock()
+        if time.Now().Before(discoveryCache.expires) &amp;&amp; discoveryCache.sessions != nil </span><span class="cov1" title="1">{
+                result := discoveryCache.sessions
+                discoveryCache.RUnlock()
+                return result, nil
+        }</span>
+        <span class="cov4" title="3">discoveryCache.RUnlock()
+
+        sessions, err := discoverSessionsUncached()
+        if err != nil </span><span class="cov1" title="1">{
+                return nil, err
+        }</span>
+
+        <span class="cov3" title="2">discoveryCache.Lock()
+        discoveryCache.sessions = sessions
+        discoveryCache.expires = time.Now().Add(discoveryCacheTTL)
+        discoveryCache.Unlock()
+
+        return sessions, nil</span>
+}
+
+// InvalidateDiscoveryCache forces the next DiscoverSessions call to rescan.
+func InvalidateDiscoveryCache() <span class="cov4" title="3">{
+        discoveryCache.Lock()
+        discoveryCache.sessions = nil
+        discoveryCache.expires = time.Time{}
+        discoveryCache.Unlock()
+}</span>
+
+// discoverSessionsUncached performs the actual filesystem scan.
+func discoverSessionsUncached() ([]SessionInfo, error) <span class="cov4" title="3">{
+        projectsDir := ClaudeProjectsDir()
+
+        entries, err := os.ReadDir(projectsDir)
+        if err != nil </span><span class="cov1" title="1">{
+                return nil, err
+        }</span>
+
+        <span class="cov3" title="2">sessions := make([]SessionInfo, 0)
+
+        for _, projEntry := range entries </span><span class="cov4" title="3">{
+                if !projEntry.IsDir() </span><span class="cov0" title="0">{
+                        continue</span>
+                }
+
+                <span class="cov4" title="3">projPath := filepath.Join(projectsDir, projEntry.Name())
+                files, err := os.ReadDir(projPath)
+                if err != nil </span><span class="cov0" title="0">{
+                        continue</span>
+                }
+
+                <span class="cov4" title="3">for _, f := range files </span><span class="cov7" title="7">{
+                        if f.IsDir() || !strings.HasSuffix(f.Name(), ".jsonl") </span><span class="cov3" title="2">{
+                                continue</span>
+                        }
+
+                        <span class="cov6" title="5">info, err := f.Info()
+                        if err != nil </span><span class="cov0" title="0">{
+                                continue</span>
+                        }
+
+                        <span class="cov6" title="5">sessionID := strings.TrimSuffix(f.Name(), ".jsonl")
+                        filePath := filepath.Join(projPath, f.Name())
+
+                        // Quick-scan for cwd and title
+                        meta := scanSessionMetadata(filePath)
+
+                        projectName := decodeProjectName(projEntry.Name())
+                        if meta.CWD != "" </span><span class="cov4" title="3">{
+                                projectName = meta.CWD
+                        }</span>
+
+                        <span class="cov6" title="5">sessions = append(sessions, SessionInfo{
+                                ID:          sessionID,
+                                ProjectDir:  projEntry.Name(),
+                                ProjectName: projectName,
+                                FilePath:    filePath,
+                                ModTime:     info.ModTime(),
+                                SizeBytes:   info.Size(),
+                                Title:       meta.Title,
+                        })</span>
+                }
+        }
+
+        <span class="cov3" title="2">return sessions, nil</span>
+}
+
+// sessionMetadata holds quick-scanned metadata from a JSONL file.
+type sessionMetadata struct {
+        CWD   string // first cwd found
+        Title string // first user text message (used as title)
+}
+
+// metadataRecord is a minimal struct for quick-scanning JSONL records.
+type metadataRecord struct {
+        Type    string          `json:"type"`
+        CWD     string          `json:"cwd"`
+        Message json.RawMessage `json:"message"`
+}
+
+// metadataMessage is a minimal struct for extracting role and content from a message.
+type metadataMessage struct {
+        Role    string          `json:"role"`
+        Content json.RawMessage `json:"content"`
+}
+
+// scanSessionMetadata reads the first ~50 lines of a JSONL file to extract
+// cwd (for the real project path) and the first user message (as title).
+func scanSessionMetadata(path string) sessionMetadata <span class="cov9" title="11">{
+        f, err := os.Open(path)
+        if err != nil </span><span class="cov1" title="1">{
+                return sessionMetadata{}
+        }</span>
+        <span class="cov9" title="10">defer f.Close()
+
+        scanner := bufio.NewScanner(f)
+        scanner.Buffer(make([]byte, 0, 64*1024), 1024*1024)
+
+        var meta sessionMetadata
+        lines := 0
+        maxLines := 50
+
+        for scanner.Scan() &amp;&amp; lines &lt; maxLines </span><span class="cov9" title="12">{
+                lines++
+                line := scanner.Bytes()
+                if len(line) == 0 </span><span class="cov0" title="0">{
+                        continue</span>
+                }
+
+                <span class="cov9" title="12">var rec metadataRecord
+                if err := json.Unmarshal(line, &amp;rec); err != nil </span><span class="cov0" title="0">{
+                        continue</span>
+                }
+
+                // Extract cwd from the first record that has it
+                <span class="cov9" title="12">if meta.CWD == "" &amp;&amp; rec.CWD != "" </span><span class="cov7" title="7">{
+                        meta.CWD = rec.CWD
+                }</span>
+
+                // Extract first user text as title
+                <span class="cov9" title="12">if meta.Title == "" &amp;&amp; (rec.Type == "human" || rec.Type == "user") &amp;&amp; len(rec.Message) &gt; 0 </span><span class="cov8" title="9">{
+                        var msg metadataMessage
+                        if err := json.Unmarshal(rec.Message, &amp;msg); err == nil &amp;&amp; msg.Role == "user" </span><span class="cov8" title="9">{
+                                meta.Title = extractUserText(msg.Content)
+                        }</span>
+                }
+
+                // Stop early if we have everything
+                <span class="cov9" title="12">if meta.CWD != "" &amp;&amp; meta.Title != "" </span><span class="cov7" title="7">{
+                        break</span>
+                }
+        }
+
+        <span class="cov9" title="10">return meta</span>
+}
+
+// extractUserText extracts a short title from user message content.
+// Content can be a plain string or an array of content blocks.
+func extractUserText(raw json.RawMessage) string <span class="cov8" title="9">{
+        // Try as plain string first
+        var s string
+        if err := json.Unmarshal(raw, &amp;s); err == nil </span><span class="cov7" title="6">{
+                return truncateTitle(s)
+        }</span>
+
+        // Try as array of content blocks
+        <span class="cov4" title="3">var blocks []struct {
+                Type string `json:"type"`
+                Text string `json:"text"`
+        }
+        if err := json.Unmarshal(raw, &amp;blocks); err == nil </span><span class="cov4" title="3">{
+                for _, b := range blocks </span><span class="cov4" title="3">{
+                        if b.Type == "text" &amp;&amp; b.Text != "" </span><span class="cov1" title="1">{
+                                return truncateTitle(b.Text)
+                        }</span>
+                }
+        }
+
+        <span class="cov3" title="2">return ""</span>
+}
+
+// truncateTitle returns the first line of text, capped at 100 chars.
+func truncateTitle(s string) string <span class="cov10" title="13">{
+        // Take only the first line
+        if idx := strings.IndexAny(s, "\r\n"); idx &gt;= 0 </span><span class="cov4" title="3">{
+                s = s[:idx]
+        }</span>
+        <span class="cov10" title="13">s = strings.TrimSpace(s)
+        if len(s) &gt; 100 </span><span class="cov1" title="1">{
+                s = s[:97] + "..."
+        }</span>
+        <span class="cov10" title="13">return s</span>
+}
+
+// decodeProjectName converts the encoded directory name back to a readable path.
+// e.g. "D--repos-claude-chronicle" -&gt; "D:/repos/claude-chronicle"
+func decodeProjectName(encoded string) string <span class="cov10" title="13">{
+        // The format encodes path separators as dashes with drive letter prefix
+        if len(encoded) &gt;= 3 &amp;&amp; encoded[1] == '-' &amp;&amp; encoded[2] == '-' </span><span class="cov8" title="8">{
+                // Looks like a Windows drive path: "D--repos-..." -&gt; "D:/repos/..."
+                return string(encoded[0]) + ":/" + strings.ReplaceAll(encoded[3:], "-", "/")
+        }</span>
+        <span class="cov6" title="5">return strings.ReplaceAll(encoded, "-", "/")</span>
+}
+
+// FindSession finds a specific session by ID.
+func FindSession(id string) (*SessionInfo, error) <span class="cov3" title="2">{
+        sessions, err := DiscoverSessions()
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov3" title="2">for _, s := range sessions </span><span class="cov5" title="4">{
+                if s.ID == id </span><span class="cov1" title="1">{
+                        return &amp;s, nil
+                }</span>
+        }
+
+        <span class="cov1" title="1">return nil, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file14" style="display: none">package session
+
+import (
+        "bufio"
+        "encoding/json"
+        "fmt"
+        "os"
+        "strings"
+        "sync"
+        "time"
+)
+
+// parseCacheEntry holds a cached parsed session with its file modification time.
+type parseCacheEntry struct {
+        mtime   time.Time
+        session *ParsedSession
+}
+
+// parseCache caches parsed sessions keyed by file path with mtime-based invalidation.
+var parseCache struct {
+        sync.RWMutex
+        entries map[string]parseCacheEntry
+}
+
+const parseCacheMaxEntries = 50
+
+func init() <span class="cov1" title="1">{
+        parseCache.entries = make(map[string]parseCacheEntry)
+}</span>
+
+// ParseFileWithCache returns a cached ParsedSession if the file hasn't changed,
+// otherwise parses the file and caches the result.
+func ParseFileWithCache(path string) (*ParsedSession, error) <span class="cov0" title="0">{
+        info, err := os.Stat(path)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("stat session file: %w", err)
+        }</span>
+        <span class="cov0" title="0">mtime := info.ModTime()
+
+        parseCache.RLock()
+        if entry, ok := parseCache.entries[path]; ok &amp;&amp; entry.mtime.Equal(mtime) </span><span class="cov0" title="0">{
+                parseCache.RUnlock()
+                return cloneParsedSession(entry.session), nil
+        }</span>
+        <span class="cov0" title="0">parseCache.RUnlock()
+
+        session, err := ParseFile(path)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov0" title="0">parseCache.Lock()
+        // Evict oldest entries if at capacity
+        if len(parseCache.entries) &gt;= parseCacheMaxEntries </span><span class="cov0" title="0">{
+                // Simple eviction: clear the entire cache when full
+                parseCache.entries = make(map[string]parseCacheEntry)
+        }</span>
+        <span class="cov0" title="0">parseCache.entries[path] = parseCacheEntry{mtime: mtime, session: session}
+        parseCache.Unlock()
+
+        return cloneParsedSession(session), nil</span>
+}
+
+// cloneParsedSession returns a deep copy safe for per-request mutation.
+func cloneParsedSession(src *ParsedSession) *ParsedSession <span class="cov0" title="0">{
+        if src == nil </span><span class="cov0" title="0">{
+                return nil
+        }</span>
+
+        <span class="cov0" title="0">out := &amp;ParsedSession{
+                Info: src.Info,
+        }
+
+        if len(src.Messages) == 0 </span><span class="cov0" title="0">{
+                out.Messages = []Message{}
+                return out
+        }</span>
+
+        <span class="cov0" title="0">out.Messages = make([]Message, len(src.Messages))
+        for i, msg := range src.Messages </span><span class="cov0" title="0">{
+                cloned := Message{
+                        ID:          msg.ID,
+                        Role:        msg.Role,
+                        Timestamp:   msg.Timestamp,
+                        TextContent: msg.TextContent,
+                }
+
+                if len(msg.Blocks) &gt; 0 </span><span class="cov0" title="0">{
+                        cloned.Blocks = make([]ContentBlock, len(msg.Blocks))
+                        for j, block := range msg.Blocks </span><span class="cov0" title="0">{
+                                blockCopy := block
+                                if len(block.Input) &gt; 0 </span><span class="cov0" title="0">{
+                                        blockCopy.Input = append(json.RawMessage(nil), block.Input...)
+                                }</span>
+                                <span class="cov0" title="0">if len(block.Content) &gt; 0 </span><span class="cov0" title="0">{
+                                        blockCopy.Content = append(json.RawMessage(nil), block.Content...)
+                                }</span>
+                                <span class="cov0" title="0">cloned.Blocks[j] = blockCopy</span>
+                        }
+                }
+
+                <span class="cov0" title="0">if len(msg.ToolResults) &gt; 0 </span><span class="cov0" title="0">{
+                        cloned.ToolResults = make([]ToolResult, len(msg.ToolResults))
+                        for j, tr := range msg.ToolResults </span><span class="cov0" title="0">{
+                                trCopy := tr
+                                if tr.Result != nil </span><span class="cov0" title="0">{
+                                        resultCopy := *tr.Result
+                                        if len(resultCopy.Filenames) &gt; 0 </span><span class="cov0" title="0">{
+                                                resultCopy.Filenames = append([]string(nil), resultCopy.Filenames...)
+                                        }</span>
+                                        <span class="cov0" title="0">if len(resultCopy.StructuredPatch) &gt; 0 </span><span class="cov0" title="0">{
+                                                resultCopy.StructuredPatch = append([]PatchFile(nil), resultCopy.StructuredPatch...)
+                                        }</span>
+                                        <span class="cov0" title="0">if len(resultCopy.Questions) &gt; 0 </span><span class="cov0" title="0">{
+                                                resultCopy.Questions = append(json.RawMessage(nil), resultCopy.Questions...)
+                                        }</span>
+                                        <span class="cov0" title="0">if len(resultCopy.Answers) &gt; 0 </span><span class="cov0" title="0">{
+                                                resultCopy.Answers = append(json.RawMessage(nil), resultCopy.Answers...)
+                                        }</span>
+                                        <span class="cov0" title="0">trCopy.Result = &amp;resultCopy</span>
+                                }
+                                <span class="cov0" title="0">cloned.ToolResults[j] = trCopy</span>
+                        }
+                }
+
+                <span class="cov0" title="0">out.Messages[i] = cloned</span>
+        }
+
+        <span class="cov0" title="0">return out</span>
+}
+
+// ParseFile reads a JSONL session file and returns merged, display-ready messages.
+func ParseFile(path string) (*ParsedSession, error) <span class="cov5" title="7">{
+        f, err := os.Open(path)
+        if err != nil </span><span class="cov1" title="1">{
+                return nil, fmt.Errorf("opening session file: %w", err)
+        }</span>
+        <span class="cov5" title="6">defer f.Close()
+
+        var records []Record
+        scanner := bufio.NewScanner(f)
+        scanner.Buffer(make([]byte, 0, 1024*1024), 10*1024*1024) // 10MB max line
+
+        lineNum := 0
+        for scanner.Scan() </span><span class="cov7" title="14">{
+                lineNum++
+                line := scanner.Bytes()
+                if len(line) == 0 </span><span class="cov1" title="1">{
+                        continue</span>
+                }
+
+                <span class="cov7" title="13">var rec Record
+                if err := json.Unmarshal(line, &amp;rec); err != nil </span><span class="cov1" title="1">{
+                        // Skip unparseable lines
+                        continue</span>
+                }
+                <span class="cov7" title="12">records = append(records, rec)</span>
+        }
+        <span class="cov5" title="6">if err := scanner.Err(); err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("scanning session file: %w", err)
+        }</span>
+
+        <span class="cov5" title="6">messages := mergeRecords(records)
+        return &amp;ParsedSession{Messages: messages}, nil</span>
+}
+
+// shouldSkipRecord returns true for record types we don't render.
+func shouldSkipRecord(rec *Record) bool <span class="cov10" title="34">{
+        switch rec.Type </span>{
+        case "file-history-snapshot", "progress":<span class="cov5" title="5">
+                return true</span>
+        }
+        <span class="cov9" title="29">if rec.IsMeta </span><span class="cov2" title="2">{
+                return true
+        }</span>
+        <span class="cov9" title="27">if rec.Message.Role == "" </span><span class="cov1" title="1">{
+                return true
+        }</span>
+        <span class="cov9" title="26">return false</span>
+}
+
+// mergeRecords processes raw records into display-ready messages.
+// Assistant records sharing the same message.id are merged into one message.
+func mergeRecords(records []Record) []Message <span class="cov7" title="15">{
+        messages := make([]Message, 0)
+        assistantMessages := make(map[string]int) // message.id -&gt; index in messages
+
+        for i := range records </span><span class="cov9" title="27">{
+                rec := &amp;records[i]
+                if shouldSkipRecord(rec) </span><span class="cov3" title="3">{
+                        continue</span>
+                }
+
+                <span class="cov9" title="24">switch rec.Message.Role </span>{
+                case "user":<span class="cov6" title="8">
+                        msg := parseUserRecord(rec)
+                        if msg != nil </span><span class="cov6" title="8">{
+                                messages = append(messages, *msg)
+                        }</span>
+
+                case "assistant":<span class="cov8" title="16">
+                        blocks := parseContentBlocks(rec.Message.Content)
+                        if len(blocks) == 0 </span><span class="cov1" title="1">{
+                                continue</span>
+                        }
+
+                        <span class="cov7" title="15">msgID := rec.Message.ID
+                        if msgID == "" </span><span class="cov2" title="2">{
+                                // No message ID, treat as standalone
+                                messages = append(messages, Message{
+                                        Role:      "assistant",
+                                        Timestamp: rec.Timestamp,
+                                        Blocks:    blocks,
+                                })
+                                continue</span>
+                        }
+
+                        <span class="cov7" title="13">if idx, ok := assistantMessages[msgID]; ok </span><span class="cov3" title="3">{
+                                // Merge into existing message
+                                messages[idx].Blocks = append(messages[idx].Blocks, blocks...)
+                        }</span> else<span class="cov6" title="10"> {
+                                // New assistant message
+                                assistantMessages[msgID] = len(messages)
+                                messages = append(messages, Message{
+                                        ID:        msgID,
+                                        Role:      "assistant",
+                                        Timestamp: rec.Timestamp,
+                                        Blocks:    blocks,
+                                })
+                        }</span>
+                }
+        }
+
+        <span class="cov7" title="15">return messages</span>
+}
+
+// parseUserRecord converts a user record into a Message.
+func parseUserRecord(rec *Record) *Message <span class="cov8" title="21">{
+        msg := &amp;Message{
+                ID:        rec.UUID,
+                Role:      "user",
+                Timestamp: rec.Timestamp,
+        }
+
+        // Content can be a string or []ContentBlock
+        content := rec.Message.Content
+        if len(content) == 0 </span><span class="cov2" title="2">{
+                return nil
+        }</span>
+
+        // Try as string first
+        <span class="cov8" title="19">var textContent string
+        if err := json.Unmarshal(content, &amp;textContent); err == nil </span><span class="cov7" title="11">{
+                // Skip command/system messages
+                if strings.HasPrefix(textContent, "&lt;local-command") ||
+                        strings.HasPrefix(textContent, "&lt;command-name&gt;") </span><span class="cov2" title="2">{
+                        return nil
+                }</span>
+                <span class="cov6" title="9">msg.TextContent = textContent
+                return msg</span>
+        }
+
+        // Try as array of content blocks (tool results)
+        <span class="cov6" title="8">var blocks []ContentBlock
+        if err := json.Unmarshal(content, &amp;blocks); err == nil </span><span class="cov6" title="8">{
+                for _, block := range blocks </span><span class="cov6" title="9">{
+                        if block.Type == "tool_result" </span><span class="cov6" title="8">{
+                                tr := ToolResult{
+                                        ToolUseID: block.ToolUseID,
+                                        IsError:   block.IsError,
+                                }
+
+                                // Parse the tool_result content (can be string or array)
+                                if len(block.Content) &gt; 0 </span><span class="cov6" title="8">{
+                                        var s string
+                                        if err := json.Unmarshal(block.Content, &amp;s); err == nil </span><span class="cov5" title="7">{
+                                                tr.Content = s
+                                        }</span> else<span class="cov1" title="1"> {
+                                                // Array of content blocks within the tool result
+                                                tr.Content = string(block.Content)
+                                        }</span>
+                                }
+
+                                // Parse toolUseResult metadata
+                                <span class="cov6" title="8">if len(rec.ToolUseResult) &gt; 0 </span><span class="cov2" title="2">{
+                                        var turd ToolUseResultData
+                                        if err := json.Unmarshal(rec.ToolUseResult, &amp;turd); err == nil </span><span class="cov2" title="2">{
+                                                tr.Result = &amp;turd
+                                        }</span>
+                                }
+
+                                <span class="cov6" title="8">msg.ToolResults = append(msg.ToolResults, tr)</span>
+                        }
+                }
+                <span class="cov6" title="8">if len(msg.ToolResults) &gt; 0 </span><span class="cov5" title="7">{
+                        return msg
+                }</span>
+        }
+
+        <span class="cov1" title="1">return nil</span>
+}
+
+// parseContentBlocks parses the content field as an array of ContentBlock.
+func parseContentBlocks(raw json.RawMessage) []ContentBlock <span class="cov9" title="28">{
+        if len(raw) == 0 </span><span class="cov2" title="2">{
+                return nil
+        }</span>
+
+        <span class="cov9" title="26">var blocks []ContentBlock
+        if err := json.Unmarshal(raw, &amp;blocks); err != nil </span><span class="cov5" title="6">{
+                // Try as string
+                var text string
+                if err := json.Unmarshal(raw, &amp;text); err == nil &amp;&amp; text != "" </span><span class="cov1" title="1">{
+                        return []ContentBlock{{Type: "text", Text: text}}
+                }</span>
+                <span class="cov5" title="5">return nil</span>
+        }
+        <span class="cov8" title="20">return blocks</span>
+}
+</pre>
+		
+		<pre class="file" id="file15" style="display: none">package session
+
+import "strings"
+
+// SearchContent returns true if the lowered search term appears anywhere in
+// the session's user text, assistant text blocks, tool result content, or title.
+func SearchContent(s *ParsedSession, termLower string) bool <span class="cov10" title="7">{
+        // Check session title
+        if strings.Contains(strings.ToLower(s.Info.Title), termLower) </span><span class="cov1" title="1">{
+                return true
+        }</span>
+
+        <span class="cov9" title="6">for i := range s.Messages </span><span class="cov10" title="7">{
+                msg := &amp;s.Messages[i]
+
+                // User text content
+                if msg.TextContent != "" &amp;&amp; strings.Contains(strings.ToLower(msg.TextContent), termLower) </span><span class="cov4" title="2">{
+                        return true
+                }</span>
+
+                // Tool results
+                <span class="cov8" title="5">for j := range msg.ToolResults </span><span class="cov1" title="1">{
+                        if strings.Contains(strings.ToLower(msg.ToolResults[j].Content), termLower) </span><span class="cov1" title="1">{
+                                return true
+                        }</span>
+                }
+
+                // Assistant text blocks
+                <span class="cov7" title="4">for j := range msg.Blocks </span><span class="cov7" title="4">{
+                        if msg.Blocks[j].Type == "text" &amp;&amp; strings.Contains(strings.ToLower(msg.Blocks[j].Text), termLower) </span><span class="cov1" title="1">{
+                                return true
+                        }</span>
+                }
+        }
+        <span class="cov4" title="2">return false</span>
+}
+</pre>
+		
+		<pre class="file" id="file16" style="display: none">package watcher
+
+import (
+        "log"
+        "os"
+        "path/filepath"
+        "strings"
+        "sync"
+        "time"
+
+        "github.com/fsnotify/fsnotify"
+)
+
+// EventType describes what kind of filesystem change was detected.
+type EventType string
+
+const (
+        // SessionsChanged means a new/deleted .jsonl file or project directory.
+        SessionsChanged EventType = "sessions_changed"
+        // SessionUpdated means an existing .jsonl file was modified.
+        SessionUpdated EventType = "session_updated"
+)
+
+// Event is a debounced, classified filesystem change notification.
+type Event struct {
+        Type      EventType
+        SessionID string // set only for SessionUpdated
+}
+
+const debounceWindow = 500 * time.Millisecond
+
+// Watcher monitors Claude's projects directory for session file changes.
+type Watcher struct {
+        fsw    *fsnotify.Watcher
+        events chan Event
+        done   chan struct{}
+        wg     sync.WaitGroup
+
+        projectsDir string
+}
+
+// New creates a Watcher for the given projects directory.
+// It watches the root directory and all existing project subdirectories.
+func New(projectsDir string) (*Watcher, error) <span class="cov6" title="6">{
+        fsw, err := fsnotify.NewWatcher()
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov6" title="6">w := &amp;Watcher{
+                fsw:         fsw,
+                events:      make(chan Event, 64),
+                done:        make(chan struct{}),
+                projectsDir: projectsDir,
+        }
+
+        // Watch root projects directory (for new project dirs)
+        if err := fsw.Add(projectsDir); err != nil </span><span class="cov0" title="0">{
+                fsw.Close()
+                return nil, err
+        }</span>
+
+        // Watch each existing project subdirectory (for .jsonl file changes)
+        <span class="cov6" title="6">entries, err := os.ReadDir(projectsDir)
+        if err == nil </span><span class="cov6" title="6">{
+                for _, e := range entries </span><span class="cov4" title="3">{
+                        if e.IsDir() </span><span class="cov4" title="3">{
+                                _ = fsw.Add(filepath.Join(projectsDir, e.Name()))
+                        }</span>
+                }
+        }
+
+        <span class="cov6" title="6">w.wg.Add(1)
+        go w.loop()
+        return w, nil</span>
+}
+
+// Events returns the channel of debounced, classified events.
+func (w *Watcher) Events() &lt;-chan Event <span class="cov6" title="7">{
+        return w.events
+}</span>
+
+// Close stops the watcher and waits for cleanup.
+func (w *Watcher) Close() error <span class="cov6" title="6">{
+        close(w.done)
+        err := w.fsw.Close()
+        w.wg.Wait()
+        return err
+}</span>
+
+// loop is the main event loop that reads raw fsnotify events,
+// debounces them, classifies them, and sends them on w.events.
+func (w *Watcher) loop() <span class="cov6" title="6">{
+        defer w.wg.Done()
+        defer close(w.events)
+
+        var timer *time.Timer
+        var timerC &lt;-chan time.Time
+
+        // Pending events accumulated during the debounce window.
+        // Operations are OR'd together so we see all ops for each path.
+        pending := make(map[string]fsnotify.Op)
+
+        for </span><span class="cov10" title="22">{
+                select </span>{
+                case &lt;-w.done:<span class="cov6" title="6">
+                        if timer != nil </span><span class="cov0" title="0">{
+                                timer.Stop()
+                        }</span>
+                        <span class="cov6" title="6">return</span>
+
+                case ev, ok := &lt;-w.fsw.Events:<span class="cov7" title="11">
+                        if !ok </span><span class="cov0" title="0">{
+                                return
+                        }</span>
+                        <span class="cov7" title="11">pending[ev.Name] |= ev.Op
+
+                        // Auto-watch new project subdirectories
+                        if ev.Has(fsnotify.Create) &amp;&amp; w.isProjectDir(ev.Name) </span><span class="cov1" title="1">{
+                                _ = w.fsw.Add(ev.Name)
+                        }</span>
+
+                        // Reset debounce timer
+                        <span class="cov7" title="11">if timer == nil </span><span class="cov5" title="5">{
+                                timer = time.NewTimer(debounceWindow)
+                                timerC = timer.C
+                        }</span> else<span class="cov6" title="6"> {
+                                timer.Reset(debounceWindow)
+                        }</span>
+
+                case &lt;-timerC:<span class="cov5" title="5">
+                        // Debounce window elapsed — flush pending events
+                        w.flush(pending)
+                        pending = make(map[string]fsnotify.Op)
+                        timer = nil
+                        timerC = nil</span>
+
+                case err, ok := &lt;-w.fsw.Errors:<span class="cov0" title="0">
+                        if !ok </span><span class="cov0" title="0">{
+                                return
+                        }</span>
+                        <span class="cov0" title="0">log.Printf("watcher error: %v", err)</span>
+                }
+        }
+}
+
+// flush classifies pending events and sends them on w.events.
+func (w *Watcher) flush(pending map[string]fsnotify.Op) <span class="cov5" title="5">{
+        sessionsChanged := false
+        updatedSessions := make(map[string]struct{})
+
+        for name, op := range pending </span><span class="cov5" title="5">{
+                if w.isProjectDir(name) </span><span class="cov1" title="1">{
+                        // Only treat directory Create/Remove/Rename as structural changes.
+                        // Directory Write events fire when file contents change inside the
+                        // directory (metadata update) and should be ignored here — the file
+                        // events themselves handle that.
+                        if op&amp;(fsnotify.Create|fsnotify.Remove|fsnotify.Rename) != 0 </span><span class="cov1" title="1">{
+                                sessionsChanged = true
+                        }</span>
+                        <span class="cov1" title="1">continue</span>
+                }
+
+                <span class="cov5" title="4">if !strings.HasSuffix(name, ".jsonl") </span><span class="cov0" title="0">{
+                        continue</span>
+                }
+
+                <span class="cov5" title="4">if op&amp;(fsnotify.Create|fsnotify.Remove|fsnotify.Rename) != 0 </span><span class="cov3" title="2">{
+                        // New, deleted, or renamed file — structural change
+                        sessionsChanged = true
+                }</span> else<span class="cov3" title="2"> if op&amp;fsnotify.Write != 0 </span><span class="cov3" title="2">{
+                        // Content modified — existing session updated
+                        sessionID := strings.TrimSuffix(filepath.Base(name), ".jsonl")
+                        updatedSessions[sessionID] = struct{}{}
+                }</span>
+        }
+
+        <span class="cov5" title="5">if sessionsChanged </span><span class="cov4" title="3">{
+                w.send(Event{Type: SessionsChanged})
+        }</span>
+
+        <span class="cov5" title="5">for id := range updatedSessions </span><span class="cov3" title="2">{
+                w.send(Event{Type: SessionUpdated, SessionID: id})
+        }</span>
+}
+
+// send attempts a non-blocking send on the events channel.
+func (w *Watcher) send(ev Event) <span class="cov5" title="5">{
+        select </span>{
+        case w.events &lt;- ev:<span class="cov5" title="5"></span>
+        default:<span class="cov0" title="0"></span>
+                // Drop event if buffer is full — client catches up on next event
+        }
+}
+
+// isProjectDir checks if a path is a direct subdirectory of the projects dir.
+func (w *Watcher) isProjectDir(path string) bool <span class="cov7" title="8">{
+        dir := filepath.Dir(path)
+        if dir != w.projectsDir </span><span class="cov6" title="6">{
+                return false
+        }</span>
+        <span class="cov3" title="2">info, err := os.Stat(path)
+        if err != nil </span><span class="cov0" title="0">{
+                return false
+        }</span>
+        <span class="cov3" title="2">return info.IsDir()</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
