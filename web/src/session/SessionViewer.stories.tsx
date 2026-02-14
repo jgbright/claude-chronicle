@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { fn } from '@storybook/test';
 import { SessionViewer } from './SessionViewer';
 import { ThemeComponentProvider } from '../themes/ThemeContext';
 import { claudeComponents } from '../themes/claude/components';
@@ -32,12 +32,12 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const defaultArgs = {
-  onAddEdit: action('onAddEdit'),
-  onRemoveEdit: action('onRemoveEdit'),
-  onUndo: action('onUndo'),
-  onRedo: action('onRedo'),
-  onUpdateTitle: action('onUpdateTitle'),
-  onToast: action('onToast'),
+  onAddEdit: fn(),
+  onRemoveEdit: fn(),
+  onUndo: fn(),
+  onRedo: fn(),
+  onUpdateTitle: fn(),
+  onToast: fn(),
   canUndo: false,
   canRedo: false,
 };
