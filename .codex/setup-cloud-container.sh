@@ -4,9 +4,6 @@
 # Installs Go, Node dependencies, and pre-builds web assets so that
 # `go build` can succeed (the Go binary embeds the compiled frontend).
 #
-# For local development, use the devcontainer (.devcontainer/devcontainer.json)
-# instead — it provides the same toolchain without manual setup.
-#
 # Codex configuration:
 #   Environment settings > Setup script > Manual > bash .codex/setup-cloud-container.sh
 #   Enable "Container caching" so dependencies are preserved between runs.
@@ -21,7 +18,7 @@ sudo tar -C /usr/local -xzf "go${GO_VERSION}.linux-amd64.tar.gz"
 rm "go${GO_VERSION}.linux-amd64.tar.gz"
 export PATH=/usr/local/go/bin:$PATH
 
-# Install Node.js 24 (align with devcontainer which uses node:24)
+# Install Node.js 24
 NODE_MAJOR=24
 curl -fsSL "https://deb.nodesource.com/setup_${NODE_MAJOR}.x" | sudo -E bash -
 sudo apt-get install -y nodejs

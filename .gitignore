@@ -191,3 +191,7 @@ dist
 # Storybook
 web/storybook-static/
 web/gallery/
+web/showcase/
+
+# Smoke test fixtures (contain private session content)
+web/src/test/fixtures/smoke/

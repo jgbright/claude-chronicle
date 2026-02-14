@@ -1,10 +1,11 @@
-.PHONY: build dev clean web-build web-install test test-go test-web lint
+.PHONY: build dev clean web-build web-install test test-go test-web test-web-watch lint smoke smoke-fixtures smoke-go smoke-web
 
 VERSION ?= dev
+BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
 
 # Build everything: web assets then Go binary
 build: web-build
-	go build -ldflags "-X main.version=$(VERSION)" -o claude-chronicle.exe ./cmd/chronicle
+	go build -ldflags "-X main.version=$(VERSION) -X main.branch=$(BRANCH)" -o claude-chronicle.exe ./cmd/chronicle
 
 # Install web dependencies
 web-install:
@@ -16,7 +17,7 @@ web-build: web-install
 
 # Development: run Go server in dev mode (proxy to Vite)
 dev:
-	go run ./cmd/chronicle serve -dev
+	go run -ldflags "-X main.branch=$(BRANCH)" ./cmd/chronicle serve -dev
 
 # Clean build artifacts
 clean:
@@ -31,10 +32,29 @@ test-go: web-build
 	go test ./...
 
 # Run frontend tests
-test-web:
+test-web: web-install
 	cd web && npm test
+
+# Run frontend tests in watch mode
+test-web-watch: web-install
+	cd web && npx vitest
 
 # Lint all code
 lint:
 	go vet ./...
 	cd web && npm run lint
+
+# Smoke tests: parse real sessions and render through frontend
+smoke: smoke-fixtures smoke-go smoke-web
+
+# Generate JSON fixtures from real session files
+smoke-fixtures: build
+	./claude-chronicle.exe dump-fixtures
+
+# Go smoke test: parse real JSONL sessions
+smoke-go:
+	go test ./internal/session/ -run Smoke -count=1
+
+# Frontend smoke test: render fixtures through SessionViewer
+smoke-web:
+	cd web && npx vitest run src/session/SessionViewer.smoke.test.tsx
