@@ -1,5 +1,5 @@
 ---
-const sha = process.env.GITHUB_SHA || 'local';
+const sha = import.meta.env.GITHUB_SHA || 'local';
 const shortSha = sha.substring(0, 7);
 const buildDate = new Date().toISOString().split('T')[0];
 const base = import.meta.env.BASE_URL;
@@ -17,7 +17,7 @@ const base = import.meta.env.BASE_URL;
     <span class="sep">&middot;</span>
     <a href={`${base}storybook/`}>Storybook</a>
     <span class="sep">&middot;</span>
-    <a href={`${base}coverage/`}>Coverage</a>
+    <a href="https://codecov.io/gh/jgbright/claude-chronicle">Coverage</a>
   </nav>
   <p>MIT License</p>
   <p>

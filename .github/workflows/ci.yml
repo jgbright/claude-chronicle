@@ -16,43 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  frontend:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: web/package-lock.json
-
-      - name: Install web dependencies
-        run: cd web && npm ci
-
-      - name: Lint
-        run: cd web && npm run lint
-
-      - name: Test with coverage
-        run: cd web && npm run test:coverage
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: web/coverage/lcov.info
-          flags: frontend
-          fail_ci_if_error: true
-
-      - name: Upload coverage HTML
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-coverage-html
-          path: web/coverage/
-          retention-days: 1
-
-  build-and-deploy:
-    needs: frontend
+  ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -72,6 +36,20 @@ jobs:
       - name: Install web dependencies
         run: cd web && npm ci
 
+      - name: Lint
+        run: cd web && npm run lint
+
+      - name: Test with coverage
+        run: cd web && npm run test:coverage
+
+      - name: Upload frontend coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: web/coverage/lcov.info
+          flags: frontend
+          fail_ci_if_error: true
+
       - name: Build web assets
         run: cd web && npm run build && npm run build:export
 
@@ -88,12 +66,6 @@ jobs:
           files: coverage.out
           flags: backend
           fail_ci_if_error: true
-
-      - name: Download frontend coverage HTML
-        uses: actions/download-artifact@v4
-        with:
-          name: frontend-coverage-html
-          path: _frontend-coverage/
 
       - name: Generate Go coverage HTML
         run: go tool cover -html=coverage.out -o go-coverage.html
@@ -183,7 +155,7 @@ jobs:
 
             mkdir -p _site/coverage/go _site/coverage/frontend
             cp go-coverage.html _site/coverage/go/index.html
-            cp -r _frontend-coverage/* _site/coverage/frontend/
+            cp -r web/coverage/* _site/coverage/frontend/
 
             mkdir -p _site/storybook/screenshots
             cp web/gallery/index.html _site/storybook/index.html
