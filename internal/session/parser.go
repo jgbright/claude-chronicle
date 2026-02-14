@@ -6,7 +6,60 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"sync"
+	"time"
 )
+
+// parseCacheEntry holds a cached parsed session with its file modification time.
+type parseCacheEntry struct {
+	mtime   time.Time
+	session *ParsedSession
+}
+
+// parseCache caches parsed sessions keyed by file path with mtime-based invalidation.
+var parseCache struct {
+	sync.RWMutex
+	entries map[string]parseCacheEntry
+}
+
+const parseCacheMaxEntries = 50
+
+func init() {
+	parseCache.entries = make(map[string]parseCacheEntry)
+}
+
+// ParseFileWithCache returns a cached ParsedSession if the file hasn't changed,
+// otherwise parses the file and caches the result.
+func ParseFileWithCache(path string) (*ParsedSession, error) {
+	info, err := os.Stat(path)
+	if err != nil {
+		return nil, fmt.Errorf("stat session file: %w", err)
+	}
+	mtime := info.ModTime()
+
+	parseCache.RLock()
+	if entry, ok := parseCache.entries[path]; ok && entry.mtime.Equal(mtime) {
+		parseCache.RUnlock()
+		return entry.session, nil
+	}
+	parseCache.RUnlock()
+
+	session, err := ParseFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	parseCache.Lock()
+	// Evict oldest entries if at capacity
+	if len(parseCache.entries) >= parseCacheMaxEntries {
+		// Simple eviction: clear the entire cache when full
+		parseCache.entries = make(map[string]parseCacheEntry)
+	}
+	parseCache.entries[path] = parseCacheEntry{mtime: mtime, session: session}
+	parseCache.Unlock()
+
+	return session, nil
+}
 
 // ParseFile reads a JSONL session file and returns merged, display-ready messages.
 func ParseFile(path string) (*ParsedSession, error) {

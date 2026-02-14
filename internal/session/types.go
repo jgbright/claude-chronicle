@@ -129,6 +129,8 @@ type SessionInfo struct {
 	FilePath    string    `json:"filePath"`
 	ModTime     time.Time `json:"modTime"`
 	SizeBytes   int64     `json:"sizeBytes"`
+	Title       string    `json:"title,omitempty"`
+	Deleted     bool      `json:"deleted,omitempty"`
 }
 
 // ParsedSession holds a fully parsed session.
