@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
 import { SessionViewer } from './SessionViewer';
 import { ThemeComponentProvider } from '../themes/ThemeContext';
 import { claudeComponents } from '../themes/claude/components';
@@ -15,6 +14,11 @@ import {
   createDeleteEdit,
   createAnnotateEdit,
 } from '../test/factories';
+
+// Simple mock function helper for Storybook args
+const mockFn = (name: string) => (...args: unknown[]) => {
+  console.log(`[${name}]`, ...args);
+};
 
 const meta = {
   component: SessionViewer,
@@ -32,12 +36,12 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const defaultArgs = {
-  onAddEdit: fn(),
-  onRemoveEdit: fn(),
-  onUndo: fn(),
-  onRedo: fn(),
-  onUpdateTitle: fn(),
-  onToast: fn(),
+  onAddEdit: mockFn('onAddEdit'),
+  onRemoveEdit: mockFn('onRemoveEdit'),
+  onUndo: mockFn('onUndo'),
+  onRedo: mockFn('onRedo'),
+  onUpdateTitle: mockFn('onUpdateTitle'),
+  onToast: mockFn('onToast'),
   canUndo: false,
   canRedo: false,
 };
