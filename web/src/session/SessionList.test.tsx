@@ -34,7 +34,6 @@ describe('formatSize', () => {
 describe('formatDate', () => {
   it('formats a date string', () => {
     const result = formatDate('2025-01-15T10:30:00Z');
-    // The exact output depends on locale; verify it contains month and day
     expect(result).toMatch(/Jan/);
     expect(result).toMatch(/15/);
   });
@@ -46,14 +45,24 @@ describe('SessionList', () => {
     expect(screen.getByText('Sessions')).toBeInTheDocument();
   });
 
-  it('renders session items', () => {
+  it('renders session items with titles', () => {
     const sessions = [
-      createSessionInfo({ id: 's1', projectName: 'Project A' }),
-      createSessionInfo({ id: 's2', projectName: 'Project B' }),
+      createSessionInfo({ id: 's1', projectName: 'Project A', title: 'Fix the build' }),
+      createSessionInfo({ id: 's2', projectName: 'Project B', title: 'Add new feature' }),
+    ];
+    render(<SessionList sessions={sessions} selectedId={null} onSelect={vi.fn()} />);
+    expect(screen.getByText('Fix the build')).toBeInTheDocument();
+    expect(screen.getByText('Add new feature')).toBeInTheDocument();
+    expect(screen.getByText('Project A')).toBeInTheDocument();
+    expect(screen.getByText('Project B')).toBeInTheDocument();
+  });
+
+  it('renders project name as primary when no title', () => {
+    const sessions = [
+      createSessionInfo({ id: 's1', projectName: 'Project A', title: undefined }),
     ];
     render(<SessionList sessions={sessions} selectedId={null} onSelect={vi.fn()} />);
     expect(screen.getByText('Project A')).toBeInTheDocument();
-    expect(screen.getByText('Project B')).toBeInTheDocument();
   });
 
   it('renders truncated session id', () => {
@@ -79,9 +88,9 @@ describe('SessionList', () => {
   it('calls onSelect with session id when clicked', async () => {
     const user = userEvent.setup();
     const onSelect = vi.fn();
-    const sessions = [createSessionInfo({ id: 'sess-abc', projectName: 'My Proj' })];
+    const sessions = [createSessionInfo({ id: 'sess-abc', projectName: 'My Proj', title: 'My title' })];
     render(<SessionList sessions={sessions} selectedId={null} onSelect={onSelect} />);
-    await user.click(screen.getByText('My Proj'));
+    await user.click(screen.getByText('My title'));
     expect(onSelect).toHaveBeenCalledWith('sess-abc');
   });
 
@@ -92,10 +101,77 @@ describe('SessionList', () => {
   });
 
   it('renders empty list without errors', () => {
-    const { container } = render(
+    render(
       <SessionList sessions={[]} selectedId={null} onSelect={vi.fn()} />
     );
-    const items = container.querySelector('.session-list__items');
-    expect(items?.children).toHaveLength(0);
+    expect(screen.getByText('No sessions found')).toBeInTheDocument();
+  });
+
+  it('shows three-dot menu button on sessions', () => {
+    const sessions = [createSessionInfo({ id: 's1', title: 'Active session' })];
+    const { container } = render(
+      <SessionList sessions={sessions} selectedId={null} onSelect={vi.fn()} onDelete={vi.fn()} />
+    );
+    const menuBtn = container.querySelector('.session-list__menu-btn');
+    expect(menuBtn).not.toBeNull();
+  });
+
+  it('shows Archive option in menu when clicking three-dot', async () => {
+    const user = userEvent.setup();
+    const sessions = [createSessionInfo({ id: 's1', title: 'Test' })];
+    render(
+      <SessionList sessions={sessions} selectedId={null} onSelect={vi.fn()} onDelete={vi.fn()} />
+    );
+    await user.click(screen.getByTitle('Session actions'));
+    expect(screen.getByText('Archive')).toBeInTheDocument();
+  });
+
+  it('calls onDelete when Archive is clicked from menu', async () => {
+    const user = userEvent.setup();
+    const onDelete = vi.fn();
+    const sessions = [createSessionInfo({ id: 's1', title: 'Test' })];
+    render(
+      <SessionList sessions={sessions} selectedId={null} onSelect={vi.fn()} onDelete={onDelete} />
+    );
+    await user.click(screen.getByTitle('Session actions'));
+    await user.click(screen.getByText('Archive'));
+    expect(onDelete).toHaveBeenCalledWith('s1');
+  });
+
+  it('shows Restore option for deleted sessions', async () => {
+    const user = userEvent.setup();
+    const sessions = [createSessionInfo({ id: 's1', title: 'Deleted session', deleted: true })];
+    render(
+      <SessionList sessions={sessions} selectedId={null} onSelect={vi.fn()} onRestore={vi.fn()} />
+    );
+    // Expand the "Archived" section first
+    await user.click(screen.getByText('Archived'));
+    await user.click(screen.getByTitle('Session actions'));
+    expect(screen.getByText('Restore')).toBeInTheDocument();
+  });
+
+  it('calls onRestore when Restore is clicked', async () => {
+    const user = userEvent.setup();
+    const onRestore = vi.fn();
+    const sessions = [createSessionInfo({ id: 's1', title: 'Deleted', deleted: true })];
+    render(
+      <SessionList sessions={sessions} selectedId={null} onSelect={vi.fn()} onRestore={onRestore} />
+    );
+    await user.click(screen.getByText('Archived'));
+    await user.click(screen.getByTitle('Session actions'));
+    await user.click(screen.getByText('Restore'));
+    expect(onRestore).toHaveBeenCalledWith('s1');
+  });
+
+  it('separates archived sessions into collapsible section', () => {
+    const sessions = [
+      createSessionInfo({ id: 's1', title: 'Active', deleted: false }),
+      createSessionInfo({ id: 's2', title: 'Gone', deleted: true }),
+    ];
+    render(
+      <SessionList sessions={sessions} selectedId={null} onSelect={vi.fn()} />
+    );
+    expect(screen.getByText('Active')).toBeInTheDocument();
+    expect(screen.getByText('Archived')).toBeInTheDocument();
   });
 });

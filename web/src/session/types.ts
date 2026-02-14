@@ -5,6 +5,8 @@ export interface SessionInfo {
   filePath: string;
   modTime: string;
   sizeBytes: number;
+  title?: string;
+  deleted?: boolean;
 }
 
 export interface ContentBlock {

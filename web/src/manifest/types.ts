@@ -1,6 +1,12 @@
+export interface ManifestMetadata {
+  title?: string;
+  deleted?: boolean;
+}
+
 export interface EditManifest {
   version: number;
   sessionId: string;
+  metadata?: ManifestMetadata;
   edits: Edit[];
 }
 

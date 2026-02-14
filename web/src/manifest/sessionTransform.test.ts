@@ -66,6 +66,8 @@ describe('applyManifest', () => {
     expect(result[1].isCollapsed).toBe(true);
     expect(result[1].collapseSummary).toBe('Collapsed items');
     expect(result[1].collapsedCount).toBe(3);
+    expect(result[1].collapsedMessages).toHaveLength(3);
+    expect(result[1].collapsedMessages!.map((m) => m.id)).toEqual(['a1', 'a2', 'a3']);
   });
 
   it('collapse with empty blockIds produces no collapsed group', () => {
@@ -297,5 +299,86 @@ describe('applyManifest', () => {
     expect(result[0].isCollapsed).toBe(true);
     expect(result[0].collapseSummary).toBe('Group');
     expect(result[0].collapsedCount).toBe(2);
+    expect(result[0].collapsedMessages).toHaveLength(2);
+    expect(result[0].collapsedMessages![0].id).toBe('a1');
+    expect(result[0].collapsedMessages![1].id).toBe('a2');
+  });
+
+  describe('collapseAllToolResults option', () => {
+    it('collapses all tool-result user messages into a single collapsed group', () => {
+      const messages = [
+        createUserMessage({ id: 'u1', textContent: 'hello' }),
+        createUserMessage({ id: 'tr1', textContent: undefined, toolResults: [{ toolUseId: 't1', content: 'output' }] }),
+        createMessage({ id: 'a1' }),
+        createUserMessage({ id: 'tr2', textContent: undefined, toolResults: [{ toolUseId: 't2', content: 'output2' }] }),
+      ];
+      const result = applyManifest(messages, null, { collapseAllToolResults: true });
+      // u1 + collapsed(tr1) + a1 — tr2 is collapsed (not first, so hidden)
+      expect(result).toHaveLength(3);
+      expect(result[0].id).toBe('u1');
+      expect(result[1].isCollapsed).toBe(true);
+      expect(result[1].collapseSummary).toBe('2 tool results');
+      expect(result[1].collapsedCount).toBe(2);
+      expect(result[2].id).toBe('a1');
+    });
+
+    it('skips messages already deleted by manifest edits', () => {
+      const messages = [
+        createUserMessage({ id: 'tr1', textContent: undefined, toolResults: [{ toolUseId: 't1', content: 'output' }] }),
+        createUserMessage({ id: 'tr2', textContent: undefined, toolResults: [{ toolUseId: 't2', content: 'output2' }] }),
+        createMessage({ id: 'a1' }),
+      ];
+      const manifest = createManifest({ edits: [createDeleteEdit('tr1')] });
+      const result = applyManifest(messages, manifest, { collapseAllToolResults: true });
+      // tr1 deleted, tr2 collapsed, a1 remains
+      expect(result).toHaveLength(2);
+      expect(result[0].isCollapsed).toBe(true);
+      expect(result[0].id).toBe('tr2');
+      expect(result[0].collapsedCount).toBe(1);
+      expect(result[1].id).toBe('a1');
+    });
+
+    it('skips messages already collapsed by manifest edits', () => {
+      const messages = [
+        createUserMessage({ id: 'tr1', textContent: undefined, toolResults: [{ toolUseId: 't1', content: 'output' }] }),
+        createUserMessage({ id: 'tr2', textContent: undefined, toolResults: [{ toolUseId: 't2', content: 'output2' }] }),
+        createMessage({ id: 'a1' }),
+      ];
+      const manifest = createManifest({
+        edits: [createCollapseEdit(['tr1'], 'Manual collapse')],
+      });
+      const result = applyManifest(messages, manifest, { collapseAllToolResults: true });
+      // tr1 collapsed by manifest, tr2 collapsed by bulk, a1 remains
+      expect(result).toHaveLength(3);
+      expect(result[0].isCollapsed).toBe(true);
+      expect(result[0].collapseSummary).toBe('Manual collapse');
+      expect(result[1].isCollapsed).toBe(true);
+      expect(result[1].collapseSummary).toBe('1 tool results');
+      expect(result[2].id).toBe('a1');
+    });
+
+    it('is a no-op when no tool results exist', () => {
+      const messages = [
+        createUserMessage({ id: 'u1', textContent: 'hello' }),
+        createMessage({ id: 'a1' }),
+      ];
+      const result = applyManifest(messages, null, { collapseAllToolResults: true });
+      expect(result).toHaveLength(2);
+      expect(result[0].id).toBe('u1');
+      expect(result[1].id).toBe('a1');
+      expect(result[0].isCollapsed).toBeUndefined();
+    });
+
+    it('works when manifest is null (early-return bypass)', () => {
+      const messages = [
+        createUserMessage({ id: 'tr1', textContent: undefined, toolResults: [{ toolUseId: 't1', content: 'output' }] }),
+        createMessage({ id: 'a1' }),
+      ];
+      const result = applyManifest(messages, null, { collapseAllToolResults: true });
+      expect(result).toHaveLength(2);
+      expect(result[0].isCollapsed).toBe(true);
+      expect(result[0].collapseSummary).toBe('1 tool results');
+      expect(result[1].id).toBe('a1');
+    });
   });
 });

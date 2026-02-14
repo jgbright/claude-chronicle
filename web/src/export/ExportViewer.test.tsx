@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { ExportViewer } from './ExportViewer';
-import { createParsedSession, createManifest } from '../test/factories';
+import { createParsedSession, createManifest, createMessage } from '../test/factories';
 
 describe('ExportViewer', () => {
   it('renders error message when data is null', () => {
@@ -22,7 +22,6 @@ describe('ExportViewer', () => {
       theme: 'claude',
     };
     render(<ExportViewer data={data} />);
-    // Chronicle appears in the toolbar brand
     const brands = screen.getAllByText('Chronicle');
     expect(brands.length).toBeGreaterThan(0);
   });
@@ -106,19 +105,16 @@ describe('ExportViewer', () => {
     expect(screen.getByText('Assistant replies')).toBeInTheDocument();
   });
 
-  it('passes editMode as false to SessionViewer', () => {
+  it('does not render message actions in export (read-only)', () => {
     const data = {
       session: createParsedSession(),
       manifest: createManifest(),
       theme: 'claude',
     };
     const { container } = render(<ExportViewer data={data} />);
-    // In view-only mode (editMode=false), no edit controls should be rendered
     expect(container.querySelector('.edit-controls')).toBeNull();
-    expect(container.querySelector('.bulk-actions')).toBeNull();
+    expect(container.querySelectorAll('.message-actions').length).toBe(0);
   });
-
-  // --- Regression tests: export should have theme toggle and edit mode ---
 
   it('renders theme toggle buttons (Claude and Copilot)', () => {
     const data = {
@@ -141,15 +137,15 @@ describe('ExportViewer', () => {
     expect(container.querySelector('.toolbar__right')).not.toBeNull();
   });
 
-  it('renders View/Edit mode toggle', () => {
+  it('does not render Undo and Redo in toolbar (read-only)', () => {
     const data = {
       session: createParsedSession(),
       manifest: null,
       theme: 'claude',
     };
-    const { container } = render(<ExportViewer data={data} />);
-    const modeButtons = container.querySelectorAll('.toolbar__mode-btn');
-    expect(modeButtons).toHaveLength(2);
+    render(<ExportViewer data={data} />);
+    expect(screen.queryByText('Undo')).not.toBeInTheDocument();
+    expect(screen.queryByText('Redo')).not.toBeInTheDocument();
   });
 
   it('sets data-theme attribute on documentElement based on export data', () => {
@@ -160,5 +156,20 @@ describe('ExportViewer', () => {
     };
     render(<ExportViewer data={data} />);
     expect(document.documentElement.getAttribute('data-theme')).toBe('copilot');
+  });
+
+  it('renders annotations without Remove button in export', () => {
+    const session = createParsedSession({
+      messages: [createMessage({ id: 'a1' })],
+    });
+    const manifest = createManifest({
+      edits: [
+        { type: 'annotate', afterBlockId: 'a1', content: 'Export annotation', id: 'ann-1' },
+      ],
+    });
+    const data = { session, manifest, theme: 'claude' };
+    const { container } = render(<ExportViewer data={data} />);
+    expect(container.querySelector('.claude-annotation')).not.toBeNull();
+    expect(container.querySelector('.claude-annotation__delete')).toBeNull();
   });
 });

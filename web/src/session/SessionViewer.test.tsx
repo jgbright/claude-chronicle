@@ -6,6 +6,7 @@ import { ThemeComponentProvider } from '../themes/ThemeContext';
 import { claudeComponents } from '../themes/claude/components';
 import {
   createParsedSession,
+  createSessionInfo,
   createManifest,
   createMessage,
   createUserMessage,
@@ -16,7 +17,6 @@ function renderViewer(overrides = {}) {
   const props = {
     session: createParsedSession(),
     manifest: null as ReturnType<typeof createManifest> | null,
-    editMode: false,
     onAddEdit: vi.fn(),
     onRemoveEdit: vi.fn(),
     ...overrides,
@@ -30,10 +30,62 @@ function renderViewer(overrides = {}) {
 }
 
 describe('SessionViewer', () => {
-  it('renders project name', () => {
+  it('renders session title', () => {
     const { container } = renderViewer();
-    const project = container.querySelector('.session-viewer__project');
-    expect(project!.textContent).toBe('my-project');
+    const title = container.querySelector('.session-viewer__title');
+    expect(title!.textContent).toContain('Test session title');
+  });
+
+  it('title is always clickable to edit when onUpdateTitle is provided', async () => {
+    const user = userEvent.setup();
+    const onUpdateTitle = vi.fn();
+    const { container } = renderViewer({ onUpdateTitle });
+
+    const titleSpan = container.querySelector('.session-viewer__title')!;
+    expect(titleSpan.className).toContain('session-viewer__title--editable');
+
+    await user.click(titleSpan);
+    const input = container.querySelector('.session-viewer__title-input');
+    expect(input).not.toBeNull();
+  });
+
+  it('calls onUpdateTitle and displays new title after inline edit', async () => {
+    const user = userEvent.setup();
+    let currentSession = createParsedSession({
+      info: createSessionInfo({ id: 'sess-1', title: 'Old Title' }),
+    });
+    const onUpdateTitle = vi.fn((title: string) => {
+      currentSession = createParsedSession({
+        info: createSessionInfo({ id: 'sess-1', title }),
+        messages: currentSession.messages,
+      });
+    });
+    const { container, rerender } = renderViewer({
+      session: currentSession, onUpdateTitle,
+    });
+
+    const titleSpan = container.querySelector('.session-viewer__title')!;
+    await user.click(titleSpan);
+
+    const input = container.querySelector('.session-viewer__title-input')! as HTMLInputElement;
+    await user.clear(input);
+    await user.type(input, 'New Title');
+
+    await user.click(container.querySelector('.session-viewer__info')!);
+    expect(onUpdateTitle).toHaveBeenCalledWith('New Title');
+
+    rerender(
+      <ThemeComponentProvider value={claudeComponents}>
+        <SessionViewer
+          session={currentSession}
+          manifest={null}
+          onAddEdit={vi.fn()}
+          onRemoveEdit={vi.fn()}
+          onUpdateTitle={onUpdateTitle}
+        />
+      </ThemeComponentProvider>
+    );
+    expect(container.querySelector('.session-viewer__title')!.textContent).toContain('New Title');
   });
 
   it('renders message count', () => {
@@ -57,6 +109,11 @@ describe('SessionViewer', () => {
     expect(container.querySelector('.claude-message--assistant')).not.toBeNull();
   });
 
+  it('renders hover action buttons on messages', () => {
+    const { container } = renderViewer();
+    expect(container.querySelectorAll('.message-actions').length).toBeGreaterThan(0);
+  });
+
   it('renders collapsed group for collapsed messages', () => {
     const session = createParsedSession({
       messages: [
@@ -72,7 +129,7 @@ describe('SessionViewer', () => {
     expect(container.querySelector('.claude-collapsed__summary')!.textContent).toBe('Two items');
   });
 
-  it('renders annotation blocks', () => {
+  it('renders annotation blocks with remove button', () => {
     const session = createParsedSession({
       messages: [createMessage({ id: 'a1' })],
     });
@@ -83,39 +140,7 @@ describe('SessionViewer', () => {
     });
     const { container } = renderViewer({ session, manifest });
     expect(container.querySelector('.claude-annotation')).not.toBeNull();
-    expect(container.querySelector('.claude-annotation__badge')!.textContent).toBe('# commentary');
-  });
-
-  it('does not show edit controls when editMode is false', () => {
-    const { container } = renderViewer();
-    expect(container.querySelector('.edit-controls')).toBeNull();
-  });
-
-  it('shows edit controls when editMode is true', () => {
-    const { container } = renderViewer({ editMode: true });
-    expect(container.querySelectorAll('.edit-controls').length).toBeGreaterThan(0);
-  });
-
-  it('calls onAddEdit with delete edit when Delete is clicked', async () => {
-    const user = userEvent.setup();
-    const onAddEdit = vi.fn();
-    const session = createParsedSession({
-      messages: [createUserMessage({ id: 'u1' })],
-    });
-    const { container } = renderViewer({ session, editMode: true, onAddEdit });
-    const deleteBtn = container.querySelector('.edit-controls__btn--delete')!;
-    await user.click(deleteBtn);
-    expect(onAddEdit).toHaveBeenCalledWith({ type: 'delete', blockId: 'u1' });
-  });
-
-  it('shows bulk action buttons in edit mode', () => {
-    const { container } = renderViewer({ editMode: true });
-    expect(container.querySelector('.bulk-actions')).not.toBeNull();
-  });
-
-  it('does not show bulk action buttons in view mode', () => {
-    const { container } = renderViewer({ editMode: false });
-    expect(container.querySelector('.bulk-actions')).toBeNull();
+    expect(container.querySelector('.claude-annotation__delete')).not.toBeNull();
   });
 
   it('hides deleted messages', () => {
@@ -145,139 +170,7 @@ describe('SessionViewer', () => {
     expect(screen.queryByText('Original')).not.toBeInTheDocument();
   });
 
-  it('collapse all thinking creates correct collapse edit', async () => {
-    const user = userEvent.setup();
-    const session = createParsedSession({
-      messages: [
-        createMessage({ id: 'think1', blocks: [createContentBlock({ type: 'thinking', thinking: 'hmm' })] }),
-        createMessage({ id: 'think2', blocks: [createContentBlock({ type: 'thinking', thinking: 'ok' })] }),
-        createMessage({ id: 'text1', blocks: [createContentBlock({ type: 'text', text: 'hello' })] }),
-      ],
-    });
-    const onAddEdit = vi.fn();
-    renderViewer({ session, editMode: true, onAddEdit });
-    const btn = screen.getByText('Collapse all thinking');
-    await user.click(btn);
-    expect(onAddEdit).toHaveBeenCalledWith({
-      type: 'collapse',
-      blockIds: ['think1', 'think2'],
-      summary: '2 thinking blocks',
-    });
-  });
-
-  it('collapse all thinking is no-op when no thinking blocks', async () => {
-    const user = userEvent.setup();
-    const session = createParsedSession({
-      messages: [
-        createMessage({ id: 'text1', blocks: [createContentBlock({ type: 'text', text: 'hello' })] }),
-        createMessage({ id: 'text2', blocks: [createContentBlock({ type: 'text', text: 'world' })] }),
-      ],
-    });
-    const onAddEdit = vi.fn();
-    renderViewer({ session, editMode: true, onAddEdit });
-    const btn = screen.getByText('Collapse all thinking');
-    await user.click(btn);
-    expect(onAddEdit).not.toHaveBeenCalled();
-  });
-
-  it('collapse all tool results creates correct collapse edit', async () => {
-    const user = userEvent.setup();
-    const session = createParsedSession({
-      messages: [
-        createUserMessage({ id: 'tr1', toolResults: [{ toolUseId: 't1', content: 'output' }] }),
-        createUserMessage({ id: 'tr2', toolResults: [{ toolUseId: 't2', content: 'output2' }] }),
-        createUserMessage({ id: 'u1', textContent: 'hello' }),
-      ],
-    });
-    const onAddEdit = vi.fn();
-    renderViewer({ session, editMode: true, onAddEdit });
-    const btn = screen.getByText('Collapse all tool results');
-    await user.click(btn);
-    expect(onAddEdit).toHaveBeenCalledWith({
-      type: 'collapse',
-      blockIds: ['tr1', 'tr2'],
-      summary: '2 tool results',
-    });
-  });
-
-  it('collapse all tool results is no-op when no tool results', async () => {
-    const user = userEvent.setup();
-    const session = createParsedSession({
-      messages: [
-        createUserMessage({ id: 'u1', textContent: 'hello' }),
-        createUserMessage({ id: 'u2', textContent: 'world' }),
-      ],
-    });
-    const onAddEdit = vi.fn();
-    renderViewer({ session, editMode: true, onAddEdit });
-    const btn = screen.getByText('Collapse all tool results');
-    await user.click(btn);
-    expect(onAddEdit).not.toHaveBeenCalled();
-  });
-
-  it('shows undo and redo buttons in edit mode', () => {
-    renderViewer({ editMode: true });
-    expect(screen.getByText('Undo')).toBeInTheDocument();
-    expect(screen.getByText('Redo')).toBeInTheDocument();
-  });
-
-  it('undo button is disabled when canUndo is false', () => {
-    renderViewer({ editMode: true, canUndo: false });
-    const undoBtn = screen.getByText('Undo');
-    expect(undoBtn).toBeDisabled();
-  });
-
-  it('redo button is disabled when canRedo is false', () => {
-    renderViewer({ editMode: true, canRedo: false });
-    const redoBtn = screen.getByText('Redo');
-    expect(redoBtn).toBeDisabled();
-  });
-
-  it('undo button is enabled when canUndo is true', () => {
-    renderViewer({ editMode: true, canUndo: true });
-    const undoBtn = screen.getByText('Undo');
-    expect(undoBtn).not.toBeDisabled();
-  });
-
-  it('undo button calls onUndo when clicked', async () => {
-    const user = userEvent.setup();
-    const onUndo = vi.fn();
-    renderViewer({ editMode: true, canUndo: true, onUndo });
-    await user.click(screen.getByText('Undo'));
-    expect(onUndo).toHaveBeenCalledTimes(1);
-  });
-
-  it('redo button calls onRedo when clicked', async () => {
-    const user = userEvent.setup();
-    const onRedo = vi.fn();
-    renderViewer({ editMode: true, canRedo: true, onRedo });
-    await user.click(screen.getByText('Redo'));
-    expect(onRedo).toHaveBeenCalledTimes(1);
-  });
-
-  it('collapse toggle removes existing collapse on second click', async () => {
-    const user = userEvent.setup();
-    const session = createParsedSession({
-      messages: [
-        createMessage({ id: 'think1', blocks: [createContentBlock({ type: 'thinking', thinking: 'hmm' })] }),
-        createMessage({ id: 'think2', blocks: [createContentBlock({ type: 'thinking', thinking: 'ok' })] }),
-      ],
-    });
-    const manifest = createManifest({
-      edits: [{ type: 'collapse', blockIds: ['think1', 'think2'], summary: '2 thinking blocks' }],
-    });
-    const onRemoveEdit = vi.fn();
-    const onAddEdit = vi.fn();
-    renderViewer({ session, manifest, editMode: true, onAddEdit, onRemoveEdit });
-    const btn = screen.getByText('Collapse all thinking');
-    await user.click(btn);
-    // Should remove existing collapse (index 0) instead of adding
-    expect(onRemoveEdit).toHaveBeenCalledWith(0);
-    expect(onAddEdit).not.toHaveBeenCalled();
-  });
-
-  it('show deleted toggle renders ghost blocks with restore button', async () => {
-    const user = userEvent.setup();
+  it('show deleted toggle renders ghost blocks with restore button', () => {
     const session = createParsedSession({
       messages: [
         createUserMessage({ id: 'u1', textContent: 'Visible' }),
@@ -288,22 +181,35 @@ describe('SessionViewer', () => {
       edits: [{ type: 'delete', blockId: 'a1' }],
     });
     const onRemoveEdit = vi.fn();
-    const { container } = renderViewer({ session, manifest, editMode: true, onRemoveEdit });
+    const { container } = renderViewer({ session, manifest, showDeleted: true, onRemoveEdit });
 
-    // Initially deleted message is hidden
-    expect(container.querySelector('.session-viewer__deleted-ghost')).toBeNull();
-
-    // Click "Show deleted"
-    await user.click(screen.getByText('Show deleted'));
-
-    // Now ghost should appear
     expect(container.querySelector('.session-viewer__deleted-ghost')).not.toBeNull();
     const restoreBtn = screen.getByText('Restore');
     expect(restoreBtn).toBeInTheDocument();
+  });
 
-    // Click restore
-    await user.click(restoreBtn);
-    expect(onRemoveEdit).toHaveBeenCalledWith(0);
+  it('collapsed group renders children when expanded', async () => {
+    const user = userEvent.setup();
+    const session = createParsedSession({
+      messages: [
+        createUserMessage({ id: 'u1', textContent: 'Visible' }),
+        createMessage({ id: 'a1', blocks: [createContentBlock({ type: 'text', text: 'First collapsed' })] }),
+        createMessage({ id: 'a2', blocks: [createContentBlock({ type: 'text', text: 'Second collapsed' })] }),
+      ],
+    });
+    const manifest = createManifest({
+      edits: [{ type: 'collapse', blockIds: ['a1', 'a2'], summary: 'Two items' }],
+    });
+    const { container } = renderViewer({ session, manifest });
+
+    expect(screen.queryByText('First collapsed')).not.toBeInTheDocument();
+    expect(screen.queryByText('Second collapsed')).not.toBeInTheDocument();
+
+    const header = container.querySelector('.claude-collapsed__header')!;
+    await user.click(header);
+
+    expect(screen.getByText('First collapsed')).toBeInTheDocument();
+    expect(screen.getByText('Second collapsed')).toBeInTheDocument();
   });
 
   it('annotation removal calls onRemoveEdit with correct index', async () => {
@@ -318,10 +224,62 @@ describe('SessionViewer', () => {
       ],
     });
     const onRemoveEdit = vi.fn();
-    const { container } = renderViewer({ session, manifest, editMode: true, onRemoveEdit });
+    const { container } = renderViewer({ session, manifest, onRemoveEdit });
     const deleteBtn = container.querySelector('.claude-annotation__delete')!;
     expect(deleteBtn).not.toBeNull();
     await user.click(deleteBtn);
     expect(onRemoveEdit).toHaveBeenCalledWith(1);
+  });
+
+  it('shows pencil icon on editable title hover', () => {
+    const { container } = renderViewer({ onUpdateTitle: vi.fn() });
+    const pencil = container.querySelector('.session-viewer__title-pencil');
+    expect(pencil).not.toBeNull();
+  });
+
+  it('does not show pencil icon when onUpdateTitle is not provided', () => {
+    const { container } = renderViewer();
+    const pencil = container.querySelector('.session-viewer__title-pencil');
+    expect(pencil).toBeNull();
+  });
+
+  describe('read-only mode (no edit callbacks)', () => {
+    it('does not render message actions when onAddEdit is omitted', () => {
+      const { container } = renderViewer({ onAddEdit: undefined });
+      expect(container.querySelectorAll('.message-actions').length).toBe(0);
+    });
+
+    it('renders annotation blocks without delete button when onRemoveEdit is omitted', () => {
+      const session = createParsedSession({
+        messages: [createMessage({ id: 'a1' })],
+      });
+      const manifest = createManifest({
+        edits: [
+          { type: 'annotate', afterBlockId: 'a1', content: 'Read-only note', id: 'ann-1' },
+        ],
+      });
+      const { container } = renderViewer({
+        session, manifest, onRemoveEdit: undefined,
+      });
+      expect(container.querySelector('.claude-annotation')).not.toBeNull();
+      expect(container.querySelector('.claude-annotation__delete')).toBeNull();
+    });
+
+    it('renders deleted ghost blocks without Restore button when onRemoveEdit is omitted', () => {
+      const session = createParsedSession({
+        messages: [
+          createUserMessage({ id: 'u1', textContent: 'Visible' }),
+          createMessage({ id: 'a1', blocks: [createContentBlock({ text: 'Deleted msg' })] }),
+        ],
+      });
+      const manifest = createManifest({
+        edits: [{ type: 'delete', blockId: 'a1' }],
+      });
+      const { container } = renderViewer({
+        session, manifest, showDeleted: true, onRemoveEdit: undefined,
+      });
+      expect(container.querySelector('.session-viewer__deleted-ghost')).not.toBeNull();
+      expect(screen.queryByText('Restore')).not.toBeInTheDocument();
+    });
   });
 });

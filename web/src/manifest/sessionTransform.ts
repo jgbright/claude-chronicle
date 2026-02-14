@@ -5,6 +5,7 @@ export interface TransformedMessage extends Message {
   isCollapsed?: boolean;
   collapseSummary?: string;
   collapsedCount?: number;
+  collapsedMessages?: Message[];
   isAnnotation?: boolean;
   isDeleted?: boolean;
 }
@@ -12,13 +13,13 @@ export interface TransformedMessage extends Message {
 export function applyManifest(
   messages: Message[],
   manifest: EditManifest | null,
-  options?: { showDeleted?: boolean }
+  options?: { showDeleted?: boolean; collapseAllToolResults?: boolean }
 ): TransformedMessage[] {
   if (!messages) {
     return [];
   }
 
-  if (!manifest || !manifest.edits || manifest.edits.length === 0) {
+  if ((!manifest || !manifest.edits || manifest.edits.length === 0) && !options?.collapseAllToolResults) {
     return messages;
   }
 
@@ -26,10 +27,11 @@ export function applyManifest(
   const collapsed = new Map<string, string>(); // blockId -> summary
   const collapseFirstIds = new Set<string>();
   const collapseGroupSizes = new Map<string, number>(); // firstId -> count
+  const collapseGroupBlockIds = new Map<string, Set<string>>(); // firstId -> all blockIds in group
   const annotations = new Map<string, Array<{ id: string; content: string }>>();
   const textEdits = new Map<string, string>(); // blockId -> newContent
 
-  for (const edit of manifest.edits) {
+  for (const edit of manifest?.edits ?? []) {
     switch (edit.type) {
       case 'delete':
         deleted.add(edit.blockId);
@@ -39,6 +41,7 @@ export function applyManifest(
           const first = edit.blockIds[0];
           collapseFirstIds.add(first);
           collapseGroupSizes.set(first, edit.blockIds.length);
+          collapseGroupBlockIds.set(first, new Set(edit.blockIds));
           for (const id of edit.blockIds) {
             collapsed.set(id, edit.summary);
           }
@@ -59,6 +62,30 @@ export function applyManifest(
     }
   }
 
+  // Bulk-collapse all tool-result user messages (view-state toggle, not manifest edit)
+  if (options?.collapseAllToolResults) {
+    const toolResultIds: string[] = [];
+    for (const msg of messages) {
+      if (
+        msg.role === 'user' &&
+        msg.toolResults && msg.toolResults.length > 0 &&
+        !deleted.has(msg.id) &&
+        !collapsed.has(msg.id)
+      ) {
+        toolResultIds.push(msg.id);
+      }
+    }
+    if (toolResultIds.length > 0) {
+      const first = toolResultIds[0];
+      collapseFirstIds.add(first);
+      collapseGroupSizes.set(first, toolResultIds.length);
+      collapseGroupBlockIds.set(first, new Set(toolResultIds));
+      for (const id of toolResultIds) {
+        collapsed.set(id, `${toolResultIds.length} tool results`);
+      }
+    }
+  }
+
   const result: TransformedMessage[] = [];
 
   for (const msg of messages) {
@@ -71,11 +98,14 @@ export function applyManifest(
 
     if (collapsed.has(msg.id)) {
       if (collapseFirstIds.has(msg.id)) {
+        const groupIds = collapseGroupBlockIds.get(msg.id)!;
+        const groupMessages = messages.filter((m) => groupIds.has(m.id));
         result.push({
           ...msg,
           isCollapsed: true,
           collapseSummary: collapsed.get(msg.id),
           collapsedCount: collapseGroupSizes.get(msg.id),
+          collapsedMessages: groupMessages,
         });
       }
       continue;

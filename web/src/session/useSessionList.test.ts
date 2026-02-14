@@ -37,4 +37,26 @@ describe('useSessionList', () => {
     expect(result.current.error).toBe('Network error');
     expect(result.current.sessions).toEqual([]);
   });
+
+  it('passes deleted=true param when showDeleted is true', async () => {
+    const sessions = [createSessionInfo({ id: 's1' })];
+    mockedApi.fetchSessions.mockResolvedValue(sessions);
+    const { result } = renderHook(() => useSessionList('', '', true));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(mockedApi.fetchSessions).toHaveBeenCalled();
+    const lastCall = mockedApi.fetchSessions.mock.calls[mockedApi.fetchSessions.mock.calls.length - 1];
+    const params = lastCall[0] as URLSearchParams;
+    expect(params.get('deleted')).toBe('true');
+  });
+
+  it('does not pass deleted param when showDeleted is false', async () => {
+    const sessions = [createSessionInfo({ id: 's1' })];
+    mockedApi.fetchSessions.mockResolvedValue(sessions);
+    const { result } = renderHook(() => useSessionList('', '', false));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(mockedApi.fetchSessions).toHaveBeenCalled();
+    const lastCall = mockedApi.fetchSessions.mock.calls[mockedApi.fetchSessions.mock.calls.length - 1];
+    // When no params, fetchSessions is called with undefined
+    expect(lastCall[0]).toBeUndefined();
+  });
 });
