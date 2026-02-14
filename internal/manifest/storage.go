@@ -41,7 +41,7 @@ func Load(sessionID string) (*Manifest, error) {
 	return &m, nil
 }
 
-// Save writes a manifest for a session.
+// Save writes a manifest for a session using atomic write (temp file + rename).
 func Save(m *Manifest) error {
 	dir := manifestDir()
 	if err := os.MkdirAll(dir, 0755); err != nil {
@@ -54,8 +54,25 @@ func Save(m *Manifest) error {
 	}
 
 	path := manifestPath(m.SessionID)
-	if err := os.WriteFile(path, data, 0644); err != nil {
-		return fmt.Errorf("writing manifest: %w", err)
+
+	tmp, err := os.CreateTemp(dir, ".manifest-*.tmp")
+	if err != nil {
+		return fmt.Errorf("creating temp file: %w", err)
+	}
+	tmpPath := tmp.Name()
+
+	if _, err := tmp.Write(data); err != nil {
+		tmp.Close()
+		os.Remove(tmpPath)
+		return fmt.Errorf("writing temp file: %w", err)
+	}
+	if err := tmp.Close(); err != nil {
+		os.Remove(tmpPath)
+		return fmt.Errorf("closing temp file: %w", err)
+	}
+	if err := os.Rename(tmpPath, path); err != nil {
+		os.Remove(tmpPath)
+		return fmt.Errorf("renaming manifest: %w", err)
 	}
 	return nil
 }
