@@ -20,13 +20,11 @@ claude-chronicle/
     src/
       main.tsx              SPA entry point (fetches data from API)
       export-main.tsx       Export entry point (reads window.__CHRONICLE_DATA__)
-      App.tsx               Root SPA component
-      api/client.ts         API client functions
-      components/           React components (14 components, each with a test file)
-      hooks/                useSession, useManifest, useTheme
-      lib/                  sessionTransform, formatUtils, toolUtils
-      themes/               CSS custom property definitions
-      types/                TypeScript type definitions (session.ts, manifest.ts)
+      shell/App.tsx         Root SPA component
+      session/              Session API, hooks, list/view components
+      manifest/             Manifest API, types, applyManifest transform
+      shared/               Shared renderers and utilities
+      themes/               CSS custom properties and per-theme components
     vite.config.ts          SPA build config (also configures dev proxy and Vitest)
     vite.config.export.ts   Export template build config (single-file output)
   scripts/                  PowerShell automation (sync-exports.ps1)
@@ -72,7 +70,7 @@ Five edit types are defined in the schema:
 | `editText` | Replace a message's text content | `blockId`, `newContent` | Implemented |
 | `reorder` | Move a message to a new position | `blockId`, `afterBlockId` | Schema only |
 
-Note: `reorder` is defined in both Go and TypeScript types but is not yet processed by `applyManifest()` in `lib/sessionTransform.ts`. Reorder edits are silently ignored at runtime.
+Note: `reorder` is defined in both Go and TypeScript types but is not yet processed by `applyManifest()` in `manifest/sessionTransform.ts`. Reorder edits are silently ignored at runtime.
 
 Edits are applied sequentially -- order matters when edits interact (e.g., a collapse referencing a block deleted by an earlier edit).
 
@@ -138,8 +136,8 @@ The frontend builds into two separate outputs for different use cases:
 Themes are implemented with CSS custom properties and controlled by the `data-theme` attribute on `<html>`.
 
 - `themes/tokens.css` -- Base layout, typography, and spacing tokens
-- `themes/claude.css` -- Claude theme color overrides
-- `themes/copilot.css` -- Copilot theme color overrides
+- `themes/claude/claude.css` -- Claude theme color overrides
+- `themes/copilot/copilot.css` -- Copilot theme color overrides
 - `themes/prism-chronicle.css` -- Syntax highlighting tokens
 
 The `useTheme` hook manages theme state, sets the `data-theme` attribute on `document.documentElement`, and persists the selection to `localStorage`.
@@ -148,41 +146,46 @@ The `useTheme` hook manages theme state, sets the `data-theme` attribute on `doc
 
 | Component | File | Role |
 |-----------|------|------|
-| `App` | `App.tsx` | Root layout: sidebar, toolbar, session viewer |
-| `SessionList` | `components/SessionList.tsx` | Sidebar list of discovered sessions |
-| `SessionViewer` | `components/SessionViewer.tsx` | Renders a session's messages with manifest applied |
-| `MessageBlock` | `components/MessageBlock.tsx` | Renders a single message (text, thinking, tool_use) |
-| `ExportViewer` | `components/ExportViewer.tsx` | Read-only wrapper for exported HTML files |
-| `Toolbar` | `components/Toolbar.tsx` | Theme switcher, edit mode toggle, export button |
-| `ToolUseBlock` | `components/ToolUseBlock.tsx` | Renders tool invocations with collapsible details |
-| `ThinkingBlock` | `components/ThinkingBlock.tsx` | Renders assistant thinking/reasoning blocks |
-| `CodeBlock` | `components/CodeBlock.tsx` | Syntax-highlighted code display |
-| `FileChangeBlock` | `components/FileChangeBlock.tsx` | Renders structured diffs |
-| `AnnotationBlock` | `components/AnnotationBlock.tsx` | Renders user annotations from manifest edits |
-| `CollapsedGroup` | `components/CollapsedGroup.tsx` | Renders collapsed message groups |
-| `EditControls` | `components/EditControls.tsx` | Per-message editing controls (delete, annotate, etc.) |
-| `MarkdownContent` | `components/MarkdownContent.tsx` | Renders markdown text content |
+| `App` | `shell/App.tsx` | Root layout: sidebar, toolbar, session viewer |
+| `SessionList` | `session/SessionList.tsx` | Sidebar list of discovered sessions |
+| `SessionViewer` | `session/SessionViewer.tsx` | Renders a session's messages with manifest applied |
+| `Theme MessageBlock` | `themes/claude/ClaudeMessageBlock.tsx` | Theme-specific message block rendering (Claude) |
+| `Theme MessageBlock` | `themes/copilot/CopilotMessageBlock.tsx` | Theme-specific message block rendering (Copilot) |
+| `ExportViewer` | `export/ExportViewer.tsx` | Read-only wrapper for exported HTML files |
+| `Toolbar` | `shell/Toolbar.tsx` | Theme switcher, edit mode toggle, export button |
+| `ToolUseBlock` | `shared/ToolUseBlock.tsx` | Renders tool invocations with collapsible details |
+| `CodeBlock` | `shared/CodeBlock.tsx` | Syntax-highlighted code display |
+| `AnnotationBlock` | `themes/claude/ClaudeAnnotationBlock.tsx` | Theme annotation block (Claude) |
+| `AnnotationBlock` | `themes/copilot/CopilotAnnotationBlock.tsx` | Theme annotation block (Copilot) |
+| `CollapsedGroup` | `themes/claude/ClaudeCollapsedGroup.tsx` | Theme collapsed-group block (Claude) |
+| `CollapsedGroup` | `themes/copilot/CopilotCollapsedGroup.tsx` | Theme collapsed-group block (Copilot) |
+| `MarkdownContent` | `shared/MarkdownContent.tsx` | Renders markdown text content |
 
 ### Manifest Application (Client-Side Only)
 
-`lib/sessionTransform.ts` exports `applyManifest()`, which takes a `Message[]` and an `EditManifest | null` and returns `TransformedMessage[]`. `TransformedMessage` extends `Message` with manifest-derived flags: `isCollapsed`, `collapseSummary`, `collapsedCount`, `isAnnotation`, and `isDeleted`.
+`manifest/sessionTransform.ts` exports `applyManifest()`, which takes a `Message[]` and an `EditManifest | null` and returns `TransformedMessage[]`. `TransformedMessage` extends `Message` with manifest-derived flags: `isCollapsed`, `collapseSummary`, `collapsedCount`, `isAnnotation`, and `isDeleted`.
 
-The function collects all edits into lookup maps (deleted set, collapsed map, annotations map, textEdits map) in a single pass, then iterates messages to produce the transformed output. This runs in the browser for both the live SPA and static exports. The Go backend stores and serves manifests but never applies them -- see [data-flow.md](data-flow.md) for the full pipeline.
+The function collects all edits into lookup maps (deleted set, collapsed map, annotations map, textEdits map) in a single pass, then iterates messages to produce the transformed output. This runs in the browser for both the live SPA and static exports. The Go backend stores and serves manifests but never applies them -- see [DATA-FLOW.md](DATA-FLOW.md) for the full pipeline.
 
-Other utility modules in `lib/`:
+Other utility modules in `shared/`:
 - `formatUtils.ts` -- Date, time, and file size formatting helpers
 - `toolUtils.ts` -- Tool invocation display helpers (`toolSummary()` for generating one-line previews, `guessLanguage()` for syntax highlighting)
 
 ## API Routes
 
 ```
-GET    /api/sessions                           List all discovered sessions
-GET    /api/sessions/{id}                      Get a parsed session (messages + info)
-GET    /api/sessions/{id}/manifest             Get the edit manifest (or empty default)
-PUT    /api/sessions/{id}/manifest             Replace the entire manifest
-POST   /api/sessions/{id}/manifest/edits       Append a single edit to the manifest
-DELETE /api/sessions/{id}/manifest/edits/{index} Remove an edit by array index
-POST   /api/sessions/{id}/export               Download an exported HTML file
+GET    /api/projects                              List projects with visible session counts
+GET    /api/sessions                              List sessions (?q=, ?project=, ?deleted=true)
+GET    /api/sessions/{id}                         Get a parsed session + manifest
+GET    /api/sessions/{id}/manifest                Get the edit manifest (or empty default)
+PUT    /api/sessions/{id}/manifest                Replace the entire manifest
+POST   /api/sessions/{id}/manifest/edits          Append a single edit to the manifest
+DELETE /api/sessions/{id}/manifest/edits/{index}  Remove an edit by array index
+PATCH  /api/sessions/{id}/manifest/metadata       Update title/deleted metadata
+POST   /api/sessions/{id}/reveal                  Reveal session file in OS explorer
+POST   /api/sessions/{id}/export                  Download an exported HTML file
+GET    /api/info                                  Build/version metadata
+GET    /api/events                                SSE stream (sessions_changed/session_updated)
 ```
 
 All routes return JSON except the export endpoint, which returns `text/html` with a `Content-Disposition: attachment` header.
@@ -221,11 +224,11 @@ Exported files are fully self-contained: all JS, CSS, and session data are inlin
 
 ## Key Design Decisions
 
-1. **Client-side-only manifest application** -- The Go backend stores manifests but never applies them. Both the SPA and export template run `applyManifest()` in the browser. This keeps the backend simple and ensures WYSIWYG parity between live preview and exported output. See [data-flow.md](data-flow.md) for the full data flow.
+1. **Client-side-only manifest application** -- The Go backend stores manifests but never applies them. Both the SPA and export template run `applyManifest()` in the browser. This keeps the backend simple and ensures WYSIWYG parity between live preview and exported output. See [DATA-FLOW.md](DATA-FLOW.md) for the full data flow.
 
 2. **Never modify `~/.claude/`** -- Chronicle treats Claude Code's session files as read-only. All Chronicle-specific data (manifests) lives under `~/.claude-chronicle/`. This prevents any risk of corrupting the source data.
 
-3. **Embed-dependent build** -- The Go binary embeds pre-built web assets at compile time. This means `web/dist/` and `web/dist-export/export.html` must exist before `go build`. The `Makefile` handles this ordering automatically. See [faq.md](faq.md) for troubleshooting embed errors.
+3. **Embed-dependent build** -- The Go binary embeds pre-built web assets at compile time. This means `web/dist/` and `web/dist-export/export.html` must exist before `go build`. The `Makefile` handles this ordering automatically. See [FAQ.md](FAQ.md) for troubleshooting embed errors.
 
 4. **Two separate Vite builds** -- The SPA and export template have fundamentally different requirements. The SPA is a standard multi-file build with code splitting. The export template uses `vite-plugin-singlefile` to inline everything into one HTML file, since exported sessions must work offline with no external dependencies.
 
@@ -267,14 +270,14 @@ These were evaluated during an architecture review of seven independent proposal
 | `ExportData` | `export` | Data injected into templates: session (`*ParsedSession`) + manifest (`*Manifest`) + theme (`string`) |
 | `Server` | `api` | HTTP server: mux (`*http.ServeMux`), webFS (`fs.FS`), devMode (`bool`), devURL (`string`) |
 
-### TypeScript (`web/src/types/`)
+### TypeScript (`web/src/session/` + `web/src/manifest/`)
 
 | Type | File | Description |
 |------|------|-------------|
-| `SessionInfo` | `session.ts` | Session metadata (mirrors Go `SessionInfo`) |
-| `ContentBlock` | `session.ts` | Message content block (text, thinking, tool_use, tool_result) |
-| `Message` | `session.ts` | Conversation turn with blocks and optional text/tool results |
-| `ParsedSession` | `session.ts` | Complete session: info + messages |
-| `EditManifest` | `manifest.ts` | Manifest with version, session ID, and edits array |
-| `Edit` | `manifest.ts` | Union type: `DeleteEdit \| CollapseEdit \| AnnotateEdit \| EditTextEdit \| ReorderEdit` |
-| `TransformedMessage` | `lib/sessionTransform.ts` | Extended `Message` with manifest flags: `isCollapsed`, `collapseSummary`, `collapsedCount`, `isAnnotation`, `isDeleted` |
+| `SessionInfo` | `session/types.ts` | Session metadata (mirrors Go `SessionInfo`) |
+| `ContentBlock` | `session/types.ts` | Message content block (text, thinking, tool_use, tool_result) |
+| `Message` | `session/types.ts` | Conversation turn with blocks and optional text/tool results |
+| `ParsedSession` | `session/types.ts` | Complete session: info + messages |
+| `EditManifest` | `manifest/types.ts` | Manifest with version, session ID, and edits array |
+| `Edit` | `manifest/types.ts` | Union type: `DeleteEdit \| CollapseEdit \| AnnotateEdit \| EditTextEdit \| ReorderEdit` |
+| `TransformedMessage` | `manifest/sessionTransform.ts` | Extended `Message` with manifest flags: `isCollapsed`, `collapseSummary`, `collapsedCount`, `isAnnotation`, `isDeleted` |

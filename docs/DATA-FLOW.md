@@ -324,13 +324,13 @@ For non-API routes, the server serves the embedded SPA from `web/dist/` (`server
 
 The SPA uses React hooks to fetch data from the API:
 
-1. **`useSessionList`** (`hooks/useSession.ts:5-18`): On mount, calls `GET /api/sessions` via `fetchSessions()` and stores the list in state.
+1. **`useSessionList`** (`session/useSessionList.ts`): On mount, calls `GET /api/sessions` via `fetchSessions()` and stores the list in state.
 
-2. **`useSessionData`** (`hooks/useSession.ts:20-42`): When a session is selected, calls `GET /api/sessions/{id}` via `fetchSession()`.
+2. **`useSessionData`** (`session/useSessionData.ts`): When a session is selected, calls `GET /api/sessions/{id}` via `fetchSession()`.
 
-3. **`useManifest`** (`hooks/useManifest.ts`): Fetches the manifest for the selected session via `GET /api/sessions/{id}/manifest`.
+3. **`useManifest`** (`manifest/useManifest.ts`): Fetches the manifest for the selected session via `GET /api/sessions/{id}/manifest`.
 
-The API client (`api/client.ts`) wraps `fetch()` calls to all endpoints.
+The API client modules (`session/api.ts` and `manifest/api.ts`) wrap `fetch()` calls to all endpoints.
 
 ### Component Tree
 
@@ -350,7 +350,7 @@ App
 
 ### Message Rendering
 
-`MessageBlock` (`components/MessageBlock.tsx`) dispatches on message role and block type:
+Theme message blocks (`themes/claude/ClaudeMessageBlock.tsx` and `themes/copilot/CopilotMessageBlock.tsx`) dispatch on message role and block type:
 
 **Assistant messages** iterate over `blocks[]` and render each by type:
 
@@ -406,7 +406,7 @@ type Edit struct {
 
 ### Client-Side Application
 
-**File**: `web/src/lib/sessionTransform.ts`
+**File**: `web/src/manifest/sessionTransform.ts`
 
 Manifest edits are applied entirely in the browser -- the Go backend stores and serves manifests but does not apply them. The `applyManifest()` function (`sessionTransform.ts:12-103`) processes the edit array sequentially, building lookup maps, then transforms the message list in a single pass:
 
@@ -527,7 +527,7 @@ createRoot(document.getElementById('root')!).render(
 );
 ```
 
-`ExportViewer` (`components/ExportViewer.tsx`) casts the data to the expected shape and renders the same `SessionViewer` component used by the SPA, with edit mode disabled:
+`ExportViewer` (`export/ExportViewer.tsx`) casts the data to the expected shape and renders the same `SessionViewer` component used by the SPA, with edit mode disabled:
 
 ```tsx
 export function ExportViewer({ data }: Props) {
@@ -536,9 +536,6 @@ export function ExportViewer({ data }: Props) {
     <SessionViewer
       session={exportData.session}
       manifest={exportData.manifest}
-      editMode={false}
-      onAddEdit={() => {}}
-      onRemoveEdit={() => {}}
     />
   );
 }
@@ -567,7 +564,7 @@ Both paths share these stages identically:
 
 1. **JSONL parsing** -- `internal/session/parser.go` (same Go code)
 2. **Record merging** -- `mergeRecords()` combines streamed assistant records
-3. **Manifest transform** -- `web/src/lib/sessionTransform.ts` (same JS, runs in browser)
+3. **Manifest transform** -- `web/src/manifest/sessionTransform.ts` (same JS, runs in browser)
 4. **Message rendering** -- `SessionViewer` -> `MessageBlock` -> component tree
 
 The only divergence is how the parsed data reaches the browser: HTTP API response vs. inline JSON in the HTML.

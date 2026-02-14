@@ -184,10 +184,10 @@ web/src/
 
 See [docs/](docs/) for detailed guides:
 
-- [**Getting Started**](docs/getting-started.md) — build, dev workflow, testing, CLI reference
-- [**Architecture**](docs/architecture.md) — package relationships, key types, design decisions
-- [**Data Flow**](docs/data-flow.md) — end-to-end trace from JSONL to rendered pixels
-- [**FAQ**](docs/faq.md) — common questions for new contributors
+- [**Getting Started**](docs/GETTING-STARTED.md) — build, dev workflow, testing, CLI reference
+- [**Architecture**](docs/ARCHITECTURE.md) — package relationships, key types, design decisions
+- [**Data Flow**](docs/DATA-FLOW.md) — end-to-end trace from JSONL to rendered pixels
+- [**FAQ**](docs/FAQ.md) — common questions for new contributors
 
 ## Development
 
@@ -201,7 +201,7 @@ cd web && npm run dev
 go run ./cmd/chronicle serve -dev
 ```
 
-The Go server runs on `:8080` and proxies frontend requests to Vite on `:5173`. See [Getting Started](docs/getting-started.md) for the full development guide.
+The Go server runs on `:8080` and proxies frontend requests to Vite on `:5173`. See [Getting Started](docs/GETTING-STARTED.md) for the full development guide.
 
 ## AI Agent Environments
 
