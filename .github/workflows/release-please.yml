@@ -11,8 +11,54 @@ permissions:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    outputs:
+      releases_created: ${{ steps.release.outputs.releases_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
       - uses: googleapis/release-please-action@v4
+        id: release
         with:
           config-file: .github/release-please-config.json
           manifest-file: .github/.release-please-manifest.json
+
+  goreleaser:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.releases_created == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+
+      - name: Install web dependencies
+        run: cd web && npm ci
+
+      - name: Build web assets
+        run: cd web && npm run build && npm run build:export
+
+      - name: Build temporary binary
+        run: go build -o chronicle-tmp ./cmd/chronicle
+
+      - name: Export demo session
+        run: ./chronicle-tmp export -file samples/sample_session.jsonl -theme claude -o demo-session.html
+
+      - name: Clean up temporary binary
+        run: rm chronicle-tmp
+
+      - uses: goreleaser/goreleaser-action@v6
+        with:
+          args: release --clean --config .github/.goreleaser.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

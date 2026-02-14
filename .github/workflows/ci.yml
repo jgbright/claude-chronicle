@@ -41,7 +41,7 @@ jobs:
         with:
           files: web/coverage/lcov.info
           flags: frontend
-          fail_ci_if_error: false
+          fail_ci_if_error: true
 
   build-and-deploy:
     needs: frontend
@@ -76,10 +76,12 @@ jobs:
         with:
           files: coverage.out
           flags: backend
-          fail_ci_if_error: false
+          fail_ci_if_error: true
 
       - name: Build Go binary
-        run: go build -ldflags "-X main.version=ci-${GITHUB_SHA::7}" -o claude-chronicle ./cmd/chronicle
+        run: |
+          BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+          go build -ldflags "-X main.version=ci-${GITHUB_SHA::7} -X main.branch=${BRANCH}" -o claude-chronicle ./cmd/chronicle
 
       - name: Smoke test
         run: ./claude-chronicle version
@@ -91,26 +93,28 @@ jobs:
           path: claude-chronicle
           retention-days: 7
 
-      - name: Determine output filename
-        id: filename
+      - name: Determine output paths
+        id: paths
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            echo "name=pr-${{ github.event.pull_request.number }}.html" >> "$GITHUB_OUTPUT"
-            echo "url=https://jgbright.github.io/claude-chronicle-demo/pr-${{ github.event.pull_request.number }}.html" >> "$GITHUB_OUTPUT"
+            DIR="pr-${{ github.event.pull_request.number }}"
+            echo "dir=${DIR}" >> "$GITHUB_OUTPUT"
+            echo "url=https://jgbright.github.io/claude-chronicle-demo/${DIR}/" >> "$GITHUB_OUTPUT"
           else
             SHORT_SHA="${GITHUB_SHA::7}"
-            echo "name=${SHORT_SHA}.html" >> "$GITHUB_OUTPUT"
+            DIR="${SHORT_SHA}"
+            echo "dir=${DIR}" >> "$GITHUB_OUTPUT"
             echo "url=https://jgbright.github.io/claude-chronicle-demo/" >> "$GITHUB_OUTPUT"
-            echo "permalink=https://jgbright.github.io/claude-chronicle-demo/${SHORT_SHA}.html" >> "$GITHUB_OUTPUT"
+            echo "permalink=https://jgbright.github.io/claude-chronicle-demo/${DIR}/" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Export demo session
+      - name: Export demo sessions
         run: |
-          mkdir _site
-          ./claude-chronicle export -file samples/sample_session.jsonl -theme claude -o "_site/${{ steps.filename.outputs.name }}"
-          if [ "${{ github.event_name }}" != "pull_request" ]; then
-            cp "_site/${{ steps.filename.outputs.name }}" _site/index.html
-          fi
+          mkdir -p "_site/${{ steps.paths.outputs.dir }}"
+          ./claude-chronicle export -file samples/sample_session.jsonl -theme claude \
+            -o "_site/${{ steps.paths.outputs.dir }}/demo.html"
+          ./claude-chronicle export -file samples/sample_session.jsonl -theme copilot \
+            -o "_site/${{ steps.paths.outputs.dir }}/demo-copilot.html"
 
       - name: Build Storybook
         working-directory: web
@@ -128,19 +132,42 @@ jobs:
         working-directory: web
         run: npm run generate-gallery
 
+      - name: Capture showcase screenshots
+        working-directory: web
+        run: npm run capture-showcase
+        env:
+          SHOWCASE_CLAUDE_HTML: ${{ github.workspace }}/_site/${{ steps.paths.outputs.dir }}/demo.html
+          SHOWCASE_COPILOT_HTML: ${{ github.workspace }}/_site/${{ steps.paths.outputs.dir }}/demo-copilot.html
+
+      - name: Generate showcase landing page
+        working-directory: web
+        run: npm run generate-showcase
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+
       - name: Stage storybook gallery for deploy
         run: |
           mkdir -p _site/storybook/screenshots
           cp web/gallery/index.html _site/storybook/index.html
           cp web/gallery/screenshots/*.png _site/storybook/screenshots/
 
+      - name: Stage showcase
+        run: |
+          cp web/showcase/index.html "_site/${{ steps.paths.outputs.dir }}/index.html"
+          rm -f "_site/${{ steps.paths.outputs.dir }}/demo-copilot.html"
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            cp "_site/${{ steps.paths.outputs.dir }}/index.html" _site/index.html
+            cp "_site/${{ steps.paths.outputs.dir }}/demo.html" _site/demo.html
+          fi
+
       - name: Upload exported HTML
         uses: actions/upload-artifact@v4
         with:
           name: exported-html
-          path: _site/${{ steps.filename.outputs.name }}
+          path: _site/${{ steps.paths.outputs.dir }}/demo.html
 
       - name: Deploy to GitHub Pages
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
         uses: peaceiris/actions-gh-pages@v4
         with:
           deploy_key: ${{ secrets.PAGES_DEPLOY_KEY }}
@@ -150,16 +177,17 @@ jobs:
           keep_files: true
 
       - name: Write job summary
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
         run: |
           echo "### Deployed to GitHub Pages" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          if [ -n "${{ steps.filename.outputs.permalink }}" ]; then
-            echo "**Latest:** ${{ steps.filename.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
-            echo "**Permalink:** ${{ steps.filename.outputs.permalink }}" >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "${{ steps.paths.outputs.permalink }}" ]; then
+            echo "**Latest:** ${{ steps.paths.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
+            echo "**Permalink:** ${{ steps.paths.outputs.permalink }}" >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "**Preview:** ${{ steps.filename.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
+            echo "**Preview:** ${{ steps.paths.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
           fi
-          echo "**File:** \`${{ steps.filename.outputs.name }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Directory:** \`${{ steps.paths.outputs.dir }}/\`" >> "$GITHUB_STEP_SUMMARY"
           echo "**Storybook Gallery:** https://jgbright.github.io/claude-chronicle-demo/storybook/" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Comment on PR with preview URL
@@ -167,9 +195,10 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const body = `### 📄 Pages Preview
+            const body = `### Pages Preview
 
-            **Preview:** ${{ steps.filename.outputs.url }}
+            **Landing:** ${{ steps.paths.outputs.url }}
+            **Demo:** ${{ steps.paths.outputs.url }}demo.html
             **Storybook Gallery:** https://jgbright.github.io/claude-chronicle-demo/storybook/
 
             Built from ${context.sha.substring(0, 7)}`;
