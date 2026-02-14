@@ -11,7 +11,7 @@ Working with Claude Code is a collaborative process — you prompt, steer, corre
 
 Think of it like a Loom recording for your AI sessions. You pick a session, trim the noise, collapse the parts that don't matter, add annotations explaining your thinking — why you prompted a certain way, what you were steering toward, what you'd do differently — and export a single HTML file you can send to anyone.
 
-**[Live Demo](https://jgbright.github.io/claude-chronicle-demo/)** — see an exported session in action.
+**[Live Demo](https://jgbright.github.io/claude-chronicle/demo/)** — see an exported session in action.
 
 ## Features
 
@@ -131,12 +131,11 @@ Three GitHub Actions workflows chain together to automate building, testing, pre
 
 Every push to `main` and every PR triggers the [CI pipeline](.github/workflows/ci.yml). It runs frontend linting and tests in parallel with the full Go build-and-test cycle, uploads code coverage to Codecov, and builds a binary. But the interesting part is what happens next.
 
-**The pipeline exports a demo session and deploys it to GitHub Pages.** It uses the freshly-built binary to run `chronicle export` on a sample session, producing a standalone HTML file, then publishes it to a separate [`claude-chronicle-demo`](https://jgbright.github.io/claude-chronicle-demo/) repository. The naming scheme makes every build browsable:
+**The pipeline exports a demo session, builds an Astro landing site, and deploys everything to [GitHub Pages](https://jgbright.github.io/claude-chronicle/).** Main pushes deploy the full site: landing page at `/`, demo export at `/demo/`, HTML coverage reports at `/coverage/`, and a Storybook screenshot gallery at `/storybook/`. Each main push also creates a `{short-sha}/demo.html` permalink that never gets overwritten.
 
-- **Main branch** pushes produce `index.html` (always the latest) plus `{short-sha}.html` (a permanent permalink). Every commit to main creates a snapshot that never gets overwritten.
-- **Pull requests** produce `pr-{number}.html` and the bot posts a comment on the PR with the preview URL.
+- **Pull requests** deploy only a `pr-{number}/demo.html` preview and the bot posts a comment with the URL.
 
-All files persist across deployments (`keep_files: true`), so the demo site becomes an accumulating archive — you can browse the export output from any CI run in the project's history.
+All files persist across deployments (`keep_files: true`), so the site accumulates an archive of every build.
 
 #### Release Please — automatic versioning
 

@@ -17,4 +17,4 @@ changelog:
   sort: asc
   footer: |
     ---
-    **[Live Demo](https://jgbright.github.io/claude-chronicle-demo/)** | Export your own sessions with `claude-chronicle export`
+    **[Live Demo](https://jgbright.github.io/claude-chronicle/demo/)** | Export your own sessions with `claude-chronicle export`
