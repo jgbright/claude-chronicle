@@ -1,5 +1,5 @@
 ---
-const sha = import.meta.env.GITHUB_SHA || 'local';
+const sha = process.env.GITHUB_SHA || 'local';
 const shortSha = sha.substring(0, 7);
 const buildDate = new Date().toISOString().split('T')[0];
 const base = import.meta.env.BASE_URL;
