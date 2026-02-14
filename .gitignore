@@ -195,6 +195,7 @@ web/showcase/
 
 # Astro build cache
 .astro
+site/public/screenshots/
 
 # Smoke test fixtures (contain private session content)
 web/src/test/fixtures/smoke/

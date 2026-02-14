@@ -44,6 +44,13 @@ jobs:
           flags: frontend
           fail_ci_if_error: true
 
+      - name: Upload coverage HTML
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage-html
+          path: web/coverage/
+          retention-days: 1
+
   build-and-deploy:
     needs: frontend
     runs-on: ubuntu-latest
@@ -81,6 +88,15 @@ jobs:
           files: coverage.out
           flags: backend
           fail_ci_if_error: true
+
+      - name: Download frontend coverage HTML
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-coverage-html
+          path: _frontend-coverage/
+
+      - name: Generate Go coverage HTML
+        run: go tool cover -html=coverage.out -o go-coverage.html
 
       - name: Build Go binary
         run: |
@@ -158,22 +174,24 @@ jobs:
 
       - name: Assemble _site
         run: |
-          # Astro output → site root
-          cp -r site/dist/* _site/
-
-          # Latest demo (main pushes only)
+          # Main pushes: deploy full site (landing page, demo, coverage, storybook)
           if [ "${{ github.event_name }}" != "pull_request" ]; then
+            cp -r site/dist/* _site/
+
             mkdir -p _site/demo
             cp "_site/${{ steps.paths.outputs.dir }}/demo.html" _site/demo/index.html
+
+            mkdir -p _site/coverage/go _site/coverage/frontend
+            cp go-coverage.html _site/coverage/go/index.html
+            cp -r _frontend-coverage/* _site/coverage/frontend/
+
+            mkdir -p _site/storybook/screenshots
+            cp web/gallery/index.html _site/storybook/index.html
+            cp web/gallery/screenshots/*.png _site/storybook/screenshots/
           fi
 
           # Remove copilot export (only used for screenshots)
           rm -f "_site/${{ steps.paths.outputs.dir }}/demo-copilot.html"
-
-          # Storybook gallery
-          mkdir -p _site/storybook/screenshots
-          cp web/gallery/index.html _site/storybook/index.html
-          cp web/gallery/screenshots/*.png _site/storybook/screenshots/
 
       - name: Upload exported HTML
         uses: actions/upload-artifact@v4
@@ -203,6 +221,7 @@ jobs:
           fi
           echo "**Directory:** \`${{ steps.paths.outputs.dir }}/\`" >> "$GITHUB_STEP_SUMMARY"
           echo "**Storybook:** https://jgbright.github.io/claude-chronicle/storybook/" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Coverage:** https://jgbright.github.io/claude-chronicle/coverage/frontend/" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Comment on PR with preview URL
         if: github.event_name == 'pull_request'
