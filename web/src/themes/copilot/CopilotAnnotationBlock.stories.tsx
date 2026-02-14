@@ -9,16 +9,15 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const ViewMode: Story = {
+export const ReadOnly: Story = {
   args: {
     content: 'This section demonstrates how the session parser handles malformed JSONL input gracefully by skipping invalid lines rather than failing the entire parse.',
   },
 };
 
-export const EditMode: Story = {
+export const WithRemoveButton: Story = {
   args: {
     content: 'An important note about the refactoring approach chosen here.',
-    editMode: true,
     onDelete: () => {},
   },
 };

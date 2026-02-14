@@ -8,7 +8,7 @@ export interface ThemeComponentSet {
   /** Renders a single message (user or assistant) */
   MessageBlock: ComponentType<{ message: Message | TransformedMessage }>;
   /** Renders an annotation/commentary block */
-  AnnotationBlock: ComponentType<{ content: string; editMode?: boolean; onDelete?: () => void }>;
+  AnnotationBlock: ComponentType<{ content: string; onDelete?: () => void }>;
   /** Renders a collapsed group of messages */
-  CollapsedGroup: ComponentType<{ summary: string; count: number }>;
+  CollapsedGroup: ComponentType<{ summary: string; count: number; children?: ReactNode }>;
 }

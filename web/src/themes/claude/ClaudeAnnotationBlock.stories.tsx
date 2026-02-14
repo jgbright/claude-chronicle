@@ -8,16 +8,15 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const ViewMode: Story = {
+export const ReadOnly: Story = {
   args: {
     content: 'This section demonstrates how the assistant handles complex refactoring tasks with multiple file changes.',
   },
 };
 
-export const EditMode: Story = {
+export const WithRemoveButton: Story = {
   args: {
-    content: 'An editable annotation that can be removed by the curator.',
-    editMode: true,
+    content: 'An annotation that can be removed by the curator.',
     onDelete: () => console.log('Delete clicked'),
   },
 };

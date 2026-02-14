@@ -3,15 +3,14 @@ import { MarkdownContent } from '../../shared/MarkdownContent';
 interface Props {
   content: string;
   onDelete?: () => void;
-  editMode?: boolean;
 }
 
-export function CopilotAnnotationBlock({ content, onDelete, editMode }: Props) {
+export function CopilotAnnotationBlock({ content, onDelete }: Props) {
   return (
     <div className="copilot-annotation">
       <div className="copilot-annotation__header">
         <span className="copilot-annotation__badge">Commentary</span>
-        {editMode && onDelete && (
+        {onDelete && (
           <button className="copilot-annotation__delete" onClick={onDelete}>
             Remove
           </button>
