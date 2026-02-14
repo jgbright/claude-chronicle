@@ -70,8 +70,16 @@ func (e *Edit) Validate() error {
 			return fmt.Errorf("editText edit requires newContent")
 		}
 	case "reorder":
+		// Support both payloads:
+		// 1) legacy: {blockIds:[...]}
+		// 2) frontend schema: {blockId:"...", afterBlockId:"..."}
 		if len(e.BlockIDs) == 0 {
-			return fmt.Errorf("reorder edit requires non-empty blockIds")
+			if e.BlockID == "" {
+				return fmt.Errorf("reorder edit requires blockId or non-empty blockIds")
+			}
+			if e.AfterBlockID == "" {
+				return fmt.Errorf("reorder edit requires afterBlockId when using blockId")
+			}
 		}
 	}
 

@@ -14,6 +14,7 @@ func TestValidate_ValidEdits(t *testing.T) {
 		{"annotate", Edit{Type: "annotate", AfterBlockID: "b1", Content: "note"}},
 		{"editText", Edit{Type: "editText", BlockID: "b1", NewContent: "updated"}},
 		{"reorder", Edit{Type: "reorder", BlockIDs: []string{"b1", "b2"}}},
+		{"reorder blockId/afterBlockId", Edit{Type: "reorder", BlockID: "b1", AfterBlockID: "b2"}},
 	}
 
 	for _, tt := range tests {
@@ -59,6 +60,7 @@ func TestValidate_MissingRequiredFields(t *testing.T) {
 		{"editText missing newContent", Edit{Type: "editText", BlockID: "b1"}},
 		{"reorder missing blockIds", Edit{Type: "reorder"}},
 		{"reorder empty blockIds", Edit{Type: "reorder", BlockIDs: []string{}}},
+		{"reorder blockId missing afterBlockId", Edit{Type: "reorder", BlockID: "b1"}},
 	}
 
 	for _, tt := range tests {
