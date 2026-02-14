@@ -1,0 +1,57 @@
+---
+---
+
+<section class="quickstart">
+  <h2>Quick Start</h2>
+  <div class="code-block">
+    <pre><span class="comment"># Download the latest release</span>
+<span class="cmd">curl -L</span> https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_linux_amd64.tar.gz <span class="cmd">| tar xz</span>
+
+<span class="comment"># Browse your sessions</span>
+<span class="cmd">./claude-chronicle serve</span>
+
+<span class="comment"># Export a session</span>
+<span class="cmd">./claude-chronicle export</span> -session &lt;id&gt; -o session.html</pre>
+  </div>
+</section>
+
+<style>
+  .quickstart {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: var(--section-padding);
+  }
+
+  .quickstart h2 {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text-bright);
+    margin-bottom: 1.5rem;
+  }
+
+  .code-block {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    overflow-x: auto;
+  }
+
+  pre {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--color-text);
+    line-height: 1.8;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .comment {
+    color: var(--color-text-muted);
+  }
+
+  .cmd {
+    color: #79c0ff;
+  }
+</style>

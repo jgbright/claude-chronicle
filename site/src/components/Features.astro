@@ -1,0 +1,101 @@
+---
+const features = [
+  {
+    icon: '\u{1F50D}',
+    title: 'Session Browsing',
+    desc: 'Auto-discovers all your Claude Code sessions with full-text search and project filtering.',
+  },
+  {
+    icon: '\u{1F3A8}',
+    title: 'Dual Themes',
+    desc: 'Claude and Copilot themes with Markdown, syntax-highlighted code, and thinking blocks.',
+  },
+  {
+    icon: '\u{2702}\u{FE0F}',
+    title: 'Non-Destructive Editing',
+    desc: 'Delete, collapse, annotate, and reorder blocks. Original sessions are never modified.',
+  },
+  {
+    icon: '\u{1F4E6}',
+    title: 'Single-File Export',
+    desc: 'Export to a self-contained HTML page with all assets inlined. Share it anywhere.',
+  },
+  {
+    icon: '\u{1F512}',
+    title: 'Privacy First',
+    desc: 'Runs entirely on your machine. No cloud, no accounts. PII sanitization on export.',
+  },
+  {
+    icon: '\u{26A1}',
+    title: 'Single Binary',
+    desc: 'One Go binary with the React SPA embedded. No runtime dependencies to install.',
+  },
+];
+---
+
+<section class="features">
+  <h2>Features</h2>
+  <div class="feature-grid">
+    {
+      features.map((f) => (
+        <div class="feature-card">
+          <div class="icon">{f.icon}</div>
+          <h3>{f.title}</h3>
+          <p>{f.desc}</p>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .features {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: var(--section-padding);
+  }
+
+  .features h2 {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text-bright);
+    margin-bottom: 2rem;
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .feature-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1.25rem;
+  }
+
+  .icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .feature-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-bright);
+    margin-bottom: 0.4rem;
+  }
+
+  .feature-card p {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+  }
+
+  @media (max-width: 768px) {
+    .feature-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

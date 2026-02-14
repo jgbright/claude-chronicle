@@ -1,0 +1,57 @@
+---
+const sha = import.meta.env.GITHUB_SHA || 'local';
+const shortSha = sha.substring(0, 7);
+const buildDate = new Date().toISOString().split('T')[0];
+const base = import.meta.env.BASE_URL;
+---
+
+<footer>
+  <nav class="footer-links">
+    <a href="https://github.com/jgbright/claude-chronicle">GitHub</a>
+    <span class="sep">&middot;</span>
+    <a
+      href="https://github.com/jgbright/claude-chronicle/releases/latest"
+    >
+      Releases
+    </a>
+    <span class="sep">&middot;</span>
+    <a href={`${base}storybook/`}>Storybook</a>
+    <span class="sep">&middot;</span>
+    <a href={`${base}coverage/`}>Coverage</a>
+  </nav>
+  <p>MIT License</p>
+  <p>
+    Commit <code>{shortSha}</code> &middot; Built {buildDate}
+  </p>
+</footer>
+
+<style>
+  footer {
+    text-align: center;
+    padding: 3rem 2rem;
+    border-top: 1px solid var(--color-border-muted);
+    margin-top: 2rem;
+  }
+
+  .footer-links {
+    margin-bottom: 0.75rem;
+  }
+
+  .footer-links a {
+    font-size: 0.9rem;
+  }
+
+  .sep {
+    color: var(--color-text-muted);
+    margin: 0 0.4rem;
+  }
+
+  footer p {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+  }
+
+  footer p + p {
+    margin-top: 0.4rem;
+  }
+</style>

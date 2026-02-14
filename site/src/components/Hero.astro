@@ -1,0 +1,61 @@
+---
+const base = import.meta.env.BASE_URL;
+---
+
+<section class="hero">
+  <h1>Claude Chronicle</h1>
+  <p class="tagline">
+    Curate and share your Claude Code sessions as polished, single&#8209;file
+    HTML pages.
+  </p>
+  <div class="hero-buttons">
+    <a href={`${base}demo/`} class="btn btn-primary">View Demo</a>
+    <a
+      href="https://github.com/jgbright/claude-chronicle"
+      class="btn btn-secondary">GitHub</a
+    >
+    <a
+      href="https://github.com/jgbright/claude-chronicle/releases/latest"
+      class="btn btn-secondary">Download</a
+    >
+  </div>
+</section>
+
+<style>
+  .hero {
+    text-align: center;
+    padding: 5rem 2rem 3rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .hero h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--color-text-bright);
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.03em;
+  }
+
+  .tagline {
+    font-size: 1.25rem;
+    color: var(--color-text-muted);
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 768px) {
+    .hero h1 {
+      font-size: 2.25rem;
+    }
+  }
+</style>
