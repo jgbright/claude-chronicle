@@ -1,5 +1,4 @@
 import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { CodeBlock } from './CodeBlock';
 
@@ -13,7 +12,6 @@ export function MarkdownContent({ content }: Props) {
   return (
     <div className="markdown-content">
       <ReactMarkdown
-        rehypePlugins={[rehypeRaw]}
         remarkPlugins={[remarkGfm]}
         components={{
           code({ className, children, ...props }) {
