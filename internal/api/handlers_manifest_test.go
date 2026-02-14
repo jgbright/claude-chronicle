@@ -419,3 +419,125 @@ func TestHandleDeleteEdit(t *testing.T) {
 		}
 	})
 }
+
+func TestHandlePatchMetadata(t *testing.T) {
+	t.Run("patching title preserves deleted", func(t *testing.T) {
+		tmpDir := setupHandlerTest(t)
+
+		// Pre-create a manifest with deleted=true
+		manifestDir := filepath.Join(tmpDir, ".claude-chronicle", "manifests")
+		if err := os.MkdirAll(manifestDir, 0755); err != nil {
+			t.Fatal(err)
+		}
+		m := manifest.Manifest{
+			Version:   1,
+			SessionID: "merge-test-1",
+			Metadata:  &manifest.Metadata{Title: "old title", Deleted: true},
+			Edits:     []manifest.Edit{},
+		}
+		data, _ := json.Marshal(m)
+		if err := os.WriteFile(filepath.Join(manifestDir, "merge-test-1.json"), data, 0644); err != nil {
+			t.Fatal(err)
+		}
+
+		// PATCH only the title
+		s := newTestServer()
+		req := httptest.NewRequest("PATCH", "/api/sessions/merge-test-1/manifest/metadata",
+			strings.NewReader(`{"title":"new title"}`))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+		s.ServeHTTP(w, req)
+
+		resp := w.Result()
+		body, _ := io.ReadAll(resp.Body)
+		if resp.StatusCode != http.StatusOK {
+			t.Fatalf("status = %d, want %d; body = %s", resp.StatusCode, http.StatusOK, body)
+		}
+
+		var result manifest.Manifest
+		if err := json.Unmarshal(body, &result); err != nil {
+			t.Fatalf("failed to unmarshal: %v", err)
+		}
+		if result.Metadata == nil {
+			t.Fatal("metadata is nil")
+		}
+		if result.Metadata.Title != "new title" {
+			t.Errorf("title = %q, want %q", result.Metadata.Title, "new title")
+		}
+		if !result.Metadata.Deleted {
+			t.Error("deleted should still be true after patching title")
+		}
+	})
+
+	t.Run("patching deleted preserves title", func(t *testing.T) {
+		tmpDir := setupHandlerTest(t)
+
+		manifestDir := filepath.Join(tmpDir, ".claude-chronicle", "manifests")
+		if err := os.MkdirAll(manifestDir, 0755); err != nil {
+			t.Fatal(err)
+		}
+		m := manifest.Manifest{
+			Version:   1,
+			SessionID: "merge-test-2",
+			Metadata:  &manifest.Metadata{Title: "keep this"},
+			Edits:     []manifest.Edit{},
+		}
+		data, _ := json.Marshal(m)
+		if err := os.WriteFile(filepath.Join(manifestDir, "merge-test-2.json"), data, 0644); err != nil {
+			t.Fatal(err)
+		}
+
+		// PATCH only deleted
+		s := newTestServer()
+		req := httptest.NewRequest("PATCH", "/api/sessions/merge-test-2/manifest/metadata",
+			strings.NewReader(`{"deleted":true}`))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+		s.ServeHTTP(w, req)
+
+		resp := w.Result()
+		body, _ := io.ReadAll(resp.Body)
+		if resp.StatusCode != http.StatusOK {
+			t.Fatalf("status = %d, want %d; body = %s", resp.StatusCode, http.StatusOK, body)
+		}
+
+		var result manifest.Manifest
+		if err := json.Unmarshal(body, &result); err != nil {
+			t.Fatalf("failed to unmarshal: %v", err)
+		}
+		if result.Metadata == nil {
+			t.Fatal("metadata is nil")
+		}
+		if result.Metadata.Title != "keep this" {
+			t.Errorf("title = %q, want %q", result.Metadata.Title, "keep this")
+		}
+		if !result.Metadata.Deleted {
+			t.Error("deleted should be true")
+		}
+	})
+
+	t.Run("creates new manifest when none exists", func(t *testing.T) {
+		setupHandlerTest(t)
+
+		s := newTestServer()
+		req := httptest.NewRequest("PATCH", "/api/sessions/new-meta-session/manifest/metadata",
+			strings.NewReader(`{"title":"brand new"}`))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+		s.ServeHTTP(w, req)
+
+		resp := w.Result()
+		body, _ := io.ReadAll(resp.Body)
+		if resp.StatusCode != http.StatusOK {
+			t.Fatalf("status = %d, want %d; body = %s", resp.StatusCode, http.StatusOK, body)
+		}
+
+		var result manifest.Manifest
+		if err := json.Unmarshal(body, &result); err != nil {
+			t.Fatalf("failed to unmarshal: %v", err)
+		}
+		if result.Metadata == nil || result.Metadata.Title != "brand new" {
+			t.Errorf("expected title %q, got %+v", "brand new", result.Metadata)
+		}
+	})
+}

@@ -228,7 +228,8 @@ func TestHandleExport(t *testing.T) {
 		sessionID := "export-manifest-1234-abcd"
 		createSessionFile(t, tmpDir, "test-project", sessionID, minimalJSONL)
 
-		// Create a manifest for this session
+		// Create a manifest for this session with a non-delete edit
+		// (delete edits are applied server-side and stripped from the export manifest)
 		manifestDir := filepath.Join(tmpDir, ".claude-chronicle", "manifests")
 		if err := os.MkdirAll(manifestDir, 0755); err != nil {
 			t.Fatal(err)
@@ -236,7 +237,9 @@ func TestHandleExport(t *testing.T) {
 		m := map[string]interface{}{
 			"version":   1,
 			"sessionId": sessionID,
-			"edits":     []map[string]string{{"type": "delete", "blockId": "b1"}},
+			"edits": []map[string]string{
+				{"type": "annotate", "afterBlockId": "b1", "content": "note", "id": "a1"},
+			},
 		}
 		data, _ := json.Marshal(m)
 		if err := os.WriteFile(filepath.Join(manifestDir, sessionID+".json"), data, 0644); err != nil {

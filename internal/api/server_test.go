@@ -16,7 +16,7 @@ func TestHandleSPA(t *testing.T) {
 		"assets/style.css":  {Data: []byte("body{}")},
 	}
 
-	s := NewServer(webFS, false, "")
+	s := NewServer(webFS, false, "", BuildInfo{})
 
 	t.Run("root serves index.html", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/", nil)
@@ -69,7 +69,7 @@ func TestHandleSPA(t *testing.T) {
 
 	t.Run("missing index.html returns 404", func(t *testing.T) {
 		emptyFS := fstest.MapFS{}
-		s2 := NewServer(emptyFS, false, "")
+		s2 := NewServer(emptyFS, false, "", BuildInfo{})
 
 		req := httptest.NewRequest("GET", "/unknown-path", nil)
 		w := httptest.NewRecorder()
@@ -84,7 +84,7 @@ func TestHandleSPA(t *testing.T) {
 
 func TestHandleDevProxy(t *testing.T) {
 	devURL := "http://localhost:5173"
-	s := NewServer(nil, true, devURL)
+	s := NewServer(nil, true, devURL, BuildInfo{})
 
 	t.Run("path is preserved", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/src/main.tsx", nil)
@@ -133,7 +133,7 @@ func TestServeHTTP(t *testing.T) {
 	webFS := fstest.MapFS{
 		"index.html": {Data: []byte("<html>Test</html>")},
 	}
-	s := NewServer(webFS, false, "")
+	s := NewServer(webFS, false, "", BuildInfo{})
 
 	t.Run("implements http.Handler", func(t *testing.T) {
 		// Verify that Server implements http.Handler by using it with httptest.Server

@@ -43,7 +43,7 @@ func (s *Server) handleExport(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	parsed, err := session.ParseFile(info.FilePath)
+	parsed, err := session.ParseFileWithCache(info.FilePath)
 	if err != nil {
 		log.Printf("Error parsing session: %v", err)
 		http.Error(w, "Failed to parse session", http.StatusInternalServerError)
@@ -56,6 +56,11 @@ func (s *Server) handleExport(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("Error loading manifest: %v", err)
 		// Continue without manifest
+	}
+
+	// Apply manifest title override before export
+	if m != nil && m.Metadata != nil && m.Metadata.Title != "" {
+		parsed.Info.Title = m.Metadata.Title
 	}
 
 	data := &export.ExportData{
