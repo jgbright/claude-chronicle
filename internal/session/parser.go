@@ -40,7 +40,7 @@ func ParseFileWithCache(path string) (*ParsedSession, error) {
 	parseCache.RLock()
 	if entry, ok := parseCache.entries[path]; ok && entry.mtime.Equal(mtime) {
 		parseCache.RUnlock()
-		return entry.session, nil
+		return cloneParsedSession(entry.session), nil
 	}
 	parseCache.RUnlock()
 
@@ -58,7 +58,75 @@ func ParseFileWithCache(path string) (*ParsedSession, error) {
 	parseCache.entries[path] = parseCacheEntry{mtime: mtime, session: session}
 	parseCache.Unlock()
 
-	return session, nil
+	return cloneParsedSession(session), nil
+}
+
+// cloneParsedSession returns a deep copy safe for per-request mutation.
+func cloneParsedSession(src *ParsedSession) *ParsedSession {
+	if src == nil {
+		return nil
+	}
+
+	out := &ParsedSession{
+		Info: src.Info,
+	}
+
+	if len(src.Messages) == 0 {
+		out.Messages = []Message{}
+		return out
+	}
+
+	out.Messages = make([]Message, len(src.Messages))
+	for i, msg := range src.Messages {
+		cloned := Message{
+			ID:          msg.ID,
+			Role:        msg.Role,
+			Timestamp:   msg.Timestamp,
+			TextContent: msg.TextContent,
+		}
+
+		if len(msg.Blocks) > 0 {
+			cloned.Blocks = make([]ContentBlock, len(msg.Blocks))
+			for j, block := range msg.Blocks {
+				blockCopy := block
+				if len(block.Input) > 0 {
+					blockCopy.Input = append(json.RawMessage(nil), block.Input...)
+				}
+				if len(block.Content) > 0 {
+					blockCopy.Content = append(json.RawMessage(nil), block.Content...)
+				}
+				cloned.Blocks[j] = blockCopy
+			}
+		}
+
+		if len(msg.ToolResults) > 0 {
+			cloned.ToolResults = make([]ToolResult, len(msg.ToolResults))
+			for j, tr := range msg.ToolResults {
+				trCopy := tr
+				if tr.Result != nil {
+					resultCopy := *tr.Result
+					if len(resultCopy.Filenames) > 0 {
+						resultCopy.Filenames = append([]string(nil), resultCopy.Filenames...)
+					}
+					if len(resultCopy.StructuredPatch) > 0 {
+						resultCopy.StructuredPatch = append([]PatchFile(nil), resultCopy.StructuredPatch...)
+					}
+					if len(resultCopy.Questions) > 0 {
+						resultCopy.Questions = append(json.RawMessage(nil), resultCopy.Questions...)
+					}
+					if len(resultCopy.Answers) > 0 {
+						resultCopy.Answers = append(json.RawMessage(nil), resultCopy.Answers...)
+					}
+					trCopy.Result = &resultCopy
+				}
+				cloned.ToolResults[j] = trCopy
+			}
+		}
+
+		out.Messages[i] = cloned
+	}
+
+	return out
 }
 
 // ParseFile reads a JSONL session file and returns merged, display-ready messages.
