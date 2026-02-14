@@ -19,12 +19,30 @@ const base = import.meta.env.BASE_URL;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="theme-color" content="#0f6fff" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
   </head>
   <body>
-    <slot />
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header" aria-label="Primary">
+      <div class="site-header-inner">
+        <a class="site-brand" href={`${base}`}>
+          <span class="site-brand-mark" aria-hidden="true">CC</span>
+          Claude Chronicle
+        </a>
+        <nav class="site-nav">
+          <a href="#showcase">Showcase</a>
+          <a href="#features">Features</a>
+          <a href="#quickstart">Quick Start</a>
+          <a href="https://github.com/jgbright/claude-chronicle">GitHub</a>
+        </nav>
+      </div>
+    </header>
+    <main id="main-content">
+      <slot />
+    </main>
   </body>
 </html>

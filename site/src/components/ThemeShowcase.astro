@@ -1,11 +1,25 @@
 ---
+import { existsSync } from 'node:fs';
+
 const base = import.meta.env.BASE_URL;
+const claudeScreenshotPath = new URL('../../public/screenshots/claude-hero.jpg', import.meta.url);
+const copilotScreenshotPath = new URL('../../public/screenshots/copilot-hero.jpg', import.meta.url);
+const hasClaudeScreenshot = existsSync(claudeScreenshotPath);
+const hasCopilotScreenshot = existsSync(copilotScreenshotPath);
 ---
 
-<section class="showcase">
-  <h2>Two Themes, One Tool</h2>
+<section id="showcase" class="showcase reveal">
+  <div class="section-header">
+    <p class="kicker">Showcase</p>
+    <h2>Two visual themes for one editing workflow</h2>
+    <p>
+      Export in Claude or Copilot style with syntax highlighting, markdown rendering,
+      tool traces, and session annotations.
+    </p>
+  </div>
+
   <div class="theme-grid">
-    <div>
+    <article>
       <div class="browser-frame">
         <div class="browser-bar">
           <span class="dot"></span>
@@ -13,15 +27,25 @@ const base = import.meta.env.BASE_URL;
           <span class="dot"></span>
           <span class="url">claude-chronicle serve</span>
         </div>
-        <img
-          src={`${base}screenshots/claude-hero.jpg`}
-          alt="Claude theme screenshot"
-          loading="lazy"
-        />
+        {
+          hasClaudeScreenshot ? (
+            <img
+              src={`${base}screenshots/claude-hero.jpg`}
+              alt="Claude theme screenshot"
+              loading="lazy"
+            />
+          ) : (
+            <div class="screenshot-placeholder" role="img" aria-label="Claude screenshot unavailable">
+              <p>Claude theme preview</p>
+              <span>Screenshot generated in CI</span>
+            </div>
+          )
+        }
       </div>
       <p class="theme-label">Claude Theme</p>
-    </div>
-    <div>
+    </article>
+
+    <article>
       <div class="browser-frame">
         <div class="browser-bar">
           <span class="dot"></span>
@@ -29,14 +53,23 @@ const base = import.meta.env.BASE_URL;
           <span class="dot"></span>
           <span class="url">claude-chronicle serve</span>
         </div>
-        <img
-          src={`${base}screenshots/copilot-hero.jpg`}
-          alt="Copilot theme screenshot"
-          loading="lazy"
-        />
+        {
+          hasCopilotScreenshot ? (
+            <img
+              src={`${base}screenshots/copilot-hero.jpg`}
+              alt="Copilot theme screenshot"
+              loading="lazy"
+            />
+          ) : (
+            <div class="screenshot-placeholder" role="img" aria-label="Copilot screenshot unavailable">
+              <p>Copilot theme preview</p>
+              <span>Screenshot generated in CI</span>
+            </div>
+          )
+        }
       </div>
       <p class="theme-label">Copilot Theme</p>
-    </div>
+    </article>
   </div>
 </section>
 
@@ -47,66 +80,106 @@ const base = import.meta.env.BASE_URL;
     padding: var(--section-padding);
   }
 
-  .showcase h2 {
-    text-align: center;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--color-text-bright);
-    margin-bottom: 2rem;
+  .section-header {
+    margin-bottom: 1.35rem;
+    max-width: 60ch;
+  }
+
+  .kicker {
+    color: var(--color-link);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+
+  .section-header h2 {
+    font-size: clamp(1.55rem, 3.8vw, 2.2rem);
+    line-height: 1.15;
+    margin-bottom: 0.55rem;
+  }
+
+  .section-header p {
+    color: var(--color-text-muted);
   }
 
   .theme-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.2rem;
   }
 
   .browser-frame {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: 10px;
+    border-radius: 14px;
     overflow: hidden;
+    box-shadow: var(--shadow-soft);
   }
 
   .browser-bar {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.6rem 1rem;
-    background: var(--color-border-muted);
+    gap: 0.45rem;
+    padding: 0.58rem 0.9rem;
     border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface-soft);
   }
 
   .dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: var(--color-border);
+    background: var(--color-border-strong);
   }
 
   .url {
-    flex: 1;
-    font-size: 0.75rem;
-    color: var(--color-text-muted);
     font-family: var(--font-mono);
-    margin-left: 0.5rem;
+    font-size: 0.74rem;
+    color: var(--color-text-faint);
+    margin-left: 0.4rem;
   }
 
   .browser-frame img {
-    display: block;
     width: 100%;
-    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+  }
+
+  .screenshot-placeholder {
+    aspect-ratio: 16 / 10;
+    width: 100%;
+    display: grid;
+    place-content: center;
+    background:
+      linear-gradient(145deg, rgba(15, 111, 255, 0.08), rgba(255, 139, 61, 0.08)),
+      var(--color-surface);
+    color: var(--color-text-muted);
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .screenshot-placeholder p {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 0.25rem;
+  }
+
+  .screenshot-placeholder span {
+    font-size: 0.86rem;
   }
 
   .theme-label {
-    text-align: center;
-    font-size: 0.9rem;
-    color: var(--color-text-muted);
     margin-top: 0.75rem;
-    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--color-text-faint);
+    text-align: center;
+    font-weight: 700;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 860px) {
     .theme-grid {
       grid-template-columns: 1fr;
     }
