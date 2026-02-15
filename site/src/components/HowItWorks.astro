@@ -1,0 +1,106 @@
+<section id="how-it-works" class="how-it-works reveal">
+  <div class="section-header">
+    <p class="kicker">Workflow</p>
+    <h2>From raw session logs to clean shareable output</h2>
+    <p>Chronicle follows one clear pipeline so you can move from transcript to artifact without touching source files.</p>
+  </div>
+
+  <div class="steps-grid">
+    <article class="step-card">
+      <p class="step-number">01</p>
+      <h3>Discover</h3>
+      <p>Automatically finds sessions in your local Claude projects and lets you filter by project or text.</p>
+    </article>
+    <article class="step-card">
+      <p class="step-number">02</p>
+      <h3>Curate</h3>
+      <p>Trim noise, collapse sections, annotate context, and refine structure in a non-destructive manifest layer.</p>
+    </article>
+    <article class="step-card">
+      <p class="step-number">03</p>
+      <h3>Export</h3>
+      <p>Generate a single portable HTML file with applied edits and path sanitization, ready to share or archive.</p>
+    </article>
+  </div>
+</section>
+
+<style>
+  .how-it-works {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--section-padding);
+  }
+
+  .section-header {
+    margin-bottom: 1.25rem;
+    max-width: 70ch;
+  }
+
+  .kicker {
+    color: var(--color-link);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+  }
+
+  .section-header h2 {
+    font-size: clamp(1.5rem, 3.7vw, 2.1rem);
+    line-height: 1.15;
+    margin-bottom: 0.45rem;
+  }
+
+  .section-header p {
+    color: var(--color-text-muted);
+  }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.95rem;
+  }
+
+  .step-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    box-shadow: var(--shadow-soft);
+    padding: 1rem;
+    transition: transform 170ms ease, box-shadow 170ms ease;
+  }
+
+  .step-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-strong);
+  }
+
+  .step-number {
+    display: inline-block;
+    border-radius: 999px;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface-soft);
+    color: var(--color-link);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    margin-bottom: 0.55rem;
+  }
+
+  .step-card h3 {
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .step-card p {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 980px) {
+    .steps-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
