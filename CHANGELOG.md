@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.3](https://github.com/jgbright/claude-chronicle/compare/v0.1.2...v0.1.3) (2026-02-15)
+
+
+### Bug Fixes
+
+* **ci:** avoid dirty git state in goreleaser release ([03583a6](https://github.com/jgbright/claude-chronicle/commit/03583a62cea9fa9709d5d764b00526418895f9ab))
+* trigger release after repairing goreleaser pipeline ([ec47096](https://github.com/jgbright/claude-chronicle/commit/ec47096a65a0ffecaa4a909e2bc64600b25509d0))
+* use true one-line streaming install for Windows docs ([d8436ab](https://github.com/jgbright/claude-chronicle/commit/d8436ab3781fb8384dcd70ea8932c1674dc38f44))
+
 ## [0.1.2](https://github.com/jgbright/claude-chronicle/compare/v0.1.1...v0.1.2) (2026-02-15)
 
 
