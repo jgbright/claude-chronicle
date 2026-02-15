@@ -1,4 +1,4 @@
-# Getting Started
+# Contributors
 
 This guide walks you through building, running, and developing Claude Chronicle.
 
@@ -55,6 +55,7 @@ go run ./cmd/chronicle serve -dev
 ```
 
 The `-dev` flag tells the Go server to proxy all frontend requests to the Vite dev server at `localhost:5173` instead of serving the embedded static files. API requests (`/api/*`) are handled by Go as usual.
+If `:8080` is busy, Chronicle may auto-fallback to the next port. Open the backend URL it prints (for example, `http://localhost:8081`).
 
 This means you get:
 - **Hot reload** for all frontend changes (no rebuild needed)
@@ -180,7 +181,7 @@ If `-o` is omitted, the output file defaults to `chronicle-<id>.html`.
 | Problem | Cause | Fix |
 |---------|-------|-----|
 | `cannot find package` or `pattern web/dist/*: no matching files found` during `go build` or `go test` | The `embed.go` directives require built web assets | Run `make web-build` before `go build` or `go test ./...` |
-| `bind: address already in use` on serve | In `-strict` mode, Chronicle does not auto-fallback to the next port | Omit `-strict` to allow automatic fallback (up to 10 ports), or pick a free port with `-addr` |
+| `bind: address already in use` on serve | Port is busy | Omit `-strict` to allow automatic fallback (up to 10 ports), or pick a free port with `-addr` |
 | `Cannot find module` or missing dependencies in `web/` | npm packages not installed | Run `cd web && npm install` |
 | Vite dev server not reachable in `-dev` mode | Terminal 1 is not running or is on a different port | Start `cd web && npm run dev` in another terminal; use `-dev-url` if the port differs |
 | `go test ./...` fails but individual packages pass | Embed errors from the root package | Run `make web-build` first, then `go test ./...` works |

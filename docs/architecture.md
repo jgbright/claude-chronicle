@@ -165,7 +165,7 @@ The `useTheme` hook manages theme state, sets the `data-theme` attribute on `doc
 
 `manifest/sessionTransform.ts` exports `applyManifest()`, which takes a `Message[]` and an `EditManifest | null` and returns `TransformedMessage[]`. `TransformedMessage` extends `Message` with manifest-derived flags: `isCollapsed`, `collapseSummary`, `collapsedCount`, `isAnnotation`, and `isDeleted`.
 
-The function collects all edits into lookup maps (deleted set, collapsed map, annotations map, textEdits map) in a single pass, then iterates messages to produce the transformed output. This runs in the browser for both the live SPA and static exports. The Go backend stores and serves manifests but never applies them -- see [DATA-FLOW.md](DATA-FLOW.md) for the full pipeline.
+The function collects all edits into lookup maps (deleted set, collapsed map, annotations map, textEdits map) in a single pass, then iterates messages to produce the transformed output. This runs in the browser for both the live SPA and static exports. The Go backend stores and serves manifests but never applies them -- see [data-flow.md](data-flow.md) for the full pipeline.
 
 Other utility modules in `shared/`:
 - `formatUtils.ts` -- Date, time, and file size formatting helpers
@@ -224,11 +224,11 @@ Exported files are fully self-contained: all JS, CSS, and session data are inlin
 
 ## Key Design Decisions
 
-1. **Client-side-only manifest application** -- The Go backend stores manifests but never applies them. Both the SPA and export template run `applyManifest()` in the browser. This keeps the backend simple and ensures WYSIWYG parity between live preview and exported output. See [DATA-FLOW.md](DATA-FLOW.md) for the full data flow.
+1. **Client-side-only manifest application** -- The Go backend stores manifests but never applies them. Both the SPA and export template run `applyManifest()` in the browser. This keeps the backend simple and ensures WYSIWYG parity between live preview and exported output. See [data-flow.md](data-flow.md) for the full data flow.
 
 2. **Never modify `~/.claude/`** -- Chronicle treats Claude Code's session files as read-only. All Chronicle-specific data (manifests) lives under `~/.claude-chronicle/`. This prevents any risk of corrupting the source data.
 
-3. **Embed-dependent build** -- The Go binary embeds pre-built web assets at compile time. This means `web/dist/` and `web/dist-export/export.html` must exist before `go build`. The `Makefile` handles this ordering automatically. See [FAQ.md](FAQ.md) for troubleshooting embed errors.
+3. **Embed-dependent build** -- The Go binary embeds pre-built web assets at compile time. This means `web/dist/` and `web/dist-export/export.html` must exist before `go build`. The `Makefile` handles this ordering automatically. See [troubleshooting.md](troubleshooting.md) for troubleshooting embed errors.
 
 4. **Two separate Vite builds** -- The SPA and export template have fundamentally different requirements. The SPA is a standard multi-file build with code splitting. The export template uses `vite-plugin-singlefile` to inline everything into one HTML file, since exported sessions must work offline with no external dependencies.
 

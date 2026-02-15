@@ -25,58 +25,12 @@ Think of it like a Loom recording for your AI sessions. You pick a session, trim
 
 ## Quick Start
 
-### Install
+Install and launch the app in under a minute.
 
-Download a pre-built binary from the [Releases](https://github.com/jgbright/claude-chronicle/releases) page.
-If the latest release does not include binary assets yet, use the Go-based install option below.
+1. Install (choose one):
 
-Linux (amd64):
-
-```bash
-curl -fL https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_linux_amd64.tar.gz | tar xz
-./claude-chronicle version
-```
-
-Linux (arm64):
-
-```bash
-curl -fL https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_linux_arm64.tar.gz | tar xz
-./claude-chronicle version
-```
-
-macOS (Apple Silicon / arm64):
-
-```bash
-curl -fL https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_darwin_arm64.tar.gz | tar xz
-./claude-chronicle version
-```
-
-macOS (Intel / amd64):
-
-```bash
-curl -fL https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_darwin_amd64.tar.gz | tar xz
-./claude-chronicle version
-```
-
-Windows PowerShell (amd64):
-
-```powershell
-curl.exe -fL https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_windows_amd64.zip | tar -x -f -
-.\claude-chronicle.exe version
-```
-
-Windows PowerShell (arm64):
-
-```powershell
-curl.exe -fL https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_windows_arm64.zip | tar -x -f -
-.\claude-chronicle.exe version
-```
-
-These PowerShell commands stream the archive directly to `tar` so no temporary zip file is written to disk.
-
-If release binaries are unavailable, use one of the Go-based options below.
-
-Alternative (separate option): auto-detect OS/arch on Linux/macOS:
+<details>
+<summary>Release binary (Linux/macOS)</summary>
 
 ```bash
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
@@ -87,46 +41,47 @@ curl -fL "https://github.com/jgbright/claude-chronicle/releases/latest/download/
 ./claude-chronicle version
 ```
 
-### Run directly with Go (no manual release download)
+</details>
 
-Install the CLI from source:
+<details>
+<summary>Release binary (Windows PowerShell)</summary>
+
+```powershell
+$arch = if ($env:PROCESSOR_ARCHITECTURE -eq "ARM64") { "arm64" } else { "amd64" }
+curl.exe -fL "https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_windows_$arch.zip" | tar -x -f -
+.\claude-chronicle.exe version
+```
+
+</details>
+
+<details>
+<summary>Go install (cross-platform)</summary>
 
 ```bash
 go install github.com/jgbright/claude-chronicle/cmd/chronicle@latest
 chronicle version
 ```
 
-Run once without installing:
+</details>
+
+2. Run:
 
 ```bash
-go run github.com/jgbright/claude-chronicle/cmd/chronicle@latest serve
-```
-
-### Build from source
-
-Requires [Go](https://go.dev/) 1.25+ and [Node.js](https://nodejs.org/) 18+.
-
-```bash
-make build
-```
-
-This installs web dependencies, builds the React SPA and export template, then compiles everything into a single `claude-chronicle` binary.
-
-### Run
-
-```bash
-# Launch the web viewer (opens browser automatically)
+# Release binary
 ./claude-chronicle serve
 
-# List discovered sessions
-./claude-chronicle list
-
-# Export a session to a standalone HTML file
-./claude-chronicle export -session <id> -theme copilot -o session.html
-
-# Export any JSONL file directly
-./claude-chronicle export -file path/to/session.jsonl -o session.html
+# Go install
+chronicle serve
 ```
+
+3. Optional next commands:
+
+```bash
+./claude-chronicle list
+./claude-chronicle export -session <id> -theme copilot -o session.html
+```
+
+Need source builds, tests, and contributor workflow? See [Contributors](docs/contributors.md).
 
 ## How the Pipelines Work
 
@@ -257,10 +212,10 @@ web/src/
 
 See [docs/](docs/) for detailed guides:
 
-- [**Getting Started**](docs/GETTING-STARTED.md) — build, dev workflow, testing, CLI reference
-- [**Architecture**](docs/ARCHITECTURE.md) — package relationships, key types, design decisions
-- [**Data Flow**](docs/DATA-FLOW.md) — end-to-end trace from JSONL to rendered pixels
-- [**FAQ**](docs/FAQ.md) — common questions for new contributors
+- [**Contributors**](docs/contributors.md) — source build, dev workflow, testing, CLI reference
+- [**Architecture**](docs/architecture.md) — package relationships, key types, design decisions
+- [**Data Flow**](docs/data-flow.md) — end-to-end trace from JSONL to rendered pixels
+- [**Troubleshooting**](docs/troubleshooting.md) — non-obvious troubleshooting and edge cases
 
 ## Development
 
@@ -274,7 +229,8 @@ cd web && npm run dev
 go run ./cmd/chronicle serve -dev
 ```
 
-The Go server runs on `:8080` and proxies frontend requests to Vite on `:5173`. See [Getting Started](docs/GETTING-STARTED.md) for the full development guide.
+The Go server runs on `:8080` and proxies frontend requests to Vite on `:5173`. See [Contributors](docs/contributors.md) for the full development guide.
+In dev mode, Go reverse-proxies Vite so the browser stays on the backend origin and relative `/api` calls always target the same backend instance.
 
 ## AI Agent Environments
 
