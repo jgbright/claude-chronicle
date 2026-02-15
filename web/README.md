@@ -21,6 +21,7 @@ npm run lint
 
 Both outputs are required by Go embed directives in `embed.go` for full backend builds/tests.
 CI also uploads both builds to Codecov Bundle Analysis and enforces bundle budgets via `npm run check:bundle-budgets`.
+Budget thresholds live in `web/bundle-budgets.json` for easier tuning.
 
 ## Main source layout
 

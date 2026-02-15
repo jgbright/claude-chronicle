@@ -5,16 +5,9 @@ import path from 'node:path';
 const rootDir = process.cwd();
 const distAssetsDir = path.join(rootDir, 'dist', 'assets');
 const exportHtmlPath = path.join(rootDir, 'dist-export', 'export.html');
+const budgetConfigPath = path.join(rootDir, 'bundle-budgets.json');
 
 const KB = 1024;
-const budgets = {
-  spaJsRaw: 530 * KB,
-  spaJsGzip: 170 * KB,
-  spaCssRaw: 65 * KB,
-  spaCssGzip: 12 * KB,
-  exportHtmlRaw: 560 * KB,
-  exportHtmlGzip: 170 * KB,
-};
 
 function formatKB(bytes) {
   return `${(bytes / KB).toFixed(2)} kB`;
@@ -24,6 +17,35 @@ function ensureFileExists(filePath) {
   if (!fs.existsSync(filePath)) {
     throw new Error(`Expected file to exist: ${filePath}`);
   }
+}
+
+function readBudgetConfig(configPath) {
+  ensureFileExists(configPath);
+  const raw = fs.readFileSync(configPath, 'utf8');
+  const config = JSON.parse(raw);
+  const requiredKeys = [
+    'spaJsRawKB',
+    'spaJsGzipKB',
+    'spaCssRawKB',
+    'spaCssGzipKB',
+    'exportHtmlRawKB',
+    'exportHtmlGzipKB',
+  ];
+
+  for (const key of requiredKeys) {
+    if (typeof config[key] !== 'number' || config[key] <= 0) {
+      throw new Error(`Invalid or missing "${key}" in ${configPath}`);
+    }
+  }
+
+  return {
+    spaJsRaw: config.spaJsRawKB * KB,
+    spaJsGzip: config.spaJsGzipKB * KB,
+    spaCssRaw: config.spaCssRawKB * KB,
+    spaCssGzip: config.spaCssGzipKB * KB,
+    exportHtmlRaw: config.exportHtmlRawKB * KB,
+    exportHtmlGzip: config.exportHtmlGzipKB * KB,
+  };
 }
 
 function getAssetTotals(assetsDir) {
@@ -62,6 +84,7 @@ function checkBudget(measurements) {
 
 ensureFileExists(distAssetsDir);
 ensureFileExists(exportHtmlPath);
+const budgets = readBudgetConfig(budgetConfigPath);
 
 const spa = getAssetTotals(distAssetsDir);
 const exportHtml = fs.readFileSync(exportHtmlPath);
