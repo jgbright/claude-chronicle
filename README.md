@@ -7,9 +7,9 @@
 
 Turn your [Claude Code](https://claude.ai/code) sessions into shareable walkthroughs.
 
-Working with Claude Code is a collaborative process — you prompt, steer, correct course, and build something together. But when the session is over, all that context lives in a raw log that's hard for anyone else to follow. Chronicle lets you turn those sessions into something you can share: a narrated, curated record of what happened and why.
+Working with Claude Code is a collaborative process: you prompt, steer, correct course, and build something together. But when the session is over, all that context lives in a raw log that's hard for anyone else to follow. Chronicle lets you turn those sessions into something you can share: a narrated, curated record of what happened and why.
 
-Think of it like a Loom recording for your AI sessions. You pick a session, trim the noise, collapse the parts that don't matter, add annotations explaining your thinking — why you prompted a certain way, what you were steering toward, what you'd do differently — and export a single HTML file you can send to anyone.
+Think of it like a Loom recording for your AI sessions. You pick a session, trim the noise, collapse the parts that don't matter, add annotations explaining your thinking (why you prompted a certain way, what you were steering toward, what you'd do differently), and export a single HTML file you can send to anyone.
 
 **[Live Demo](https://jgbright.github.io/claude-chronicle/demo/)** — see an exported session in action.
 
@@ -130,7 +130,7 @@ This installs web dependencies, builds the React SPA and export template, then c
 
 ## How the Pipelines Work
 
-Claude Chronicle has several interesting pipelines — the export pipeline that produces self-contained HTML files, the JSONL parsing pipeline that handles Claude Code's quirky data format, and a CI/CD chain that automates everything from preview deployments to cross-platform releases.
+Claude Chronicle has several interesting pipelines: the export pipeline that produces self-contained HTML files, the JSONL parsing pipeline that handles Claude Code's quirky data format, and a CI/CD chain that automates everything from preview deployments to cross-platform releases.
 
 ### The Export Pipeline
 
@@ -142,9 +142,9 @@ The headline feature: export any session as a single HTML file that works offlin
 <script>window.__CHRONICLE_DATA__={};</script>
 ```
 
-At this point the template is a fully functional React app — it just has no data to render.
+At this point the template is a fully functional React app, but it has no data to render.
 
-**Stage 2 — Sanitize and inject the data.** When you run `chronicle export`, the Go engine reads the JSONL session, parses and merges the records, loads any curation manifest, and runs the data through a three-stage PII sanitization pipeline: (1) manifest delete edits are applied server-side to physically remove deleted content, (2) sensitive metadata like `FilePath` and `ProjectDir` are stripped from session info, and (3) home directory paths (`C:\Users\name\`, `/home/name/`) are normalized to `~/` across all message content, tool results, and structured patches. The sanitized data is bundled into a JSON payload, then injected via string replacement — swapping the empty `{}` with the real data:
+**Stage 2 — Sanitize and inject the data.** When you run `chronicle export`, the Go engine reads the JSONL session, parses and merges the records, loads any curation manifest, and runs the data through a three-stage PII sanitization pipeline: (1) manifest delete edits are applied server-side to physically remove deleted content, (2) sensitive metadata like `FilePath` and `ProjectDir` are stripped from session info, and (3) home directory paths (`C:\Users\name\`, `/home/name/`) are normalized to `~/` across all message content, tool results, and structured patches. The sanitized data is bundled into a JSON payload, then injected via string replacement, swapping the empty `{}` with the real data:
 
 ```go
 html = strings.Replace(html,
@@ -154,9 +154,9 @@ html = strings.Replace(html,
 
 The template becomes a data-carrying document. Same HTML, same React code, but now with a complete session embedded.
 
-**Stage 3 — Open in a browser.** The exported HTML file reads `window.__CHRONICLE_DATA__` at startup and renders the session using the same React components as the live app. Manifest edits (deletions, collapses, annotations) are applied client-side — the exact same `applyManifest()` function runs in both the live viewer and the export. What you see in the editor is what you get in the export.
+**Stage 3 — Open in a browser.** The exported HTML file reads `window.__CHRONICLE_DATA__` at startup and renders the session using the same React components as the live app. Manifest edits (deletions, collapses, annotations) are applied client-side. The exact same `applyManifest()` function runs in both the live viewer and the export. What you see in the editor is what you get in the export.
 
-The result is a fully portable HTML file, typically 200-500 KB, that renders a complete Claude Code conversation with syntax highlighting, collapsible tool calls, and themed styling. No server, no dependencies — just open the file.
+The result is a fully portable HTML file, typically 200-500 KB, that renders a complete Claude Code conversation with syntax highlighting, collapsible tool calls, and themed styling. No server, no dependencies; just open the file.
 
 ### The JSONL Parsing Pipeline
 
@@ -178,13 +178,13 @@ if err := json.Unmarshal(content, &blocks); err == nil {
 }
 ```
 
-**Streamed assistant records.** A single assistant response can span multiple JSONL records — one for thinking, one for text, one for a tool call. Records sharing the same `message.id` are merged into a single message with all content blocks combined. The parser uses a map to track which message ID maps to which position in the output slice, appending new blocks as they arrive.
+**Streamed assistant records.** A single assistant response can span multiple JSONL records: one for thinking, one for text, and one for a tool call. Records sharing the same `message.id` are merged into a single message with all content blocks combined. The parser uses a map to track which message ID maps to which position in the output slice, appending new blocks as they arrive.
 
 **Filtering.** Meta records, progress events, system commands, and sidechain messages are filtered out before merging, leaving a clean conversation ready for rendering.
 
 ### Non-Destructive Editing
 
-All curation happens through a manifest system. Manifests are JSON files stored in `~/.claude-chronicle/manifests/` — Chronicle never touches Claude's data in `~/.claude/`. Five edit types are supported:
+All curation happens through a manifest system. Manifests are JSON files stored in `~/.claude-chronicle/manifests/`, and Chronicle never touches Claude's data in `~/.claude/`. Five edit types are supported:
 
 | Edit | What it does |
 |------|-------------|
@@ -194,7 +194,7 @@ All curation happens through a manifest system. Manifests are JSON files stored 
 | **editText** | Replace a message's text content |
 | **reorder** | Move a message to a different position |
 
-A deliberate design choice: the Go backend only stores manifests — it does not apply them for the live SPA. The same `applyManifest()` function in `sessionTransform.ts` runs client-side in both the live viewer and exported HTML files. The one exception is during export: `SanitizeForExport()` applies delete edits server-side to physically remove deleted content from the exported HTML, ensuring deleted messages can't be recovered even via browser dev tools.
+A deliberate design choice: the Go backend only stores manifests; it does not apply them for the live SPA. The same `applyManifest()` function in `sessionTransform.ts` runs client-side in both the live viewer and exported HTML files. The one exception is during export: `SanitizeForExport()` applies delete edits server-side to physically remove deleted content from the exported HTML, ensuring deleted messages can't be recovered even via browser dev tools.
 
 ### CI/CD: From Push to Release
 
@@ -212,11 +212,11 @@ All files persist across deployments (`keep_files: true`), so the site accumulat
 
 #### Release Please — automatic versioning
 
-The [release-please workflow](.github/workflows/release-please.yml) scans every push to `main` for [conventional commit](https://www.conventionalcommits.org/) prefixes. When it finds `feat:` or `fix:` commits, it opens (or updates) a release PR that bumps the version and generates a changelog. The PR stays open and accumulates changes until you merge it — that's the only human action in the release process.
+The [release-please workflow](.github/workflows/release-please.yml) scans every push to `main` for [conventional commit](https://www.conventionalcommits.org/) prefixes. When it finds `feat:` or `fix:` commits, it opens (or updates) a release PR that bumps the version and generates a changelog. The PR stays open and accumulates changes until you merge it; that's the only human action in the release process.
 
 #### GoReleaser — cross-platform binaries
 
-Merging the release PR creates a version tag, which triggers the GoReleaser job chained in the same [release-please workflow](.github/workflows/release-please.yml). GoReleaser builds the full pipeline — web assets, Go binary — for six targets:
+Merging the release PR creates a version tag, which triggers the GoReleaser job chained in the same [release-please workflow](.github/workflows/release-please.yml). GoReleaser builds the full pipeline (web assets and Go binary) for six targets:
 
 | OS | Architectures |
 |----|--------------|
@@ -289,7 +289,7 @@ To use it in Codex:
 3. **Setup script > Manual**: `bash .codex/setup-cloud-container.sh`
 4. **Maintenance script > Manual**: `bash .codex/maintain-cloud-container.sh`
 
-The setup script runs once when a new container is created (installs Go, Node deps, builds web assets). The maintenance script runs when a cached container is resumed on a new branch — it re-installs dependencies and rebuilds the frontend without reinstalling Go.
+The setup script runs once when a new container is created (installs Go, Node deps, builds web assets). The maintenance script runs when a cached container is resumed on a new branch; it re-installs dependencies and rebuilds the frontend without reinstalling Go.
 
 ## License
 

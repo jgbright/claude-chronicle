@@ -117,6 +117,7 @@ Conventional commit prefixes are required. release-please parses them to auto-ge
 
 ## Key Patterns
 
+- **Em dash style in docs**: Use em dashes only for label-style formatting (`Label — description`), such as section labels or feature bullets. Do not use em dashes as parenthetical punctuation inside running prose; use commas, parentheses, colons, or semicolons instead.
 - **JSONL parsing quirk**: `content` field in user records can be either a plain string or a `[]ContentBlock` array. Parser handles both via `json.RawMessage`.
 - **Project name decoding**: Directory names like `D--repos-claude-chronicle` are decoded back to paths (`D:/repos/claude-chronicle`) in `discovery.go`.
 - **Cross-platform**: Uses `USERPROFILE` on Windows, `HOME` on Unix for locating `~/.claude/`.
