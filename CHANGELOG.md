@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.5](https://github.com/jgbright/claude-chronicle/compare/v0.1.4...v0.1.5) (2026-02-15)
+
+
+### Bug Fixes
+
+* **ci:** stabilize goreleaser demo artifact publishing ([665dc26](https://github.com/jgbright/claude-chronicle/commit/665dc26e13aea9510fefa5a2d2d1f0e5a13fad2a))
+* clarify Windows install note wording ([b0d6844](https://github.com/jgbright/claude-chronicle/commit/b0d684431443824e3fa400a028ab177e22380c5e))
+
 ## [0.1.4](https://github.com/jgbright/claude-chronicle/compare/v0.1.3...v0.1.4) (2026-02-15)
 
 
