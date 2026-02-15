@@ -9,6 +9,7 @@ vi.mock('./session/useProjects');
 vi.mock('./manifest/useManifest');
 vi.mock('./themes/useTheme');
 vi.mock('./export/api');
+vi.mock('./manifest/api');
 vi.mock('./hooks/useDeferredLoading', () => ({
   useDeferredLoading: (value: boolean) => value,
 }));
@@ -20,10 +21,12 @@ import { useProjects } from './session/useProjects';
 import { useManifest } from './manifest/useManifest';
 import { useTheme } from './themes/useTheme';
 import { exportSession } from './export/api';
+import { updateMetadata } from './manifest/api';
 import { createParsedSession, createSessionInfo } from './test/factories';
 
 describe('App', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     vi.mocked(useTheme).mockReturnValue({ theme: 'claude', setTheme: vi.fn() });
     vi.mocked(useSessionList).mockReturnValue({ sessions: [], loading: false, error: null, refresh: vi.fn(), isSearching: false });
     vi.mocked(useSessionData).mockReturnValue({ session: null, initialManifest: null, loading: false, error: null, refresh: vi.fn(), patchTitle: vi.fn() });
@@ -41,6 +44,7 @@ describe('App', () => {
       updateTitle: vi.fn(),
       saveState: 'idle',
     });
+    vi.mocked(updateMetadata).mockResolvedValue({ version: 1, sessionId: 's1', edits: [] });
   });
 
   it('shows loading state for session list', () => {
@@ -205,5 +209,27 @@ describe('App', () => {
 
     // Should show a toast with failure message instead of alert
     expect(screen.getByText('Export failed')).toBeInTheDocument();
+  });
+
+  it('right-click Rename updates session title metadata', async () => {
+    const user = userEvent.setup();
+    const sessions = [
+      createSessionInfo({ id: 'sess-rename', projectName: 'Rename Project', title: 'Old Title' }),
+    ];
+    const promptSpy = vi.spyOn(window, 'prompt').mockReturnValue('New Title');
+    const refresh = vi.fn();
+    vi.mocked(useSessionList).mockReturnValue({ sessions, loading: false, error: null, refresh, isSearching: false });
+
+    render(<App />);
+
+    await user.click(screen.getByTitle('Session actions'));
+    await user.click(screen.getByText('Rename'));
+
+    expect(promptSpy).toHaveBeenCalledWith('Rename session', 'Old Title');
+    expect(vi.mocked(updateMetadata)).toHaveBeenCalledWith('sess-rename', { title: 'New Title' });
+    expect(refresh).toHaveBeenCalled();
+    expect(screen.getByText('Session renamed')).toBeInTheDocument();
+
+    promptSpy.mockRestore();
   });
 });

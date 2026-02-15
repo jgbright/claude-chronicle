@@ -108,6 +108,8 @@ func cmdServe(args []string) {
 		Branch:  branch,
 	})
 
+	startSessionWarmup()
+
 	// Start filesystem watcher for real-time updates
 	if err := server.StartWatching(session.ClaudeProjectsDir()); err != nil {
 		log.Printf("Warning: filesystem watching unavailable: %v", err)
@@ -126,6 +128,19 @@ func cmdServe(args []string) {
 	if err := server.Serve(ln); err != nil {
 		log.Fatalf("Server error: %v", err)
 	}
+}
+
+// startSessionWarmup primes discovery cache so first UI load is less likely
+// to block on a full filesystem scan.
+func startSessionWarmup() {
+	go func() {
+		start := time.Now()
+		if _, err := session.DiscoverSessions(); err != nil {
+			log.Printf("Session warm-up skipped: %v", err)
+			return
+		}
+		log.Printf("Session warm-up completed in %s", time.Since(start).Round(time.Millisecond))
+	}()
 }
 
 // parsePort extracts the numeric port from an address string like ":8080" or "localhost:8080".

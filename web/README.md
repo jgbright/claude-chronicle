@@ -14,6 +14,19 @@ npm test
 npm run lint
 ```
 
+## Dev API target
+
+Standard dev flow is to open the app through the Go server (`http://localhost:<backend-port>`), which reverse-proxies Vite while keeping the browser origin on the backend.
+In that flow, frontend API calls stay relative (`/api/*`) and always hit the same backend instance.
+
+If you want to pin a specific backend URL, set `VITE_API_TARGET` before starting Vite:
+
+```bash
+# PowerShell
+$env:VITE_API_TARGET="http://localhost:8081"
+npm run dev
+```
+
 ## Build outputs
 
 - `npm run build` writes the SPA bundle to `web/dist/`

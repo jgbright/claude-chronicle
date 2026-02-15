@@ -4,7 +4,7 @@ import { useProjects } from '../session/useProjects';
 import { useSessionData } from '../session/useSessionData';
 import { useSSE } from '../session/useSSE';
 import { useManifest } from '../manifest/useManifest';
-import { deleteSession, restoreSession } from '../manifest/api';
+import { deleteSession, restoreSession, updateMetadata } from '../manifest/api';
 import { useTheme } from '../themes/useTheme';
 import { exportSession } from '../export/api';
 import { useDeferredLoading } from '../hooks/useDeferredLoading';
@@ -116,10 +116,22 @@ export default function App() {
     }
   }, [selectedId, theme, showToast]);
 
-  const handleRenameSession = useCallback((id: string) => {
-    setSelectedId(id);
-    // Title edit is handled by clicking the title in SessionViewer
-  }, []);
+  const handleRenameSession = useCallback(async (id: string) => {
+    const target = sessions.find((s) => s.id === id);
+    const currentTitle = target?.title || target?.projectName || '';
+    const input = window.prompt('Rename session', currentTitle);
+    if (input === null) return;
+
+    const title = input.trim();
+    try {
+      await updateMetadata(id, { title });
+      if (id === selectedId) patchTitle(title);
+      refreshSessions();
+      showToast(title ? 'Session renamed' : 'Session title cleared');
+    } catch {
+      showToast('Rename failed');
+    }
+  }, [sessions, selectedId, patchTitle, refreshSessions, showToast]);
 
   return (
     <ThemeComponentProvider value={themeComponents}>

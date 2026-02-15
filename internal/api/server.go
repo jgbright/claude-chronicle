@@ -5,6 +5,8 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"strings"
 
 	"github.com/jgbright/claude-chronicle/internal/session"
@@ -25,6 +27,7 @@ type Server struct {
 	webFS     fs.FS
 	devMode   bool
 	devURL    string
+	devProxy  *httputil.ReverseProxy
 	hub       *Hub
 	watcher   *watcher.Watcher
 	buildInfo BuildInfo
@@ -41,6 +44,9 @@ func NewServer(webFS fs.FS, devMode bool, devURL string, buildInfo BuildInfo) *S
 		devURL:    devURL,
 		hub:       newHub(),
 		buildInfo: buildInfo,
+	}
+	if devMode {
+		s.devProxy = newDevReverseProxy(devURL)
 	}
 	s.registerRoutes()
 	return s
@@ -122,13 +128,21 @@ func (s *Server) handleSPA(w http.ResponseWriter, r *http.Request) {
 
 // handleDevProxy proxies requests to the Vite dev server.
 func (s *Server) handleDevProxy(w http.ResponseWriter, r *http.Request) {
-	target := s.devURL + r.URL.Path
-	if r.URL.RawQuery != "" {
-		target += "?" + r.URL.RawQuery
+	if s.devProxy == nil {
+		http.Error(w, "Invalid dev proxy configuration", http.StatusInternalServerError)
+		return
+	}
+	log.Printf("dev proxy: %s -> %s", r.URL.Path, s.devURL)
+	s.devProxy.ServeHTTP(w, r)
+}
+
+func newDevReverseProxy(rawTarget string) *httputil.ReverseProxy {
+	target, err := url.Parse(rawTarget)
+	if err != nil || target.Scheme == "" || target.Host == "" {
+		return nil
 	}
 
-	log.Printf("dev proxy: %s -> %s", r.URL.Path, target)
-	http.Redirect(w, r, target, http.StatusTemporaryRedirect)
+	return httputil.NewSingleHostReverseProxy(target)
 }
 
 // StartWatching begins filesystem monitoring and forwards events to SSE clients.

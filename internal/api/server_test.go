@@ -83,8 +83,14 @@ func TestHandleSPA(t *testing.T) {
 }
 
 func TestHandleDevProxy(t *testing.T) {
-	devURL := "http://localhost:5173"
-	s := NewServer(nil, true, devURL, BuildInfo{})
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Upstream-Path", r.URL.Path)
+		w.Header().Set("X-Upstream-Query", r.URL.RawQuery)
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	defer upstream.Close()
+
+	s := NewServer(nil, true, upstream.URL, BuildInfo{})
 
 	t.Run("path is preserved", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/src/main.tsx", nil)
@@ -92,12 +98,12 @@ func TestHandleDevProxy(t *testing.T) {
 		s.ServeHTTP(w, req)
 
 		resp := w.Result()
-		if resp.StatusCode != http.StatusTemporaryRedirect {
-			t.Errorf("status = %d, want %d", resp.StatusCode, http.StatusTemporaryRedirect)
+		if resp.StatusCode != http.StatusNoContent {
+			t.Errorf("status = %d, want %d", resp.StatusCode, http.StatusNoContent)
 		}
-		loc := resp.Header.Get("Location")
-		if loc != "http://localhost:5173/src/main.tsx" {
-			t.Errorf("Location = %q, want %q", loc, "http://localhost:5173/src/main.tsx")
+		gotPath := resp.Header.Get("X-Upstream-Path")
+		if gotPath != "/src/main.tsx" {
+			t.Errorf("X-Upstream-Path = %q, want %q", gotPath, "/src/main.tsx")
 		}
 	})
 
@@ -107,9 +113,16 @@ func TestHandleDevProxy(t *testing.T) {
 		s.ServeHTTP(w, req)
 
 		resp := w.Result()
-		loc := resp.Header.Get("Location")
-		if loc != "http://localhost:5173/api/test?foo=bar&baz=1" {
-			t.Errorf("Location = %q, want %q", loc, "http://localhost:5173/api/test?foo=bar&baz=1")
+		if resp.StatusCode != http.StatusNoContent {
+			t.Errorf("status = %d, want %d", resp.StatusCode, http.StatusNoContent)
+		}
+		gotPath := resp.Header.Get("X-Upstream-Path")
+		if gotPath != "/api/test" {
+			t.Errorf("X-Upstream-Path = %q, want %q", gotPath, "/api/test")
+		}
+		gotQuery := resp.Header.Get("X-Upstream-Query")
+		if gotQuery != "foo=bar&baz=1" && gotQuery != "baz=1&foo=bar" {
+			t.Errorf("X-Upstream-Query = %q, want foo=bar&baz=1 (order-insensitive)", gotQuery)
 		}
 	})
 
@@ -119,12 +132,12 @@ func TestHandleDevProxy(t *testing.T) {
 		s.ServeHTTP(w, req)
 
 		resp := w.Result()
-		if resp.StatusCode != http.StatusTemporaryRedirect {
-			t.Errorf("status = %d, want %d", resp.StatusCode, http.StatusTemporaryRedirect)
+		if resp.StatusCode != http.StatusNoContent {
+			t.Errorf("status = %d, want %d", resp.StatusCode, http.StatusNoContent)
 		}
-		loc := resp.Header.Get("Location")
-		if loc != "http://localhost:5173/" {
-			t.Errorf("Location = %q, want %q", loc, "http://localhost:5173/")
+		gotPath := resp.Header.Get("X-Upstream-Path")
+		if gotPath != "/" {
+			t.Errorf("X-Upstream-Path = %q, want %q", gotPath, "/")
 		}
 	})
 }
