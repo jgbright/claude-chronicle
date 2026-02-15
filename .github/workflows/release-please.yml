@@ -52,7 +52,7 @@ jobs:
         run: go build -o chronicle-tmp ./cmd/chronicle
 
       - name: Export demo session
-        run: ./chronicle-tmp export -file samples/sample_session.jsonl -theme claude -o demo-session.html
+        run: mkdir -p dist && ./chronicle-tmp export -file samples/sample_session.jsonl -theme claude -o dist/demo-session.html
 
       - name: Clean up temporary binary
         run: rm chronicle-tmp
