@@ -13,6 +13,6 @@ archives:
 release:
   mode: replace
   extra_files:
-    - glob: dist/demo-session.html
+    - glob: demo-session.html
 changelog:
   sort: asc

@@ -199,3 +199,6 @@ site/public/screenshots/
 
 # Smoke test fixtures (contain private session content)
 web/src/test/fixtures/smoke/
+
+# Release pipeline temporary artifact
+demo-session.html

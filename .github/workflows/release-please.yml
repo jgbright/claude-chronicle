@@ -52,14 +52,14 @@ jobs:
         run: go build -o chronicle-tmp ./cmd/chronicle
 
       - name: Export demo session
-        run: mkdir -p dist && ./chronicle-tmp export -file samples/sample_session.jsonl -theme claude -o dist/demo-session.html
+        run: ./chronicle-tmp export -file samples/sample_session.jsonl -theme claude -o demo-session.html
 
       - name: Clean up temporary binary
         run: rm chronicle-tmp
 
       - uses: goreleaser/goreleaser-action@v6
         with:
-          args: release --config .github/.goreleaser.yml
+          args: release --clean --config .github/.goreleaser.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
