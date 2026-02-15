@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/jgbright/claude-chronicle/compare/v0.1.1...v0.1.2) (2026-02-15)
+
+
+### Bug Fixes
+
+* **ci:** remove unsupported goreleaser changelog footer ([9b3fe31](https://github.com/jgbright/claude-chronicle/commit/9b3fe31caff40da3a7685247229cf552ba9774fb))
+
 ## [0.1.1](https://github.com/jgbright/claude-chronicle/compare/v0.1.0...v0.1.1) (2026-02-15)
 
 
