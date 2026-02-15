@@ -72,7 +72,7 @@ curl.exe -fL https://github.com/jgbright/claude-chronicle/releases/latest/downlo
 .\claude-chronicle.exe version
 ```
 
-These PowerShell commands stream the archive directly to `tar` so no temporary zip file is kept on disk.
+These PowerShell commands stream the archive directly to `tar` so no temporary zip file is written to disk.
 
 If release binaries are unavailable, use one of the Go-based options below.
 
