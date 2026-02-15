@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.4](https://github.com/jgbright/claude-chronicle/compare/v0.1.3...v0.1.4) (2026-02-15)
+
+
+### Bug Fixes
+
+* **ci:** keep dist demo asset for goreleaser upload ([77e3e05](https://github.com/jgbright/claude-chronicle/commit/77e3e05b26e8af7c3e7328d8b5a6e4b9aa83a34b))
+* clarify Windows streaming install behavior ([30f7f26](https://github.com/jgbright/claude-chronicle/commit/30f7f2610453052bfcc45f5aa6e2fda63d2518a6))
+
 ## [0.1.3](https://github.com/jgbright/claude-chronicle/compare/v0.1.2...v0.1.3) (2026-02-15)
 
 
