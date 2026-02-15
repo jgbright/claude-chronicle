@@ -61,16 +61,14 @@ curl -fL https://github.com/jgbright/claude-chronicle/releases/latest/download/c
 Windows PowerShell (amd64):
 
 ```powershell
-Invoke-WebRequest https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_windows_amd64.zip -OutFile claude-chronicle_windows_amd64.zip
-Expand-Archive .\claude-chronicle_windows_amd64.zip -DestinationPath .
+curl.exe -fL https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_windows_amd64.zip | tar -x -f -
 .\claude-chronicle.exe version
 ```
 
 Windows PowerShell (arm64):
 
 ```powershell
-Invoke-WebRequest https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_windows_arm64.zip -OutFile claude-chronicle_windows_arm64.zip
-Expand-Archive .\claude-chronicle_windows_arm64.zip -DestinationPath .
+curl.exe -fL https://github.com/jgbright/claude-chronicle/releases/latest/download/claude-chronicle_windows_arm64.zip | tar -x -f -
 .\claude-chronicle.exe version
 ```
 
