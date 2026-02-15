@@ -1,6 +1,7 @@
 /// <reference types="vitest/config" />
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { codecovRollupPlugin } from '@codecov/rollup-plugin'
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin'
 import { playwright } from '@vitest/browser-playwright'
 import path from 'node:path'
@@ -10,6 +11,18 @@ const dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   plugins: [react()],
+  build: {
+    rollupOptions: {
+      plugins: [
+        codecovRollupPlugin({
+          enableBundleAnalysis: process.env.CI === 'true',
+          bundleName: 'claude-chronicle-web',
+          uploadToken: process.env.CODECOV_TOKEN,
+          gitService: 'github',
+        }),
+      ],
+    },
+  },
   server: {
     port: 5173,
     proxy: {

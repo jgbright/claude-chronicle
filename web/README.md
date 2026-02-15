@@ -9,6 +9,7 @@ npm install
 npm run dev
 npm run build
 npm run build:export
+npm run check:bundle-budgets
 npm test
 npm run lint
 ```
@@ -19,6 +20,7 @@ npm run lint
 - `npm run build:export` writes the single-file export template to `web/dist-export/export.html`
 
 Both outputs are required by Go embed directives in `embed.go` for full backend builds/tests.
+CI also uploads both builds to Codecov Bundle Analysis and enforces bundle budgets via `npm run check:bundle-budgets`.
 
 ## Main source layout
 

@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -40,7 +42,7 @@ jobs:
         run: cd web && npm run lint
 
       - name: Test with coverage
-        run: cd web && npm run test:coverage
+        run: cd web && npm run test:coverage:ci
 
       - name: Upload frontend coverage to Codecov
         uses: codecov/codecov-action@v5
@@ -50,8 +52,21 @@ jobs:
           flags: frontend
           fail_ci_if_error: true
 
+      - name: Upload frontend test results to Codecov
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: web/coverage/test-results.junit.xml
+          flags: frontend
+          fail_ci_if_error: true
+
       - name: Build web assets
         run: cd web && npm run build && npm run build:export
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Enforce web bundle budgets
+        run: cd web && npm run check:bundle-budgets
 
       - name: Go vet
         run: go vet ./...
