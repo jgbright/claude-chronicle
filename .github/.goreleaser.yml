@@ -16,6 +16,3 @@ release:
     - glob: demo-session.html
 changelog:
   sort: asc
-  footer: |
-    ---
-    **[Live Demo](https://jgbright.github.io/claude-chronicle/demo/)** | Export your own sessions with `claude-chronicle export`
