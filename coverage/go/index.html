@@ -55,7 +55,7 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/jgbright/claude-chronicle/cmd/chronicle/main.go (18.4%)</option>
+				<option value="file0">github.com/jgbright/claude-chronicle/cmd/chronicle/main.go (17.8%)</option>
 				
 				<option value="file1">github.com/jgbright/claude-chronicle/internal/api/handlers_export.go (78.0%)</option>
 				
@@ -71,7 +71,7 @@
 				
 				<option value="file7">github.com/jgbright/claude-chronicle/internal/api/hub.go (7.1%)</option>
 				
-				<option value="file8">github.com/jgbright/claude-chronicle/internal/api/server.go (74.1%)</option>
+				<option value="file8">github.com/jgbright/claude-chronicle/internal/api/server.go (71.9%)</option>
 				
 				<option value="file9">github.com/jgbright/claude-chronicle/internal/export/engine.go (90.0%)</option>
 				
@@ -220,6 +220,8 @@ func cmdServe(args []string) <span class="cov0" title="0">{
                 Branch:  branch,
         })
 
+        startSessionWarmup()
+
         // Start filesystem watcher for real-time updates
         if err := server.StartWatching(session.ClaudeProjectsDir()); err != nil </span><span class="cov0" title="0">{
                 log.Printf("Warning: filesystem watching unavailable: %v", err)
@@ -238,6 +240,19 @@ func cmdServe(args []string) <span class="cov0" title="0">{
         <span class="cov0" title="0">if err := server.Serve(ln); err != nil </span><span class="cov0" title="0">{
                 log.Fatalf("Server error: %v", err)
         }</span>
+}
+
+// startSessionWarmup primes discovery cache so first UI load is less likely
+// to block on a full filesystem scan.
+func startSessionWarmup() <span class="cov0" title="0">{
+        go func() </span><span class="cov0" title="0">{
+                start := time.Now()
+                if _, err := session.DiscoverSessions(); err != nil </span><span class="cov0" title="0">{
+                        log.Printf("Session warm-up skipped: %v", err)
+                        return
+                }</span>
+                <span class="cov0" title="0">log.Printf("Session warm-up completed in %s", time.Since(start).Round(time.Millisecond))</span>
+        }()
 }
 
 // parsePort extracts the numeric port from an address string like ":8080" or "localhost:8080".
@@ -1251,6 +1266,8 @@ import (
         "log"
         "net"
         "net/http"
+        "net/http/httputil"
+        "net/url"
         "strings"
 
         "github.com/jgbright/claude-chronicle/internal/session"
@@ -1271,6 +1288,7 @@ type Server struct {
         webFS     fs.FS
         devMode   bool
         devURL    string
+        devProxy  *httputil.ReverseProxy
         hub       *Hub
         watcher   *watcher.Watcher
         buildInfo BuildInfo
@@ -1288,9 +1306,12 @@ func NewServer(webFS fs.FS, devMode bool, devURL string, buildInfo BuildInfo) *S
                 hub:       newHub(),
                 buildInfo: buildInfo,
         }
-        s.registerRoutes()
-        return s
-}</span>
+        if devMode </span><span class="cov1" title="1">{
+                s.devProxy = newDevReverseProxy(devURL)
+        }</span>
+        <span class="cov9" title="47">s.registerRoutes()
+        return s</span>
+}
 
 func (s *Server) registerRoutes() <span class="cov9" title="47">{
         s.mux.HandleFunc("GET /api/projects", s.handleListProjects)
@@ -1368,13 +1389,21 @@ func (s *Server) handleSPA(w http.ResponseWriter, r *http.Request) <span class="
 
 // handleDevProxy proxies requests to the Vite dev server.
 func (s *Server) handleDevProxy(w http.ResponseWriter, r *http.Request) <span class="cov3" title="3">{
-        target := s.devURL + r.URL.Path
-        if r.URL.RawQuery != "" </span><span class="cov1" title="1">{
-                target += "?" + r.URL.RawQuery
+        if s.devProxy == nil </span><span class="cov0" title="0">{
+                http.Error(w, "Invalid dev proxy configuration", http.StatusInternalServerError)
+                return
+        }</span>
+        <span class="cov3" title="3">log.Printf("dev proxy: %s -&gt; %s", r.URL.Path, s.devURL)
+        s.devProxy.ServeHTTP(w, r)</span>
+}
+
+func newDevReverseProxy(rawTarget string) *httputil.ReverseProxy <span class="cov1" title="1">{
+        target, err := url.Parse(rawTarget)
+        if err != nil || target.Scheme == "" || target.Host == "" </span><span class="cov0" title="0">{
+                return nil
         }</span>
 
-        <span class="cov3" title="3">log.Printf("dev proxy: %s -&gt; %s", r.URL.Path, target)
-        http.Redirect(w, r, target, http.StatusTemporaryRedirect)</span>
+        <span class="cov1" title="1">return httputil.NewSingleHostReverseProxy(target)</span>
 }
 
 // StartWatching begins filesystem monitoring and forwards events to SSE clients.
