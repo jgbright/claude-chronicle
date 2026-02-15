@@ -41,8 +41,8 @@ const features = [
 
   <div class="feature-grid">
     {
-      features.map((f) => (
-        <article class="feature-card">
+      features.map((f, i) => (
+        <article class="feature-card" style={`animation-delay: ${i * 70}ms`}>
           <p class="badge" aria-hidden="true">{f.badge}</p>
           <h3>{f.title}</h3>
           <p>{f.desc}</p>
@@ -89,6 +89,30 @@ const features = [
     border-radius: 14px;
     padding: 1rem;
     box-shadow: var(--shadow-soft);
+    transition: transform 170ms ease, box-shadow 170ms ease, border-color 170ms ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-accent), var(--color-warm));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 170ms ease;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-strong);
+    border-color: var(--color-border-strong);
+  }
+
+  .feature-card:hover::after {
+    transform: scaleX(1);
   }
 
   .badge {
