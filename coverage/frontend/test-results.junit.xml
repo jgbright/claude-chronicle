@@ -1,615 +1,623 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="282" failures="0" errors="0" time="6.99907243">
-    <testsuite name="src/App.test.tsx" timestamp="2026-02-18T05:57:57.165Z" hostname="runnervmjduv7" tests="11" failures="0" errors="0" skipped="0" time="0.926299566">
-        <testcase classname="src/App.test.tsx" name="App &gt; shows loading state for session list" time="0.095024168">
+<testsuites name="vitest tests" tests="286" failures="0" errors="0" time="7.086886965">
+    <testsuite name="src/App.test.tsx" timestamp="2026-02-18T14:30:10.367Z" hostname="runnervmjduv7" tests="11" failures="0" errors="0" skipped="0" time="0.996981956">
+        <testcase classname="src/App.test.tsx" name="App &gt; shows loading state for session list" time="0.074482352">
         </testcase>
-        <testcase classname="src/App.test.tsx" name="App &gt; shows error state for session list" time="0.010962149">
+        <testcase classname="src/App.test.tsx" name="App &gt; shows error state for session list" time="0.012996113">
         </testcase>
-        <testcase classname="src/App.test.tsx" name="App &gt; shows empty session prompt when no session selected" time="0.009698985">
+        <testcase classname="src/App.test.tsx" name="App &gt; shows empty session prompt when no session selected" time="0.013583589">
         </testcase>
-        <testcase classname="src/App.test.tsx" name="App &gt; shows loading state for selected session" time="0.292997026">
+        <testcase classname="src/App.test.tsx" name="App &gt; shows loading state for selected session" time="0.302262611">
         </testcase>
-        <testcase classname="src/App.test.tsx" name="App &gt; shows error state for selected session" time="0.061916714">
+        <testcase classname="src/App.test.tsx" name="App &gt; shows error state for selected session" time="0.098698206">
         </testcase>
-        <testcase classname="src/App.test.tsx" name="App &gt; renders session viewer when session loaded" time="0.080521824">
+        <testcase classname="src/App.test.tsx" name="App &gt; renders session viewer when session loaded" time="0.106035925">
         </testcase>
-        <testcase classname="src/App.test.tsx" name="App &gt; renders session list with sessions" time="0.021224178">
+        <testcase classname="src/App.test.tsx" name="App &gt; renders session list with sessions" time="0.022038747">
         </testcase>
-        <testcase classname="src/App.test.tsx" name="App &gt; shows hover actions instead of old edit controls" time="0.017055292">
+        <testcase classname="src/App.test.tsx" name="App &gt; shows hover actions instead of old edit controls" time="0.013839956">
         </testcase>
-        <testcase classname="src/App.test.tsx" name="App &gt; export calls exportSession and triggers download" time="0.129655339">
+        <testcase classname="src/App.test.tsx" name="App &gt; export calls exportSession and triggers download" time="0.113435145">
         </testcase>
-        <testcase classname="src/App.test.tsx" name="App &gt; export shows toast on failure" time="0.118909847">
+        <testcase classname="src/App.test.tsx" name="App &gt; export shows toast on failure" time="0.116713955">
         </testcase>
-        <testcase classname="src/App.test.tsx" name="App &gt; right-click Rename updates session title metadata" time="0.08547299">
-        </testcase>
-    </testsuite>
-    <testsuite name="src/export/ExportViewer.test.tsx" timestamp="2026-02-18T05:57:57.168Z" hostname="runnervmjduv7" tests="13" failures="0" errors="0" skipped="0" time="0.233102035">
-        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; renders error message when data is null" time="0.041146212">
-        </testcase>
-        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; renders error message when data is falsy" time="0.005405389">
-        </testcase>
-        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; renders Chronicle brand" time="0.053427166">
-        </testcase>
-        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; renders project name from session info" time="0.011754686">
-        </testcase>
-        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; renders session viewer with messages" time="0.021467962">
-        </testcase>
-        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; renders with manifest edits applied" time="0.010454019">
-        </testcase>
-        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; renders without manifest" time="0.017261046">
-        </testcase>
-        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; does not render message actions in export (read-only)" time="0.010726892">
-        </testcase>
-        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; renders theme toggle buttons (Claude and Copilot)" time="0.012155898">
-        </testcase>
-        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; renders the toolbar right section with controls" time="0.009274353">
-        </testcase>
-        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; does not render Undo and Redo in toolbar (read-only)" time="0.012640787">
-        </testcase>
-        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; sets data-theme attribute on documentElement based on export data" time="0.014414396">
-        </testcase>
-        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; renders annotations without Remove button in export" time="0.010166724">
+        <testcase classname="src/App.test.tsx" name="App &gt; right-click Rename updates session title metadata" time="0.120079608">
         </testcase>
     </testsuite>
-    <testsuite name="src/export/api.test.ts" timestamp="2026-02-18T05:57:57.170Z" hostname="runnervmjduv7" tests="2" failures="0" errors="0" skipped="0" time="0.008323653">
-        <testcase classname="src/export/api.test.ts" name="exportSession &gt; sends POST to /api/sessions/{id}/export with theme" time="0.00481291">
+    <testsuite name="src/export/ExportViewer.test.tsx" timestamp="2026-02-18T14:30:10.370Z" hostname="runnervmjduv7" tests="13" failures="0" errors="0" skipped="0" time="0.249683476">
+        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; renders error message when data is null" time="0.037398698">
         </testcase>
-        <testcase classname="src/export/api.test.ts" name="exportSession &gt; throws on non-ok response" time="0.001884618">
+        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; renders error message when data is falsy" time="0.004873671">
         </testcase>
-    </testsuite>
-    <testsuite name="src/hooks/useDeferredLoading.test.ts" timestamp="2026-02-18T05:57:57.171Z" hostname="runnervmjduv7" tests="12" failures="0" errors="0" skipped="0" time="0.079041176">
-        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; returns false initially even when loading is true" time="0.029572945">
+        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; renders Chronicle brand" time="0.048970371">
         </testcase>
-        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; returns true after showDelay elapses" time="0.005023735">
+        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; renders project name from session info" time="0.017872529">
         </testcase>
-        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; never shows if loading finishes before delay" time="0.004613838">
+        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; renders session viewer with messages" time="0.028490803">
         </testcase>
-        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; hides immediately when loading finishes after being shown (no minDuration)" time="0.004842063">
+        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; renders with manifest edits applied" time="0.008467317">
         </testcase>
-        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; holds visible for minDuration once shown" time="0.006183757">
+        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; renders without manifest" time="0.011860382">
         </testcase>
-        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; rapid toggling does not cause a flash" time="0.006442121">
+        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; does not render message actions in export (read-only)" time="0.009239395">
         </testcase>
-        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; respects custom showDelay" time="0.002235565">
+        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; renders theme toggle buttons (Claude and Copilot)" time="0.012355831">
         </testcase>
-        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; returns false when loading is false" time="0.002537181">
+        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; renders the toolbar right section with controls" time="0.011393317">
         </testcase>
-        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; cleans up timers on unmount" time="0.005666638">
+        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; does not render Undo and Redo in toolbar (read-only)" time="0.015975926">
         </testcase>
-        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; re-shows after hiding if loading starts again" time="0.003761853">
+        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; sets data-theme attribute on documentElement based on export data" time="0.029866114">
         </testcase>
-        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; cancels hide timer if loading restarts during minDuration hold" time="0.002982444">
-        </testcase>
-        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; defaults showDelay to 300ms" time="0.002046702">
+        <testcase classname="src/export/ExportViewer.test.tsx" name="ExportViewer &gt; renders annotations without Remove button in export" time="0.010231193">
         </testcase>
     </testsuite>
-    <testsuite name="src/manifest/api.test.ts" timestamp="2026-02-18T05:57:57.173Z" hostname="runnervmjduv7" tests="8" failures="0" errors="0" skipped="0" time="0.015494768">
-        <testcase classname="src/manifest/api.test.ts" name="fetchManifest &gt; fetches from /api/sessions/{id}/manifest" time="0.005908962">
+    <testsuite name="src/export/api.test.ts" timestamp="2026-02-18T14:30:10.372Z" hostname="runnervmjduv7" tests="2" failures="0" errors="0" skipped="0" time="0.008258911">
+        <testcase classname="src/export/api.test.ts" name="exportSession &gt; sends POST to /api/sessions/{id}/export with theme" time="0.004770009">
         </testcase>
-        <testcase classname="src/manifest/api.test.ts" name="fetchManifest &gt; throws on non-ok response" time="0.002874331">
-        </testcase>
-        <testcase classname="src/manifest/api.test.ts" name="saveManifest &gt; sends PUT to /api/sessions/{id}/manifest" time="0.001370676">
-        </testcase>
-        <testcase classname="src/manifest/api.test.ts" name="saveManifest &gt; throws on non-ok response" time="0.00049134">
-        </testcase>
-        <testcase classname="src/manifest/api.test.ts" name="addEdit &gt; sends POST to /api/sessions/{id}/manifest/edits" time="0.000612447">
-        </testcase>
-        <testcase classname="src/manifest/api.test.ts" name="addEdit &gt; throws on non-ok response" time="0.000393917">
-        </testcase>
-        <testcase classname="src/manifest/api.test.ts" name="removeEdit &gt; sends DELETE to /api/sessions/{id}/manifest/edits/{index}" time="0.000597048">
-        </testcase>
-        <testcase classname="src/manifest/api.test.ts" name="removeEdit &gt; throws on non-ok response" time="0.000428202">
+        <testcase classname="src/export/api.test.ts" name="exportSession &gt; throws on non-ok response" time="0.001858764">
         </testcase>
     </testsuite>
-    <testsuite name="src/manifest/sessionTransform.test.ts" timestamp="2026-02-18T05:57:57.174Z" hostname="runnervmjduv7" tests="27" failures="0" errors="0" skipped="0" time="0.025085554">
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; returns messages unchanged when manifest is null" time="0.003920108">
+    <testsuite name="src/hooks/useDeferredLoading.test.ts" timestamp="2026-02-18T14:30:10.373Z" hostname="runnervmjduv7" tests="12" failures="0" errors="0" skipped="0" time="0.067169359">
+        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; returns false initially even when loading is true" time="0.027556323">
         </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; returns messages unchanged when manifest has empty edits" time="0.0005501">
+        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; returns true after showDelay elapses" time="0.005084553">
         </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; deletes a message by id" time="0.002808167">
+        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; never shows if loading finishes before delay" time="0.003183592">
         </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; deletes multiple messages" time="0.000877703">
+        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; hides immediately when loading finishes after being shown (no minDuration)" time="0.003275753">
         </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; collapses messages into a single group" time="0.001457328">
+        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; holds visible for minDuration once shown" time="0.003338901">
         </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; collapse with empty blockIds produces no collapsed group" time="0.000819503">
+        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; rapid toggling does not cause a flash" time="0.005491071">
         </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; inserts annotation after a message" time="0.000813884">
+        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; respects custom showDelay" time="0.002182276">
         </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; inserts multiple annotations after the same message" time="0.000458869">
+        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; returns false when loading is false" time="0.001761212">
         </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; applies editText to a message" time="0.000703317">
+        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; cleans up timers on unmount" time="0.004332873">
         </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; editText overrides previous editText for the same block" time="0.000264515">
+        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; re-shows after hiding if loading starts again" time="0.003546558">
         </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; combines delete and annotate edits" time="0.000676867">
+        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; cancels hide timer if loading restarts during minDuration hold" time="0.002938385">
         </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; combines delete, collapse, annotate, and editText edits" time="0.000617024">
-        </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; does not mutate original messages array" time="0.000250489">
-        </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; does not mutate original message objects" time="0.00157643">
-        </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; annotation inherits timestamp from the target message" time="0.000287408">
-        </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; ignores delete for non-existent id" time="0.000429584">
-        </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; ignores annotation for non-existent afterBlockId" time="0.000360084">
-        </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; ignores editText for non-existent blockId" time="0.000242685">
-        </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; showDeleted includes deleted messages with isDeleted flag" time="0.000816238">
-        </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; showDeleted false still hides deleted messages" time="0.000415738">
-        </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; showDeleted does not include annotations for deleted messages" time="0.000575287">
-        </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; collapsed first message gets the group metadata" time="0.000631602">
-        </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; collapseAllToolResults option &gt; collapses all tool-result user messages into a single collapsed group" time="0.000547475">
-        </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; collapseAllToolResults option &gt; skips messages already deleted by manifest edits" time="0.000744321">
-        </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; collapseAllToolResults option &gt; skips messages already collapsed by manifest edits" time="0.000479748">
-        </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; collapseAllToolResults option &gt; is a no-op when no tool results exist" time="0.000423082">
-        </testcase>
-        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; collapseAllToolResults option &gt; works when manifest is null (early-return bypass)" time="0.000452648">
+        <testcase classname="src/hooks/useDeferredLoading.test.ts" name="useDeferredLoading &gt; defaults showDelay to 300ms" time="0.002263127">
         </testcase>
     </testsuite>
-    <testsuite name="src/manifest/useManifest.test.ts" timestamp="2026-02-18T05:57:57.179Z" hostname="runnervmjduv7" tests="16" failures="0" errors="0" skipped="0" time="0.75890968">
-        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; returns null manifest when sessionId is null" time="0.02966084">
+    <testsuite name="src/manifest/api.test.ts" timestamp="2026-02-18T14:30:10.375Z" hostname="runnervmjduv7" tests="8" failures="0" errors="0" skipped="0" time="0.011338789">
+        <testcase classname="src/manifest/api.test.ts" name="fetchManifest &gt; fetches from /api/sessions/{id}/manifest" time="0.004106804">
         </testcase>
-        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; fetches manifest when sessionId is provided" time="0.057641003">
+        <testcase classname="src/manifest/api.test.ts" name="fetchManifest &gt; throws on non-ok response" time="0.001874713">
         </testcase>
-        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; creates fallback manifest on fetch error" time="0.056912429">
+        <testcase classname="src/manifest/api.test.ts" name="saveManifest &gt; sends PUT to /api/sessions/{id}/manifest" time="0.001081245">
         </testcase>
-        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; addEdit calls API and updates manifest" time="0.056326143">
+        <testcase classname="src/manifest/api.test.ts" name="saveManifest &gt; throws on non-ok response" time="0.000351334">
         </testcase>
-        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; removeEdit calls API and updates manifest" time="0.057988744">
+        <testcase classname="src/manifest/api.test.ts" name="addEdit &gt; sends POST to /api/sessions/{id}/manifest/edits" time="0.000707949">
         </testcase>
-        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; save calls API and updates manifest" time="0.056535993">
+        <testcase classname="src/manifest/api.test.ts" name="addEdit &gt; throws on non-ok response" time="0.000321559">
         </testcase>
-        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; addEdit does nothing when sessionId is null" time="0.001744836">
+        <testcase classname="src/manifest/api.test.ts" name="removeEdit &gt; sends DELETE to /api/sessions/{id}/manifest/edits/{index}" time="0.000572948">
         </testcase>
-        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; removeEdit does nothing when sessionId is null" time="0.001327695">
-        </testcase>
-        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; save does nothing when sessionId is null" time="0.001844773">
-        </testcase>
-        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; resets manifest when sessionId changes to null" time="0.054833801">
-        </testcase>
-        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; undo removes last edit and populates redo stack" time="0.054729133">
-        </testcase>
-        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; redo re-adds the undone edit" time="0.057884198">
-        </testcase>
-        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; new edit clears redo stack" time="0.054940188">
-        </testcase>
-        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; undo is no-op on empty manifest" time="0.052696431">
-        </testcase>
-        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; redo is no-op when redo stack is empty" time="0.053292521">
-        </testcase>
-        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; session change clears redo stack" time="0.106882003">
+        <testcase classname="src/manifest/api.test.ts" name="removeEdit &gt; throws on non-ok response" time="0.000346405">
         </testcase>
     </testsuite>
-    <testsuite name="src/manifest/useUndoRedoKeys.test.ts" timestamp="2026-02-18T05:57:57.181Z" hostname="runnervmjduv7" tests="8" failures="0" errors="0" skipped="0" time="0.047050347">
-        <testcase classname="src/manifest/useUndoRedoKeys.test.ts" name="useUndoRedoKeys &gt; calls onUndo on Ctrl+Z" time="0.028927378">
+    <testsuite name="src/manifest/sessionTransform.test.ts" timestamp="2026-02-18T14:30:10.376Z" hostname="runnervmjduv7" tests="29" failures="0" errors="0" skipped="0" time="0.023726972">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; returns messages unchanged when manifest is null" time="0.002240868">
         </testcase>
-        <testcase classname="src/manifest/useUndoRedoKeys.test.ts" name="useUndoRedoKeys &gt; calls onRedo on Ctrl+Y" time="0.002440729">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; returns messages unchanged when manifest has empty edits" time="0.000354501">
         </testcase>
-        <testcase classname="src/manifest/useUndoRedoKeys.test.ts" name="useUndoRedoKeys &gt; calls onRedo on Ctrl+Shift+Z" time="0.002340451">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; deletes a message by id" time="0.002652336">
         </testcase>
-        <testcase classname="src/manifest/useUndoRedoKeys.test.ts" name="useUndoRedoKeys &gt; does nothing when enabled is false" time="0.002239713">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; deletes multiple messages" time="0.000383756">
         </testcase>
-        <testcase classname="src/manifest/useUndoRedoKeys.test.ts" name="useUndoRedoKeys &gt; skips when target is INPUT" time="0.003043448">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; collapses messages into a single group" time="0.001160744">
         </testcase>
-        <testcase classname="src/manifest/useUndoRedoKeys.test.ts" name="useUndoRedoKeys &gt; skips when target is TEXTAREA" time="0.002290117">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; collapse with empty blockIds produces no collapsed group" time="0.000945613">
         </testcase>
-        <testcase classname="src/manifest/useUndoRedoKeys.test.ts" name="useUndoRedoKeys &gt; does nothing when Ctrl is not pressed" time="0.00176816">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; inserts annotation after a message" time="0.000923122">
         </testcase>
-        <testcase classname="src/manifest/useUndoRedoKeys.test.ts" name="useUndoRedoKeys &gt; cleans up listener on unmount" time="0.001810199">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; inserts multiple annotations after the same message" time="0.000460368">
         </testcase>
-    </testsuite>
-    <testsuite name="src/session/MessageActions.test.tsx" timestamp="2026-02-18T05:57:57.182Z" hostname="runnervmjduv7" tests="9" failures="0" errors="0" skipped="0" time="0.866608861">
-        <testcase classname="src/session/MessageActions.test.tsx" name="MessageActions &gt; renders annotate and menu buttons" time="0.048921478">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; applies editText to a message" time="0.00048829">
         </testcase>
-        <testcase classname="src/session/MessageActions.test.tsx" name="MessageActions &gt; opens dropdown menu when three-dot is clicked" time="0.285073585">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; editText overrides previous editText for the same block" time="0.000254865">
         </testcase>
-        <testcase classname="src/session/MessageActions.test.tsx" name="MessageActions &gt; calls onHide with messageId when Hide is clicked" time="0.077511494">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; combines delete and annotate edits" time="0.00053675">
         </testcase>
-        <testcase classname="src/session/MessageActions.test.tsx" name="MessageActions &gt; shows annotation form when annotate icon is clicked" time="0.038368382">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; combines delete, collapse, annotate, and editText edits" time="0.000598486">
         </testcase>
-        <testcase classname="src/session/MessageActions.test.tsx" name="MessageActions &gt; shows annotation form when Annotate menu item is clicked" time="0.050535423">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; does not mutate original messages array" time="0.000232243">
         </testcase>
-        <testcase classname="src/session/MessageActions.test.tsx" name="MessageActions &gt; calls onAnnotate with messageId and text when Add is clicked" time="0.149447576">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; does not mutate original message objects" time="0.001390552">
         </testcase>
-        <testcase classname="src/session/MessageActions.test.tsx" name="MessageActions &gt; does not call onAnnotate when text is empty" time="0.058741714">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; annotation inherits timestamp from the target message" time="0.000250638">
         </testcase>
-        <testcase classname="src/session/MessageActions.test.tsx" name="MessageActions &gt; hides form when Cancel is clicked" time="0.065975497">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; ignores delete for non-existent id" time="0.000373466">
         </testcase>
-        <testcase classname="src/session/MessageActions.test.tsx" name="MessageActions &gt; clears form after successful annotation" time="0.089188076">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; ignores annotation for non-existent afterBlockId" time="0.000303876">
         </testcase>
-    </testsuite>
-    <testsuite name="src/session/SessionList.test.tsx" timestamp="2026-02-18T05:57:57.184Z" hostname="runnervmjduv7" tests="21" failures="0" errors="0" skipped="0" time="0.662756854">
-        <testcase classname="src/session/SessionList.test.tsx" name="formatSize &gt; formats bytes" time="0.002435298">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; ignores editText for non-existent blockId" time="0.000218177">
         </testcase>
-        <testcase classname="src/session/SessionList.test.tsx" name="formatSize &gt; formats kilobytes" time="0.00030991">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; showDeleted includes deleted messages with isDeleted flag" time="0.00057369">
         </testcase>
-        <testcase classname="src/session/SessionList.test.tsx" name="formatSize &gt; formats megabytes" time="0.00021902">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; showDeleted false still hides deleted messages" time="0.000347278">
         </testcase>
-        <testcase classname="src/session/SessionList.test.tsx" name="formatSize &gt; formats exactly 1 KB boundary" time="0.000457547">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; showDeleted does not include annotations for deleted messages" time="0.000748175">
         </testcase>
-        <testcase classname="src/session/SessionList.test.tsx" name="formatSize &gt; formats exactly 1 MB boundary" time="0.000222225">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; collapsed first message gets the group metadata" time="0.000781046">
         </testcase>
-        <testcase classname="src/session/SessionList.test.tsx" name="formatSize &gt; formats 0 bytes" time="0.000196758">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; collapseAllToolResults option &gt; collapses all tool-result user messages into a single collapsed group" time="0.000601823">
         </testcase>
-        <testcase classname="src/session/SessionList.test.tsx" name="formatDate &gt; formats a date string" time="0.02290863">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; collapseAllToolResults option &gt; skips messages already deleted by manifest edits" time="0.001414107">
         </testcase>
-        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; renders &quot;Sessions&quot; title" time="0.037757044">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; collapseAllToolResults option &gt; skips messages already collapsed by manifest edits" time="0.000511524">
         </testcase>
-        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; renders session items with titles" time="0.022768326">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; collapseAllToolResults option &gt; is a no-op when no tool results exist" time="0.000507907">
         </testcase>
-        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; renders project name as primary when no title" time="0.005873163">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; collapseAllToolResults option &gt; works when manifest is null (early-return bypass)" time="0.000384898">
         </testcase>
-        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; renders truncated session id" time="0.007595327">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; collapseAllToolResults option &gt; collapses only file-read tool results when collapseReadResults is enabled" time="0.000778142">
         </testcase>
-        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; highlights selected session" time="0.022820546">
-        </testcase>
-        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; calls onSelect with session id when clicked" time="0.240580341">
-        </testcase>
-        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; renders file size for each session" time="0.007076907">
-        </testcase>
-        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; renders empty list without errors" time="0.002830669">
-        </testcase>
-        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; shows three-dot menu button on sessions" time="0.005061022">
-        </testcase>
-        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; shows Hide option in menu when clicking three-dot" time="0.036000206">
-        </testcase>
-        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; calls onDelete when Hide is clicked from menu" time="0.063950946">
-        </testcase>
-        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; shows Restore option for deleted sessions" time="0.078043112">
-        </testcase>
-        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; calls onRestore when Restore is clicked" time="0.095537897">
-        </testcase>
-        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; separates hidden sessions into collapsible section" time="0.006830065">
+        <testcase classname="src/manifest/sessionTransform.test.ts" name="applyManifest &gt; collapseAllToolResults option &gt; does not collapse generic tool output when collapseReadResults is enabled" time="0.000495463">
         </testcase>
     </testsuite>
-    <testsuite name="src/session/SessionViewer.smoke.test.tsx" timestamp="2026-02-18T05:57:57.187Z" hostname="runnervmjduv7" tests="0" failures="0" errors="0" skipped="0" time="0">
-    </testsuite>
-    <testsuite name="src/session/SessionViewer.test.tsx" timestamp="2026-02-18T05:57:57.187Z" hostname="runnervmjduv7" tests="19" failures="0" errors="0" skipped="0" time="0.77926574">
-        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; renders session title" time="0.08180808">
+    <testsuite name="src/manifest/useManifest.test.ts" timestamp="2026-02-18T14:30:10.382Z" hostname="runnervmjduv7" tests="16" failures="0" errors="0" skipped="0" time="0.749945619">
+        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; returns null manifest when sessionId is null" time="0.02318609">
         </testcase>
-        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; title is always clickable to edit when onUpdateTitle is provided" time="0.222295143">
+        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; fetches manifest when sessionId is provided" time="0.056804199">
         </testcase>
-        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; calls onUpdateTitle and displays new title after inline edit" time="0.203574726">
+        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; creates fallback manifest on fetch error" time="0.057369614">
         </testcase>
-        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; renders message count" time="0.013768482">
+        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; addEdit calls API and updates manifest" time="0.056772099">
         </testcase>
-        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; renders edit count when manifest has edits" time="0.013437032">
+        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; removeEdit calls API and updates manifest" time="0.055717924">
         </testcase>
-        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; renders user and assistant messages" time="0.013459634">
+        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; save calls API and updates manifest" time="0.054462052">
         </testcase>
-        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; renders hover action buttons on messages" time="0.016488263">
+        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; addEdit does nothing when sessionId is null" time="0.002093423">
         </testcase>
-        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; renders collapsed group for collapsed messages" time="0.008155093">
+        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; removeEdit does nothing when sessionId is null" time="0.001817489">
         </testcase>
-        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; renders annotation blocks with remove button" time="0.012552005">
+        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; save does nothing when sessionId is null" time="0.00196295">
         </testcase>
-        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; hides deleted messages" time="0.012905847">
+        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; resets manifest when sessionId changes to null" time="0.053236637">
         </testcase>
-        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; applies text edits to messages" time="0.008475976">
+        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; undo removes last edit and populates redo stack" time="0.057106874">
         </testcase>
-        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; show deleted toggle renders ghost blocks with restore button" time="0.011481321">
+        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; redo re-adds the undone edit" time="0.054963139">
         </testcase>
-        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; collapsed group renders children when expanded" time="0.046013221">
+        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; new edit clears redo stack" time="0.055838799">
         </testcase>
-        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; annotation removal calls onRemoveEdit with correct index" time="0.048549834">
+        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; undo is no-op on empty manifest" time="0.055171531">
         </testcase>
-        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; shows pencil icon on editable title hover" time="0.017089161">
+        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; redo is no-op when redo stack is empty" time="0.055067874">
         </testcase>
-        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; does not show pencil icon when onUpdateTitle is not provided" time="0.014177438">
-        </testcase>
-        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; read-only mode (no edit callbacks) &gt; does not render message actions when onAddEdit is omitted" time="0.009471179">
-        </testcase>
-        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; read-only mode (no edit callbacks) &gt; renders annotation blocks without delete button when onRemoveEdit is omitted" time="0.010476329">
-        </testcase>
-        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; read-only mode (no edit callbacks) &gt; renders deleted ghost blocks without Restore button when onRemoveEdit is omitted" time="0.011900726">
+        <testcase classname="src/manifest/useManifest.test.ts" name="useManifest &gt; session change clears redo stack" time="0.105336892">
         </testcase>
     </testsuite>
-    <testsuite name="src/session/api.test.ts" timestamp="2026-02-18T05:57:57.191Z" hostname="runnervmjduv7" tests="4" failures="0" errors="0" skipped="0" time="0.010853898">
-        <testcase classname="src/session/api.test.ts" name="fetchSessions &gt; fetches from /api/sessions" time="0.004786932">
+    <testsuite name="src/manifest/useUndoRedoKeys.test.ts" timestamp="2026-02-18T14:30:10.385Z" hostname="runnervmjduv7" tests="8" failures="0" errors="0" skipped="0" time="0.037380049">
+        <testcase classname="src/manifest/useUndoRedoKeys.test.ts" name="useUndoRedoKeys &gt; calls onUndo on Ctrl+Z" time="0.019982418">
         </testcase>
-        <testcase classname="src/session/api.test.ts" name="fetchSessions &gt; throws on non-ok response" time="0.002557899">
+        <testcase classname="src/manifest/useUndoRedoKeys.test.ts" name="useUndoRedoKeys &gt; calls onRedo on Ctrl+Y" time="0.002031271">
         </testcase>
-        <testcase classname="src/session/api.test.ts" name="fetchSession &gt; fetches from /api/sessions/{id}" time="0.000487292">
+        <testcase classname="src/manifest/useUndoRedoKeys.test.ts" name="useUndoRedoKeys &gt; calls onRedo on Ctrl+Shift+Z" time="0.0019796">
         </testcase>
-        <testcase classname="src/session/api.test.ts" name="fetchSession &gt; throws on non-ok response" time="0.000475238">
+        <testcase classname="src/manifest/useUndoRedoKeys.test.ts" name="useUndoRedoKeys &gt; does nothing when enabled is false" time="0.002813526">
         </testcase>
-    </testsuite>
-    <testsuite name="src/session/useSSE.test.ts" timestamp="2026-02-18T05:57:57.192Z" hostname="runnervmjduv7" tests="6" failures="0" errors="0" skipped="0" time="0.04573891">
-        <testcase classname="src/session/useSSE.test.ts" name="useSSE &gt; connects to /api/events" time="0.028606206">
+        <testcase classname="src/manifest/useUndoRedoKeys.test.ts" name="useUndoRedoKeys &gt; skips when target is INPUT" time="0.002763009">
         </testcase>
-        <testcase classname="src/session/useSSE.test.ts" name="useSSE &gt; calls onSessionsChanged for sessions_changed events" time="0.002993605">
+        <testcase classname="src/manifest/useUndoRedoKeys.test.ts" name="useUndoRedoKeys &gt; skips when target is TEXTAREA" time="0.002342735">
         </testcase>
-        <testcase classname="src/session/useSSE.test.ts" name="useSSE &gt; calls onSessionUpdated for session_updated events" time="0.003395236">
+        <testcase classname="src/manifest/useUndoRedoKeys.test.ts" name="useUndoRedoKeys &gt; does nothing when Ctrl is not pressed" time="0.001633474">
         </testcase>
-        <testcase classname="src/session/useSSE.test.ts" name="useSSE &gt; ignores malformed events" time="0.00298602">
-        </testcase>
-        <testcase classname="src/session/useSSE.test.ts" name="useSSE &gt; closes EventSource on unmount" time="0.002091837">
-        </testcase>
-        <testcase classname="src/session/useSSE.test.ts" name="useSSE &gt; does not recreate EventSource when callbacks change" time="0.003230308">
+        <testcase classname="src/manifest/useUndoRedoKeys.test.ts" name="useUndoRedoKeys &gt; cleans up listener on unmount" time="0.001809923">
         </testcase>
     </testsuite>
-    <testsuite name="src/session/useSessionData.test.ts" timestamp="2026-02-18T05:57:57.193Z" hostname="runnervmjduv7" tests="8" failures="0" errors="0" skipped="0" time="0.471079889">
-        <testcase classname="src/session/useSessionData.test.ts" name="useSessionData &gt; returns null session when id is null" time="0.025726934">
+    <testsuite name="src/session/MessageActions.test.tsx" timestamp="2026-02-18T14:30:10.386Z" hostname="runnervmjduv7" tests="9" failures="0" errors="0" skipped="0" time="0.685726598">
+        <testcase classname="src/session/MessageActions.test.tsx" name="MessageActions &gt; renders annotate and menu buttons" time="0.03406483">
         </testcase>
-        <testcase classname="src/session/useSessionData.test.ts" name="useSessionData &gt; fetches session data when id is provided" time="0.058200202">
+        <testcase classname="src/session/MessageActions.test.tsx" name="MessageActions &gt; opens dropdown menu when three-dot is clicked" time="0.174727829">
         </testcase>
-        <testcase classname="src/session/useSessionData.test.ts" name="useSessionData &gt; starts loading when id is provided" time="0.003192577">
+        <testcase classname="src/session/MessageActions.test.tsx" name="MessageActions &gt; calls onHide with messageId when Hide is clicked" time="0.047895638">
         </testcase>
-        <testcase classname="src/session/useSessionData.test.ts" name="useSessionData &gt; sets error on fetch failure" time="0.054953772">
+        <testcase classname="src/session/MessageActions.test.tsx" name="MessageActions &gt; shows annotation form when annotate icon is clicked" time="0.029084162">
         </testcase>
-        <testcase classname="src/session/useSessionData.test.ts" name="useSessionData &gt; resets session when id changes to null" time="0.056345999">
+        <testcase classname="src/session/MessageActions.test.tsx" name="MessageActions &gt; shows annotation form when Annotate menu item is clicked" time="0.067227828">
         </testcase>
-        <testcase classname="src/session/useSessionData.test.ts" name="useSessionData &gt; refetches when id changes" time="0.10532772">
+        <testcase classname="src/session/MessageActions.test.tsx" name="MessageActions &gt; calls onAnnotate with messageId and text when Add is clicked" time="0.119594875">
         </testcase>
-        <testcase classname="src/session/useSessionData.test.ts" name="useSessionData &gt; patchTitle survives refresh for the same session" time="0.059560286">
+        <testcase classname="src/session/MessageActions.test.tsx" name="MessageActions &gt; does not call onAnnotate when text is empty" time="0.059133287">
         </testcase>
-        <testcase classname="src/session/useSessionData.test.ts" name="useSessionData &gt; title override clears when switching sessions" time="0.105543945">
+        <testcase classname="src/session/MessageActions.test.tsx" name="MessageActions &gt; hides form when Cancel is clicked" time="0.070640309">
         </testcase>
-    </testsuite>
-    <testsuite name="src/session/useSessionList.test.ts" timestamp="2026-02-18T05:57:57.194Z" hostname="runnervmjduv7" tests="5" failures="0" errors="0" skipped="0" time="0.261070112">
-        <testcase classname="src/session/useSessionList.test.ts" name="useSessionList &gt; starts in loading state" time="0.030748416">
-        </testcase>
-        <testcase classname="src/session/useSessionList.test.ts" name="useSessionList &gt; fetches sessions on mount" time="0.056200403">
-        </testcase>
-        <testcase classname="src/session/useSessionList.test.ts" name="useSessionList &gt; sets error on fetch failure" time="0.054025174">
-        </testcase>
-        <testcase classname="src/session/useSessionList.test.ts" name="useSessionList &gt; passes deleted=true param when showDeleted is true" time="0.059651475">
-        </testcase>
-        <testcase classname="src/session/useSessionList.test.ts" name="useSessionList &gt; does not pass deleted param when showDeleted is false" time="0.057467239">
+        <testcase classname="src/session/MessageActions.test.tsx" name="MessageActions &gt; clears form after successful annotation" time="0.081177707">
         </testcase>
     </testsuite>
-    <testsuite name="src/shared/CodeBlock.test.tsx" timestamp="2026-02-18T05:57:57.195Z" hostname="runnervmjduv7" tests="15" failures="0" errors="0" skipped="0" time="0.150575424">
-        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; renders code content in a code element" time="0.067481877">
+    <testsuite name="src/session/SessionList.test.tsx" timestamp="2026-02-18T14:30:10.388Z" hostname="runnervmjduv7" tests="21" failures="0" errors="0" skipped="0" time="0.69935538">
+        <testcase classname="src/session/SessionList.test.tsx" name="formatSize &gt; formats bytes" time="0.002035025">
         </testcase>
-        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; renders with code-block class" time="0.0061091">
+        <testcase classname="src/session/SessionList.test.tsx" name="formatSize &gt; formats kilobytes" time="0.000270795">
         </testcase>
-        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; renders pre element with code-block__pre class" time="0.004679158">
+        <testcase classname="src/session/SessionList.test.tsx" name="formatSize &gt; formats megabytes" time="0.000164637">
         </testcase>
-        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; shows language label for non-text languages" time="0.007065338">
+        <testcase classname="src/session/SessionList.test.tsx" name="formatSize &gt; formats exactly 1 KB boundary" time="0.000201907">
         </testcase>
-        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; does not show language label for text" time="0.004734456">
+        <testcase classname="src/session/SessionList.test.tsx" name="formatSize &gt; formats exactly 1 MB boundary" time="0.000214901">
         </testcase>
-        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; does not show language label when language defaults to text" time="0.002922311">
+        <testcase classname="src/session/SessionList.test.tsx" name="formatSize &gt; formats 0 bytes" time="0.00021477">
         </testcase>
-        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; adds error class when isError is true" time="0.003304297">
+        <testcase classname="src/session/SessionList.test.tsx" name="formatDate &gt; formats a date string" time="0.015400807">
         </testcase>
-        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; does not add error class when isError is false" time="0.003757415">
+        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; renders &quot;Sessions&quot; title" time="0.032695773">
         </testcase>
-        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; resolves ts to typescript via langMap" time="0.005730508">
+        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; renders session items with titles" time="0.026431688">
         </testcase>
-        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; resolves tsx to tsx via langMap" time="0.007415975">
+        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; renders project name as primary when no title" time="0.007317084">
         </testcase>
-        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; resolves sh to bash via langMap" time="0.012522604">
+        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; renders truncated session id" time="0.008210018">
         </testcase>
-        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; resolves shell to bash via langMap" time="0.008618776">
+        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; highlights selected session" time="0.020968929">
         </testcase>
-        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; resolves plaintext to text (no language label)" time="0.003045632">
+        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; calls onSelect with session id when clicked" time="0.237932016">
         </testcase>
-        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; resolves empty string to text" time="0.003255965">
+        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; renders file size for each session" time="0.006236569">
         </testcase>
-        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; passes through unknown languages as-is" time="0.00675184">
+        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; renders empty list without errors" time="0.003336862">
         </testcase>
-    </testsuite>
-    <testsuite name="src/shared/MarkdownContent.test.tsx" timestamp="2026-02-18T05:57:57.198Z" hostname="runnervmjduv7" tests="6" failures="0" errors="0" skipped="0" time="0.104875071">
-        <testcase classname="src/shared/MarkdownContent.test.tsx" name="MarkdownContent &gt; renders plain text content" time="0.057013208">
+        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; shows three-dot menu button on sessions" time="0.006442122">
         </testcase>
-        <testcase classname="src/shared/MarkdownContent.test.tsx" name="MarkdownContent &gt; renders markdown bold text" time="0.010246561">
+        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; shows Hide option in menu when clicking three-dot" time="0.034431011">
         </testcase>
-        <testcase classname="src/shared/MarkdownContent.test.tsx" name="MarkdownContent &gt; renders nothing when content is empty" time="0.002541518">
+        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; calls onDelete when Hide is clicked from menu" time="0.067243674">
         </testcase>
-        <testcase classname="src/shared/MarkdownContent.test.tsx" name="MarkdownContent &gt; renders inline code" time="0.00654875">
+        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; shows Restore option for deleted sessions" time="0.101805871">
         </testcase>
-        <testcase classname="src/shared/MarkdownContent.test.tsx" name="MarkdownContent &gt; renders markdown lists" time="0.010583734">
+        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; calls onRestore when Restore is clicked" time="0.117741515">
         </testcase>
-        <testcase classname="src/shared/MarkdownContent.test.tsx" name="MarkdownContent &gt; renders fenced code blocks without language as code blocks, not inline code" time="0.0153135">
+        <testcase classname="src/session/SessionList.test.tsx" name="SessionList &gt; separates hidden sessions into collapsible section" time="0.007615549">
         </testcase>
     </testsuite>
-    <testsuite name="src/shared/Toast.test.tsx" timestamp="2026-02-18T05:57:57.199Z" hostname="runnervmjduv7" tests="6" failures="0" errors="0" skipped="0" time="0.341977715">
-        <testcase classname="src/shared/Toast.test.tsx" name="ToastContainer &gt; renders nothing when toasts array is empty" time="0.028416441">
+    <testsuite name="src/session/SessionViewer.smoke.test.tsx" timestamp="2026-02-18T14:30:10.392Z" hostname="runnervmjduv7" tests="0" failures="0" errors="0" skipped="0" time="0">
+    </testsuite>
+    <testsuite name="src/session/SessionViewer.test.tsx" timestamp="2026-02-18T14:30:10.392Z" hostname="runnervmjduv7" tests="20" failures="0" errors="0" skipped="0" time="0.746289154">
+        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; renders session title" time="0.072599251">
         </testcase>
-        <testcase classname="src/shared/Toast.test.tsx" name="ToastContainer &gt; renders toast messages" time="0.020374624">
+        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; title is always clickable to edit when onUpdateTitle is provided" time="0.216792926">
         </testcase>
-        <testcase classname="src/shared/Toast.test.tsx" name="ToastContainer &gt; renders Undo button when onUndo is provided" time="0.004192429">
+        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; calls onUpdateTitle and displays new title after inline edit" time="0.207451852">
         </testcase>
-        <testcase classname="src/shared/Toast.test.tsx" name="ToastContainer &gt; does not render Undo button when onUndo is not provided" time="0.003703414">
+        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; renders message count" time="0.013985679">
         </testcase>
-        <testcase classname="src/shared/Toast.test.tsx" name="ToastContainer &gt; calls onUndo and onDismiss when Undo is clicked" time="0.245166439">
+        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; renders edit count when manifest has edits" time="0.012884435">
         </testcase>
-        <testcase classname="src/shared/Toast.test.tsx" name="ToastContainer &gt; calls onDismiss when close button is clicked" time="0.037261089">
+        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; renders user and assistant messages" time="0.01373499">
+        </testcase>
+        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; renders hover action buttons on messages" time="0.014206761">
+        </testcase>
+        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; renders collapsed group for collapsed messages" time="0.00605502">
+        </testcase>
+        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; renders annotation blocks with remove button" time="0.012471555">
+        </testcase>
+        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; hides deleted messages" time="0.018130066">
+        </testcase>
+        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; applies text edits to messages" time="0.011566728">
+        </testcase>
+        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; collapses file reads without collapsing other tool results when collapseFileReads is true" time="0.009566739">
+        </testcase>
+        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; show deleted toggle renders ghost blocks with restore button" time="0.013860995">
+        </testcase>
+        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; collapsed group renders children when expanded" time="0.038349129">
+        </testcase>
+        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; annotation removal calls onRemoveEdit with correct index" time="0.035394705">
+        </testcase>
+        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; shows pencil icon on editable title hover" time="0.009847061">
+        </testcase>
+        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; does not show pencil icon when onUpdateTitle is not provided" time="0.009700167">
+        </testcase>
+        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; read-only mode (no edit callbacks) &gt; does not render message actions when onAddEdit is omitted" time="0.005854286">
+        </testcase>
+        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; read-only mode (no edit callbacks) &gt; renders annotation blocks without delete button when onRemoveEdit is omitted" time="0.009854164">
+        </testcase>
+        <testcase classname="src/session/SessionViewer.test.tsx" name="SessionViewer &gt; read-only mode (no edit callbacks) &gt; renders deleted ghost blocks without Restore button when onRemoveEdit is omitted" time="0.011417012">
         </testcase>
     </testsuite>
-    <testsuite name="src/shared/ToolUseBlock.test.tsx" timestamp="2026-02-18T05:57:57.200Z" hostname="runnervmjduv7" tests="34" failures="0" errors="0" skipped="0" time="0.431636433">
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; returns command for Bash tool" time="0.002215828">
+    <testsuite name="src/session/api.test.ts" timestamp="2026-02-18T14:30:10.396Z" hostname="runnervmjduv7" tests="4" failures="0" errors="0" skipped="0" time="0.012569283">
+        <testcase classname="src/session/api.test.ts" name="fetchSessions &gt; fetches from /api/sessions" time="0.006206666">
         </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; truncates long Bash commands to 100 chars" time="0.001321583">
+        <testcase classname="src/session/api.test.ts" name="fetchSessions &gt; throws on non-ok response" time="0.002529664">
         </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; returns file_path for Read tool" time="0.000226304">
+        <testcase classname="src/session/api.test.ts" name="fetchSession &gt; fetches from /api/sessions/{id}" time="0.000667294">
         </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; returns file_path for Write tool" time="0.000498914">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; returns file_path for Edit tool" time="0.000187611">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; returns pattern for Glob tool" time="0.000161222">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; returns formatted string for Grep tool" time="0.000184064">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; returns description for Task tool" time="0.000150161">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; returns url for WebFetch tool" time="0.00017077">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; returns query for WebSearch tool" time="0.00014955">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; returns empty string for unknown tool" time="0.000152145">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; handles missing input fields gracefully" time="0.000233247">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; handles Grep with no path" time="0.000245168">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns typescript for .ts files" time="0.000239338">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns typescript for .tsx files" time="0.000504264">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns javascript for .js files" time="0.000154419">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns javascript for .jsx files" time="0.000139891">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns go for .go files" time="0.000152806">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns python for .py files" time="0.000172263">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns rust for .rs files" time="0.000134922">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns json for .json files" time="0.000124412">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns yaml for .yaml and .yml files" time="0.000159328">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns bash for .sh files" time="0.000121097">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns text for unknown extensions" time="0.000123671">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns text for files without extension" time="0.00012274">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; handles paths with directories" time="0.000154709">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="ToolUseBlock component &gt; renders the tool name" time="0.032019755">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="ToolUseBlock component &gt; renders the summary text" time="0.007898715">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="ToolUseBlock component &gt; is collapsed by default" time="0.008598074">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="ToolUseBlock component &gt; expands on click to show body" time="0.262807115">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="ToolUseBlock component &gt; collapses again on second click" time="0.054949407">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="ToolUseBlock component &gt; does not render summary for unknown tool" time="0.001685424">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="ToolUseBlock component &gt; shows Glob detail when expanded" time="0.020403692">
-        </testcase>
-        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="ToolUseBlock component &gt; shows JSON for unsupported tool when expanded" time="0.032116425">
+        <testcase classname="src/session/api.test.ts" name="fetchSession &gt; throws on non-ok response" time="0.000530569">
         </testcase>
     </testsuite>
-    <testsuite name="src/shell/Toolbar.test.tsx" timestamp="2026-02-18T05:57:57.205Z" hostname="runnervmjduv7" tests="24" failures="0" errors="0" skipped="0" time="0.467644123">
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; renders the brand name" time="0.04470386">
+    <testsuite name="src/session/useSSE.test.ts" timestamp="2026-02-18T14:30:10.397Z" hostname="runnervmjduv7" tests="6" failures="0" errors="0" skipped="0" time="0.058419306">
+        <testcase classname="src/session/useSSE.test.ts" name="useSSE &gt; connects to /api/events" time="0.03071587">
         </testcase>
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; renders session title when provided" time="0.006178875">
+        <testcase classname="src/session/useSSE.test.ts" name="useSSE &gt; calls onSessionsChanged for sessions_changed events" time="0.004038315">
         </testcase>
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; does not render session title when not provided" time="0.012867516">
+        <testcase classname="src/session/useSSE.test.ts" name="useSSE &gt; calls onSessionUpdated for session_updated events" time="0.00673425">
         </testcase>
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; renders theme buttons" time="0.00828272">
+        <testcase classname="src/session/useSSE.test.ts" name="useSSE &gt; ignores malformed events" time="0.003969187">
         </testcase>
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; calls onThemeChange when Claude button is clicked" time="0.250017047">
+        <testcase classname="src/session/useSSE.test.ts" name="useSSE &gt; closes EventSource on unmount" time="0.006507787">
         </testcase>
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; calls onThemeChange when Copilot button is clicked" time="0.034458668">
-        </testcase>
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; marks Claude theme button as active when theme is claude" time="0.003618734">
-        </testcase>
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; marks Copilot theme button as active when theme is copilot" time="0.002915437">
-        </testcase>
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; renders Undo and Redo buttons when provided" time="0.006823142">
-        </testcase>
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; Undo button is disabled when canUndo is false" time="0.004379468">
-        </testcase>
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; Undo button is enabled when canUndo is true" time="0.00504863">
-        </testcase>
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; calls onUndo when Undo is clicked" time="0.020812187">
-        </testcase>
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; renders Export button when onExport is provided" time="0.003202607">
-        </testcase>
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; does not render Export button when onExport is not provided" time="0.002436249">
-        </testcase>
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; does not render Export button when hasSession is false" time="0.002857109">
-        </testcase>
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; calls onExport when Export button is clicked" time="0.022614167">
-        </testcase>
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; shows branch name as descriptor for non-main branch" time="0.004469007">
-        </testcase>
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; shows version as descriptor when branch is &quot;main&quot;" time="0.006542851">
-        </testcase>
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; shows version as descriptor when branch is undefined" time="0.0026869">
-        </testcase>
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; shows &quot;dev&quot; without v prefix for non-semver version" time="0.003075588">
-        </testcase>
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; shows CI version without v prefix" time="0.003195022">
-        </testcase>
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; shows no descriptor when both version and branch are undefined" time="0.003094203">
-        </testcase>
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; renders Collapse dropdown when toggle handlers provided" time="0.006966642">
-        </testcase>
-        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; shows save state indicator" time="0.003848184">
+        <testcase classname="src/session/useSSE.test.ts" name="useSSE &gt; does not recreate EventSource when callbacks change" time="0.003806633">
         </testcase>
     </testsuite>
-    <testsuite name="src/shell/useBuildInfo.test.ts" timestamp="2026-02-18T05:57:57.209Z" hostname="runnervmjduv7" tests="3" failures="0" errors="0" skipped="0" time="0.183227872">
-        <testcase classname="src/shell/useBuildInfo.test.ts" name="useBuildInfo &gt; returns fetched build info" time="0.07543167">
+    <testsuite name="src/session/useSessionData.test.ts" timestamp="2026-02-18T14:30:10.398Z" hostname="runnervmjduv7" tests="8" failures="0" errors="0" skipped="0" time="0.463968566">
+        <testcase classname="src/session/useSessionData.test.ts" name="useSessionData &gt; returns null session when id is null" time="0.022772329">
         </testcase>
-        <testcase classname="src/shell/useBuildInfo.test.ts" name="useBuildInfo &gt; returns null on fetch error" time="0.052988764">
+        <testcase classname="src/session/useSessionData.test.ts" name="useSessionData &gt; fetches session data when id is provided" time="0.057692345">
         </testcase>
-        <testcase classname="src/shell/useBuildInfo.test.ts" name="useBuildInfo &gt; returns null on non-ok response" time="0.052412805">
+        <testcase classname="src/session/useSessionData.test.ts" name="useSessionData &gt; starts loading when id is provided" time="0.002543609">
         </testcase>
-    </testsuite>
-    <testsuite name="src/shell/useResizableSidebar.test.ts" timestamp="2026-02-18T05:57:57.210Z" hostname="runnervmjduv7" tests="17" failures="0" errors="0" skipped="0" time="0.083947664">
-        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; returns default width of 300" time="0.029887533">
+        <testcase classname="src/session/useSessionData.test.ts" name="useSessionData &gt; sets error on fetch failure" time="0.054133898">
         </testcase>
-        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; reads width from localStorage" time="0.00350449">
+        <testcase classname="src/session/useSessionData.test.ts" name="useSessionData &gt; resets session when id changes to null" time="0.054198085">
         </testcase>
-        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; clamps stored width to min" time="0.004988868">
+        <testcase classname="src/session/useSessionData.test.ts" name="useSessionData &gt; refetches when id changes" time="0.106057917">
         </testcase>
-        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; clamps stored width to max" time="0.004290511">
+        <testcase classname="src/session/useSessionData.test.ts" name="useSessionData &gt; patchTitle survives refresh for the same session" time="0.055800507">
         </testcase>
-        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; falls back to default for invalid localStorage value" time="0.005322432">
-        </testcase>
-        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; resets to default on double-click" time="0.004752857">
-        </testcase>
-        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; provides expected divider event handlers" time="0.001766116">
-        </testcase>
-        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; returns isCollapsed false by default" time="0.002079984">
-        </testcase>
-        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; reads collapsed state from localStorage" time="0.002928361">
-        </testcase>
-        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; toggleCollapsed flips state and persists" time="0.003011066">
-        </testcase>
-        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; preserves stored width after collapse/uncollapse round-trip" time="0.002352514">
-        </testcase>
-        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; double-click uncollapses when collapsed" time="0.002189047">
-        </testcase>
-        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; simulates drag to resize via document events" time="0.005173083">
-        </testcase>
-        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; clamps during drag to min/max" time="0.002739508">
-        </testcase>
-        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; sets hasMovedRef to true after drag" time="0.00260736">
-        </testcase>
-        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; hasMovedRef stays false for click without move" time="0.00211058">
-        </testcase>
-        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; ignores right-click on pointer down" time="0.00142102">
+        <testcase classname="src/session/useSessionData.test.ts" name="useSessionData &gt; title override clears when switching sessions" time="0.108428333">
         </testcase>
     </testsuite>
-    <testsuite name="src/themes/useTheme.test.ts" timestamp="2026-02-18T05:57:57.213Z" hostname="runnervmjduv7" tests="8" failures="0" errors="0" skipped="0" time="0.044507085">
-        <testcase classname="src/themes/useTheme.test.ts" name="useTheme &gt; defaults to claude theme" time="0.022597405">
+    <testsuite name="src/session/useSessionList.test.ts" timestamp="2026-02-18T14:30:10.400Z" hostname="runnervmjduv7" tests="5" failures="0" errors="0" skipped="0" time="0.251809642">
+        <testcase classname="src/session/useSessionList.test.ts" name="useSessionList &gt; starts in loading state" time="0.030377759">
         </testcase>
-        <testcase classname="src/themes/useTheme.test.ts" name="useTheme &gt; reads initial theme from localStorage" time="0.002065337">
+        <testcase classname="src/session/useSessionList.test.ts" name="useSessionList &gt; fetches sessions on mount" time="0.055463325">
         </testcase>
-        <testcase classname="src/themes/useTheme.test.ts" name="useTheme &gt; falls back to claude when localStorage has no value" time="0.002303012">
+        <testcase classname="src/session/useSessionList.test.ts" name="useSessionList &gt; sets error on fetch failure" time="0.053920973">
         </testcase>
-        <testcase classname="src/themes/useTheme.test.ts" name="useTheme &gt; sets data-theme attribute on document element" time="0.003281854">
+        <testcase classname="src/session/useSessionList.test.ts" name="useSessionList &gt; passes deleted=true param when showDeleted is true" time="0.054304969">
         </testcase>
-        <testcase classname="src/themes/useTheme.test.ts" name="useTheme &gt; updates theme when setTheme is called" time="0.004908239">
+        <testcase classname="src/session/useSessionList.test.ts" name="useSessionList &gt; does not pass deleted param when showDeleted is false" time="0.054990335">
         </testcase>
-        <testcase classname="src/themes/useTheme.test.ts" name="useTheme &gt; persists theme change to localStorage" time="0.001952525">
+    </testsuite>
+    <testsuite name="src/shared/CodeBlock.test.tsx" timestamp="2026-02-18T14:30:10.401Z" hostname="runnervmjduv7" tests="15" failures="0" errors="0" skipped="0" time="0.155106243">
+        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; renders code content in a code element" time="0.062345078">
         </testcase>
-        <testcase classname="src/themes/useTheme.test.ts" name="useTheme &gt; updates data-theme attribute on theme change" time="0.002956234">
+        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; renders with code-block class" time="0.006602171">
         </testcase>
-        <testcase classname="src/themes/useTheme.test.ts" name="useTheme &gt; returns setTheme function" time="0.00204615">
+        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; renders pre element with code-block__pre class" time="0.005786993">
+        </testcase>
+        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; shows language label for non-text languages" time="0.007701098">
+        </testcase>
+        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; does not show language label for text" time="0.004995959">
+        </testcase>
+        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; does not show language label when language defaults to text" time="0.00339218">
+        </testcase>
+        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; adds error class when isError is true" time="0.003768892">
+        </testcase>
+        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; does not add error class when isError is false" time="0.005083692">
+        </testcase>
+        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; resolves ts to typescript via langMap" time="0.008181467">
+        </testcase>
+        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; resolves tsx to tsx via langMap" time="0.009425642">
+        </testcase>
+        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; resolves sh to bash via langMap" time="0.012012271">
+        </testcase>
+        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; resolves shell to bash via langMap" time="0.009108561">
+        </testcase>
+        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; resolves plaintext to text (no language label)" time="0.003324945">
+        </testcase>
+        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; resolves empty string to text" time="0.003717797">
+        </testcase>
+        <testcase classname="src/shared/CodeBlock.test.tsx" name="CodeBlock &gt; passes through unknown languages as-is" time="0.006914514">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/shared/MarkdownContent.test.tsx" timestamp="2026-02-18T14:30:10.404Z" hostname="runnervmjduv7" tests="6" failures="0" errors="0" skipped="0" time="0.109236198">
+        <testcase classname="src/shared/MarkdownContent.test.tsx" name="MarkdownContent &gt; renders plain text content" time="0.058595875">
+        </testcase>
+        <testcase classname="src/shared/MarkdownContent.test.tsx" name="MarkdownContent &gt; renders markdown bold text" time="0.009805326">
+        </testcase>
+        <testcase classname="src/shared/MarkdownContent.test.tsx" name="MarkdownContent &gt; renders nothing when content is empty" time="0.002696926">
+        </testcase>
+        <testcase classname="src/shared/MarkdownContent.test.tsx" name="MarkdownContent &gt; renders inline code" time="0.007699659">
+        </testcase>
+        <testcase classname="src/shared/MarkdownContent.test.tsx" name="MarkdownContent &gt; renders markdown lists" time="0.011902931">
+        </testcase>
+        <testcase classname="src/shared/MarkdownContent.test.tsx" name="MarkdownContent &gt; renders fenced code blocks without language as code blocks, not inline code" time="0.016111875">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/shared/Toast.test.tsx" timestamp="2026-02-18T14:30:10.406Z" hostname="runnervmjduv7" tests="6" failures="0" errors="0" skipped="0" time="0.355437288">
+        <testcase classname="src/shared/Toast.test.tsx" name="ToastContainer &gt; renders nothing when toasts array is empty" time="0.033848228">
+        </testcase>
+        <testcase classname="src/shared/Toast.test.tsx" name="ToastContainer &gt; renders toast messages" time="0.027953322">
+        </testcase>
+        <testcase classname="src/shared/Toast.test.tsx" name="ToastContainer &gt; renders Undo button when onUndo is provided" time="0.0047704">
+        </testcase>
+        <testcase classname="src/shared/Toast.test.tsx" name="ToastContainer &gt; does not render Undo button when onUndo is not provided" time="0.004398016">
+        </testcase>
+        <testcase classname="src/shared/Toast.test.tsx" name="ToastContainer &gt; calls onUndo and onDismiss when Undo is clicked" time="0.249235411">
+        </testcase>
+        <testcase classname="src/shared/Toast.test.tsx" name="ToastContainer &gt; calls onDismiss when close button is clicked" time="0.032644381">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/shared/ToolUseBlock.test.tsx" timestamp="2026-02-18T14:30:10.407Z" hostname="runnervmjduv7" tests="34" failures="0" errors="0" skipped="0" time="0.479528514">
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; returns command for Bash tool" time="0.002674043">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; truncates long Bash commands to 100 chars" time="0.001686032">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; returns file_path for Read tool" time="0.000247982">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; returns file_path for Write tool" time="0.000338792">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; returns file_path for Edit tool" time="0.00020421">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; returns pattern for Glob tool" time="0.000202778">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; returns formatted string for Grep tool" time="0.000221573">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; returns description for Task tool" time="0.000189062">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; returns url for WebFetch tool" time="0.000532872">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; returns query for WebSearch tool" time="0.000218346">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; returns empty string for unknown tool" time="0.000189784">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; handles missing input fields gracefully" time="0.000249205">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="toolSummary &gt; handles Grep with no path" time="0.000267549">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns typescript for .ts files" time="0.000277246">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns typescript for .tsx files" time="0.000543162">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns javascript for .js files" time="0.00017675">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns javascript for .jsx files" time="0.000167262">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns go for .go files" time="0.000384156">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns python for .py files" time="0.000171389">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns rust for .rs files" time="0.000175087">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns json for .json files" time="0.000157613">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns yaml for .yaml and .yml files" time="0.000194151">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns bash for .sh files" time="0.000184433">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns text for unknown extensions" time="0.000163985">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; returns text for files without extension" time="0.000154138">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="guessLanguage &gt; handles paths with directories" time="0.000146172">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="ToolUseBlock component &gt; renders the tool name" time="0.034819696">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="ToolUseBlock component &gt; renders the summary text" time="0.004441335">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="ToolUseBlock component &gt; is collapsed by default" time="0.003398222">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="ToolUseBlock component &gt; expands on click to show body" time="0.329990556">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="ToolUseBlock component &gt; collapses again on second click" time="0.044915613">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="ToolUseBlock component &gt; does not render summary for unknown tool" time="0.002484649">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="ToolUseBlock component &gt; shows Glob detail when expanded" time="0.022855919">
+        </testcase>
+        <testcase classname="src/shared/ToolUseBlock.test.tsx" name="ToolUseBlock component &gt; shows JSON for unsupported tool when expanded" time="0.023333325">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/shell/Toolbar.test.tsx" timestamp="2026-02-18T14:30:10.413Z" hostname="runnervmjduv7" tests="25" failures="0" errors="0" skipped="0" time="0.607981133">
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; renders the brand name" time="0.038954265">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; renders session title when provided" time="0.005280366">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; does not render session title when not provided" time="0.011097563">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; renders theme buttons" time="0.006006343">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; calls onThemeChange when Claude button is clicked" time="0.236363671">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; calls onThemeChange when Copilot button is clicked" time="0.029811447">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; marks Claude theme button as active when theme is claude" time="0.00385591">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; marks Copilot theme button as active when theme is copilot" time="0.003454382">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; renders Undo and Redo buttons when provided" time="0.00801233">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; Undo button is disabled when canUndo is false" time="0.005079121">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; Undo button is enabled when canUndo is true" time="0.005312856">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; calls onUndo when Undo is clicked" time="0.030778049">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; renders Export button when onExport is provided" time="0.005403676">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; does not render Export button when onExport is not provided" time="0.003667599">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; does not render Export button when hasSession is false" time="0.003515235">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; calls onExport when Export button is clicked" time="0.043823715">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; shows branch name as descriptor for non-main branch" time="0.007378449">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; shows version as descriptor when branch is &quot;main&quot;" time="0.008925643">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; shows version as descriptor when branch is undefined" time="0.004979565">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; shows &quot;dev&quot; without v prefix for non-semver version" time="0.003635098">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; shows CI version without v prefix" time="0.003786921">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; shows no descriptor when both version and branch are undefined" time="0.00380781">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; renders Collapse dropdown when toggle handlers provided" time="0.008370438">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; renders and toggles Hide file reads option in collapse dropdown" time="0.119686632">
+        </testcase>
+        <testcase classname="src/shell/Toolbar.test.tsx" name="Toolbar &gt; shows save state indicator" time="0.004437113">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/shell/useBuildInfo.test.ts" timestamp="2026-02-18T14:30:10.418Z" hostname="runnervmjduv7" tests="3" failures="0" errors="0" skipped="0" time="0.185156123">
+        <testcase classname="src/shell/useBuildInfo.test.ts" name="useBuildInfo &gt; returns fetched build info" time="0.07734799">
+        </testcase>
+        <testcase classname="src/shell/useBuildInfo.test.ts" name="useBuildInfo &gt; returns null on fetch error" time="0.053138733">
+        </testcase>
+        <testcase classname="src/shell/useBuildInfo.test.ts" name="useBuildInfo &gt; returns null on non-ok response" time="0.052486903">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/shell/useResizableSidebar.test.ts" timestamp="2026-02-18T14:30:10.419Z" hostname="runnervmjduv7" tests="17" failures="0" errors="0" skipped="0" time="0.089731245">
+        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; returns default width of 300" time="0.030673685">
+        </testcase>
+        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; reads width from localStorage" time="0.003224493">
+        </testcase>
+        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; clamps stored width to min" time="0.002555595">
+        </testcase>
+        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; clamps stored width to max" time="0.004305879">
+        </testcase>
+        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; falls back to default for invalid localStorage value" time="0.002033">
+        </testcase>
+        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; resets to default on double-click" time="0.005400861">
+        </testcase>
+        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; provides expected divider event handlers" time="0.004951022">
+        </testcase>
+        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; returns isCollapsed false by default" time="0.008109942">
+        </testcase>
+        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; reads collapsed state from localStorage" time="0.00364637">
+        </testcase>
+        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; toggleCollapsed flips state and persists" time="0.003709327">
+        </testcase>
+        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; preserves stored width after collapse/uncollapse round-trip" time="0.002344252">
+        </testcase>
+        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; double-click uncollapses when collapsed" time="0.002291914">
+        </testcase>
+        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; simulates drag to resize via document events" time="0.004860123">
+        </testcase>
+        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; clamps during drag to min/max" time="0.002664167">
+        </testcase>
+        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; sets hasMovedRef to true after drag" time="0.002635454">
+        </testcase>
+        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; hasMovedRef stays false for click without move" time="0.002158866">
+        </testcase>
+        <testcase classname="src/shell/useResizableSidebar.test.ts" name="useResizableSidebar &gt; ignores right-click on pointer down" time="0.001385493">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/themes/useTheme.test.ts" timestamp="2026-02-18T14:30:10.422Z" hostname="runnervmjduv7" tests="8" failures="0" errors="0" skipped="0" time="0.042087161">
+        <testcase classname="src/themes/useTheme.test.ts" name="useTheme &gt; defaults to claude theme" time="0.022886196">
+        </testcase>
+        <testcase classname="src/themes/useTheme.test.ts" name="useTheme &gt; reads initial theme from localStorage" time="0.002156401">
+        </testcase>
+        <testcase classname="src/themes/useTheme.test.ts" name="useTheme &gt; falls back to claude when localStorage has no value" time="0.002048848">
+        </testcase>
+        <testcase classname="src/themes/useTheme.test.ts" name="useTheme &gt; sets data-theme attribute on document element" time="0.002713367">
+        </testcase>
+        <testcase classname="src/themes/useTheme.test.ts" name="useTheme &gt; updates theme when setTheme is called" time="0.00463144">
+        </testcase>
+        <testcase classname="src/themes/useTheme.test.ts" name="useTheme &gt; persists theme change to localStorage" time="0.002025592">
+        </testcase>
+        <testcase classname="src/themes/useTheme.test.ts" name="useTheme &gt; updates data-theme attribute on theme change" time="0.001922256">
+        </testcase>
+        <testcase classname="src/themes/useTheme.test.ts" name="useTheme &gt; returns setTheme function" time="0.001541392">
         </testcase>
     </testsuite>
 </testsuites>
