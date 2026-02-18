@@ -71,7 +71,7 @@ function SessionMenu({ sessionId, isDeleted, onDelete, onRestore, onRename, onEx
               role="menuitem"
               onClick={(e) => { e.stopPropagation(); onDelete(sessionId); onClose(); }}
             >
-              Archive
+              Hide
             </button>
           )}
         </>
@@ -168,7 +168,7 @@ function ArchivedSection({ children }: { children: React.ReactNode }) {
         onClick={() => setExpanded(!expanded)}
       >
         <span className="session-list__archived-icon">{expanded ? '\u25BE' : '\u25B8'}</span>
-        Archived
+        Hidden
       </button>
       {expanded && <div className="session-list__items">{children}</div>}
     </div>

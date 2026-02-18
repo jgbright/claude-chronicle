@@ -48,7 +48,7 @@ export function SessionFilters({
           checked={showDeleted}
           onChange={(e) => onShowDeletedChange(e.target.checked)}
         />
-        Show hidden
+        Show hidden sessions
       </label>
       {isSearching && <div className="session-filters__loading">Searching...</div>}
     </div>
