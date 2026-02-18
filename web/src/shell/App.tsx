@@ -38,12 +38,14 @@ export default function App() {
   // View-state toggles (reset on session change)
   const [collapseThinking, setCollapseThinking] = useState(false);
   const [collapseToolResults, setCollapseToolResults] = useState(false);
+  const [collapseFileReads, setCollapseFileReads] = useState(false);
   const [showHiddenBlocks, setShowHiddenBlocks] = useState(false);
   const [prevSessionId, setPrevSessionId] = useState<string | null>(null);
   if (selectedId !== prevSessionId) {
     setPrevSessionId(selectedId);
     setCollapseThinking(false);
     setCollapseToolResults(false);
+    setCollapseFileReads(false);
     setShowHiddenBlocks(false);
   }
 
@@ -155,6 +157,8 @@ export default function App() {
             onToggleCollapseThinking={session ? () => setCollapseThinking((v) => !v) : undefined}
             collapseToolResults={collapseToolResults}
             onToggleCollapseToolResults={session ? () => setCollapseToolResults((v) => !v) : undefined}
+            collapseFileReads={collapseFileReads}
+            onToggleCollapseFileReads={session ? () => setCollapseFileReads((v) => !v) : undefined}
             showHidden={showHiddenBlocks}
             onToggleShowHidden={session ? () => setShowHiddenBlocks((v) => !v) : undefined}
             hasDeleteEdits={hasDeleteEdits}
@@ -229,6 +233,7 @@ export default function App() {
                   showDeleted={showHiddenBlocks}
                   collapseThinking={collapseThinking}
                   collapseToolResults={collapseToolResults}
+                  collapseFileReads={collapseFileReads}
                   onToast={showToast}
                 />
               ) : null}

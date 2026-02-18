@@ -161,11 +161,31 @@ describe('Toolbar', () => {
     renderToolbar({
       onToggleCollapseThinking: vi.fn(),
       onToggleCollapseToolResults: vi.fn(),
+      onToggleCollapseFileReads: vi.fn(),
       onToggleShowHidden: vi.fn(),
     });
     expect(screen.getByText(/Collapse/)).toBeInTheDocument();
   });
 
+
+
+  it('renders and toggles Hide file reads option in collapse dropdown', async () => {
+    const user = userEvent.setup();
+    const onToggleCollapseFileReads = vi.fn();
+    renderToolbar({
+      onToggleCollapseThinking: vi.fn(),
+      onToggleCollapseToolResults: vi.fn(),
+      onToggleCollapseFileReads,
+      onToggleShowHidden: vi.fn(),
+    });
+
+    await user.click(screen.getByRole('button', { name: /Collapse/ }));
+
+    const hideFileReads = screen.getByLabelText('Hide file reads');
+    expect(hideFileReads).toBeInTheDocument();
+    await user.click(hideFileReads);
+    expect(onToggleCollapseFileReads).toHaveBeenCalledTimes(1);
+  });
   it('shows save state indicator', () => {
     renderToolbar({ saveState: 'saved' });
     expect(screen.getByText(/Saved/)).toBeInTheDocument();

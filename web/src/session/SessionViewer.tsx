@@ -19,6 +19,7 @@ interface Props {
   showDeleted?: boolean;
   collapseThinking?: boolean;
   collapseToolResults?: boolean;
+  collapseFileReads?: boolean;
   onToast?: (message: string, onUndo?: () => void) => void;
 }
 
@@ -29,6 +30,7 @@ export function SessionViewer({
   showDeleted = false,
   collapseThinking = false,
   collapseToolResults = false,
+  collapseFileReads = false,
   onToast,
 }: Props) {
   const { MessageBlock, AnnotationBlock, CollapsedGroup } = useThemeComponents();
@@ -91,8 +93,9 @@ export function SessionViewer({
     () => applyManifest(session.messages, manifest, {
       showDeleted: effectiveShowDeleted,
       collapseAllToolResults: collapseToolResults,
+      collapseReadResults: collapseFileReads,
     }),
-    [session.messages, manifest, effectiveShowDeleted, collapseToolResults]
+    [session.messages, manifest, effectiveShowDeleted, collapseToolResults, collapseFileReads]
   );
 
   const handleHide = useCallback((messageId: string) => {

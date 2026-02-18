@@ -10,16 +10,43 @@ export interface TransformedMessage extends Message {
   isDeleted?: boolean;
 }
 
+interface TransformOptions {
+  showDeleted?: boolean;
+  collapseAllToolResults?: boolean;
+  collapseReadResults?: boolean;
+}
+
+function isFileReadToolResult(message: Message): boolean {
+  if (message.role !== 'user' || !message.toolResults?.length) {
+    return false;
+  }
+
+  return message.toolResults.some((toolResult) => {
+    const result = toolResult.result;
+    if (!result || result.type !== 'text') {
+      return false;
+    }
+
+    const hasFileIdentity = Boolean(result.filePath || result.file || result.originalFile);
+    const hasReadPayload = typeof result.content === 'string' || Boolean(result.truncated);
+    return hasFileIdentity && hasReadPayload;
+  });
+}
+
 export function applyManifest(
   messages: Message[],
   manifest: EditManifest | null,
-  options?: { showDeleted?: boolean; collapseAllToolResults?: boolean }
+  options?: TransformOptions
 ): TransformedMessage[] {
   if (!messages) {
     return [];
   }
 
-  if ((!manifest || !manifest.edits || manifest.edits.length === 0) && !options?.collapseAllToolResults) {
+  if (
+    (!manifest || !manifest.edits || manifest.edits.length === 0) &&
+    !options?.collapseAllToolResults &&
+    !options?.collapseReadResults
+  ) {
     return messages;
   }
 
@@ -63,14 +90,15 @@ export function applyManifest(
   }
 
   // Bulk-collapse all tool-result user messages (view-state toggle, not manifest edit)
-  if (options?.collapseAllToolResults) {
+  if (options?.collapseAllToolResults || options?.collapseReadResults) {
     const toolResultIds: string[] = [];
     for (const msg of messages) {
       if (
         msg.role === 'user' &&
         msg.toolResults && msg.toolResults.length > 0 &&
         !deleted.has(msg.id) &&
-        !collapsed.has(msg.id)
+        !collapsed.has(msg.id) &&
+        (options?.collapseAllToolResults || isFileReadToolResult(msg))
       ) {
         toolResultIds.push(msg.id);
       }
@@ -81,7 +109,7 @@ export function applyManifest(
       collapseGroupSizes.set(first, toolResultIds.length);
       collapseGroupBlockIds.set(first, new Set(toolResultIds));
       for (const id of toolResultIds) {
-        collapsed.set(id, `${toolResultIds.length} tool results`);
+        collapsed.set(id, options?.collapseAllToolResults ? `${toolResultIds.length} tool results` : `${toolResultIds.length} file reads`);
       }
     }
   }
