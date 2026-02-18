@@ -116,17 +116,17 @@ describe('SessionList', () => {
     expect(menuBtn).not.toBeNull();
   });
 
-  it('shows Archive option in menu when clicking three-dot', async () => {
+  it('shows Hide option in menu when clicking three-dot', async () => {
     const user = userEvent.setup();
     const sessions = [createSessionInfo({ id: 's1', title: 'Test' })];
     render(
       <SessionList sessions={sessions} selectedId={null} onSelect={vi.fn()} onDelete={vi.fn()} />
     );
     await user.click(screen.getByTitle('Session actions'));
-    expect(screen.getByText('Archive')).toBeInTheDocument();
+    expect(screen.getByText('Hide')).toBeInTheDocument();
   });
 
-  it('calls onDelete when Archive is clicked from menu', async () => {
+  it('calls onDelete when Hide is clicked from menu', async () => {
     const user = userEvent.setup();
     const onDelete = vi.fn();
     const sessions = [createSessionInfo({ id: 's1', title: 'Test' })];
@@ -134,7 +134,7 @@ describe('SessionList', () => {
       <SessionList sessions={sessions} selectedId={null} onSelect={vi.fn()} onDelete={onDelete} />
     );
     await user.click(screen.getByTitle('Session actions'));
-    await user.click(screen.getByText('Archive'));
+    await user.click(screen.getByText('Hide'));
     expect(onDelete).toHaveBeenCalledWith('s1');
   });
 
@@ -144,8 +144,8 @@ describe('SessionList', () => {
     render(
       <SessionList sessions={sessions} selectedId={null} onSelect={vi.fn()} onRestore={vi.fn()} />
     );
-    // Expand the "Archived" section first
-    await user.click(screen.getByText('Archived'));
+    // Expand the "Hidden" section first
+    await user.click(screen.getByText('Hidden'));
     await user.click(screen.getByTitle('Session actions'));
     expect(screen.getByText('Restore')).toBeInTheDocument();
   });
@@ -157,13 +157,13 @@ describe('SessionList', () => {
     render(
       <SessionList sessions={sessions} selectedId={null} onSelect={vi.fn()} onRestore={onRestore} />
     );
-    await user.click(screen.getByText('Archived'));
+    await user.click(screen.getByText('Hidden'));
     await user.click(screen.getByTitle('Session actions'));
     await user.click(screen.getByText('Restore'));
     expect(onRestore).toHaveBeenCalledWith('s1');
   });
 
-  it('separates archived sessions into collapsible section', () => {
+  it('separates hidden sessions into collapsible section', () => {
     const sessions = [
       createSessionInfo({ id: 's1', title: 'Active', deleted: false }),
       createSessionInfo({ id: 's2', title: 'Gone', deleted: true }),
@@ -172,6 +172,6 @@ describe('SessionList', () => {
       <SessionList sessions={sessions} selectedId={null} onSelect={vi.fn()} />
     );
     expect(screen.getByText('Active')).toBeInTheDocument();
-    expect(screen.getByText('Archived')).toBeInTheDocument();
+    expect(screen.getByText('Hidden')).toBeInTheDocument();
   });
 });

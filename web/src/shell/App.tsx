@@ -89,7 +89,7 @@ export default function App() {
     await deleteSession(id);
     if (id === selectedId) setSelectedId(null);
     refreshSessions();
-    showToast('Session archived', () => {
+    showToast('Session hidden', () => {
       restoreSession(id).then(() => refreshSessions());
     });
   }, [selectedId, refreshSessions, showToast]);
