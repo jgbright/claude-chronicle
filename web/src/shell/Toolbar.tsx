@@ -22,6 +22,8 @@ interface Props {
   onToggleCollapseThinking?: () => void;
   collapseToolResults?: boolean;
   onToggleCollapseToolResults?: () => void;
+  collapseFileReads?: boolean;
+  onToggleCollapseFileReads?: () => void;
   showHidden?: boolean;
   onToggleShowHidden?: () => void;
   hasDeleteEdits?: boolean;
@@ -39,12 +41,15 @@ function buildDescriptor(version?: string, branch?: string): string | null {
 function CollapseDropdown({
   collapseThinking, onToggleCollapseThinking,
   collapseToolResults, onToggleCollapseToolResults,
+  collapseFileReads, onToggleCollapseFileReads,
   showHidden, onToggleShowHidden, hasDeleteEdits,
 }: {
   collapseThinking: boolean;
   onToggleCollapseThinking: () => void;
   collapseToolResults: boolean;
   onToggleCollapseToolResults: () => void;
+  collapseFileReads: boolean;
+  onToggleCollapseFileReads: () => void;
   showHidden: boolean;
   onToggleShowHidden: () => void;
   hasDeleteEdits: boolean;
@@ -63,7 +68,7 @@ function CollapseDropdown({
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
 
-  const activeCount = [collapseThinking, collapseToolResults, showHidden].filter(Boolean).length;
+  const activeCount = [collapseThinking, collapseToolResults, collapseFileReads, showHidden].filter(Boolean).length;
 
   return (
     <div className="toolbar__dropdown" ref={ref}>
@@ -91,6 +96,14 @@ function CollapseDropdown({
               onChange={onToggleCollapseToolResults}
             />
             Hide tool results
+          </label>
+          <label className="toolbar__dropdown-item">
+            <input
+              type="checkbox"
+              checked={collapseFileReads}
+              onChange={onToggleCollapseFileReads}
+            />
+            Hide file reads
           </label>
           <label className={`toolbar__dropdown-item${!hasDeleteEdits ? ' toolbar__dropdown-item--disabled' : ''}`}>
             <input
@@ -134,6 +147,7 @@ export function Toolbar({
   onUndo, onRedo, canUndo = false, canRedo = false,
   collapseThinking = false, onToggleCollapseThinking,
   collapseToolResults = false, onToggleCollapseToolResults,
+  collapseFileReads = false, onToggleCollapseFileReads,
   showHidden = false, onToggleShowHidden,
   hasDeleteEdits = false,
   saveState = 'idle', onRetrySave,
@@ -158,12 +172,14 @@ export function Toolbar({
                 {isCollapsed ? 'Unfocus' : 'Focus'}
               </button>
             )}
-            {onToggleCollapseThinking && onToggleCollapseToolResults && onToggleShowHidden && (
+            {onToggleCollapseThinking && onToggleCollapseToolResults && onToggleCollapseFileReads && onToggleShowHidden && (
               <CollapseDropdown
                 collapseThinking={collapseThinking}
                 onToggleCollapseThinking={onToggleCollapseThinking}
                 collapseToolResults={collapseToolResults}
                 onToggleCollapseToolResults={onToggleCollapseToolResults}
+                collapseFileReads={collapseFileReads}
+                onToggleCollapseFileReads={onToggleCollapseFileReads}
                 showHidden={showHidden}
                 onToggleShowHidden={onToggleShowHidden}
                 hasDeleteEdits={hasDeleteEdits}

@@ -170,6 +170,19 @@ describe('SessionViewer', () => {
     expect(screen.queryByText('Original')).not.toBeInTheDocument();
   });
 
+
+  it('collapses file reads without collapsing other tool results when collapseFileReads is true', () => {
+    const session = createParsedSession({
+      messages: [
+        createUserMessage({ id: 'read1', toolResults: [{ toolUseId: 't1', content: 'output', result: { type: 'text', filePath: '/tmp/app.ts', content: 'const x = 1;' } }] }),
+        createUserMessage({ id: 'cmd1', toolResults: [{ toolUseId: 't2', content: 'output2', result: { type: 'text', stdout: 'npm test' } }] }),
+      ],
+    });
+    const { container } = renderViewer({ session, collapseFileReads: true });
+    expect(container.querySelector('.claude-collapsed')).not.toBeNull();
+    expect(container.querySelectorAll('.claude-collapsed').length).toBe(1);
+  });
+
   it('show deleted toggle renders ghost blocks with restore button', () => {
     const session = createParsedSession({
       messages: [

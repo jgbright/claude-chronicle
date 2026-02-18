@@ -380,5 +380,34 @@ describe('applyManifest', () => {
       expect(result[0].collapseSummary).toBe('1 tool results');
       expect(result[1].id).toBe('a1');
     });
+
+    it('collapses only file-read tool results when collapseReadResults is enabled', () => {
+      const messages = [
+        createUserMessage({ id: 'read1', textContent: undefined, toolResults: [{ toolUseId: 't1', content: 'output', result: { type: 'text', filePath: '/tmp/a.txt', content: 'file contents' } }] }),
+        createUserMessage({ id: 'cmd1', textContent: undefined, toolResults: [{ toolUseId: 't2', content: 'output2', result: { type: 'text', stdout: 'pwd' } }] }),
+        createUserMessage({ id: 'read2', textContent: undefined, toolResults: [{ toolUseId: 't3', content: 'output3', result: { type: 'text', file: 'README.md', truncated: true } }] }),
+      ];
+      const result = applyManifest(messages, null, { collapseReadResults: true });
+      expect(result).toHaveLength(2);
+      expect(result[0].id).toBe('read1');
+      expect(result[0].isCollapsed).toBe(true);
+      expect(result[0].collapseSummary).toBe('2 file reads');
+      expect(result[0].collapsedMessages?.map((m) => m.id)).toEqual(['read1', 'read2']);
+      expect(result[1].id).toBe('cmd1');
+      expect(result[1].isCollapsed).toBeUndefined();
+    });
+
+    it('does not collapse generic tool output when collapseReadResults is enabled', () => {
+      const messages = [
+        createUserMessage({ id: 'cmd1', textContent: undefined, toolResults: [{ toolUseId: 't1', content: 'output', result: { type: 'text', stdout: 'npm test' } }] }),
+        createUserMessage({ id: 'cmd2', textContent: undefined, toolResults: [{ toolUseId: 't2', content: 'output2', result: { type: 'text', content: 'plain output' } }] }),
+      ];
+      const result = applyManifest(messages, null, { collapseReadResults: true });
+      expect(result).toHaveLength(2);
+      expect(result[0].id).toBe('cmd1');
+      expect(result[1].id).toBe('cmd2');
+      expect(result[0].isCollapsed).toBeUndefined();
+      expect(result[1].isCollapsed).toBeUndefined();
+    });
   });
 });
