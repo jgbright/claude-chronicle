@@ -118,13 +118,7 @@ export default function App() {
     }
   }, [selectedId, theme, showToast]);
 
-  const handleRenameSession = useCallback(async (id: string) => {
-    const target = sessions.find((s) => s.id === id);
-    const currentTitle = target?.title || target?.projectName || '';
-    const input = window.prompt('Rename session', currentTitle);
-    if (input === null) return;
-
-    const title = input.trim();
+  const handleRenameSession = useCallback(async (id: string, title: string) => {
     try {
       await updateMetadata(id, { title });
       if (id === selectedId) patchTitle(title);
@@ -133,7 +127,7 @@ export default function App() {
     } catch {
       showToast('Rename failed');
     }
-  }, [sessions, selectedId, patchTitle, refreshSessions, showToast]);
+  }, [selectedId, patchTitle, refreshSessions, showToast]);
 
   return (
     <ThemeComponentProvider value={themeComponents}>

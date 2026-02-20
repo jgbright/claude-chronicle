@@ -144,8 +144,7 @@ describe('SessionList', () => {
     render(
       <SessionList sessions={sessions} selectedId={null} onSelect={vi.fn()} onRestore={vi.fn()} />
     );
-    // Expand the "Hidden" section first
-    await user.click(screen.getByText('Hidden'));
+    // Hidden section starts expanded by default
     await user.click(screen.getByTitle('Session actions'));
     expect(screen.getByText('Restore')).toBeInTheDocument();
   });
@@ -157,21 +156,25 @@ describe('SessionList', () => {
     render(
       <SessionList sessions={sessions} selectedId={null} onSelect={vi.fn()} onRestore={onRestore} />
     );
-    await user.click(screen.getByText('Hidden'));
+    // Hidden section starts expanded by default
     await user.click(screen.getByTitle('Session actions'));
     await user.click(screen.getByText('Restore'));
     expect(onRestore).toHaveBeenCalledWith('s1');
   });
 
-  it('separates hidden sessions into collapsible section', () => {
+  it('renders hidden sessions inline without a separate section', () => {
     const sessions = [
       createSessionInfo({ id: 's1', title: 'Active', deleted: false }),
       createSessionInfo({ id: 's2', title: 'Gone', deleted: true }),
     ];
-    render(
+    const { container } = render(
       <SessionList sessions={sessions} selectedId={null} onSelect={vi.fn()} />
     );
     expect(screen.getByText('Active')).toBeInTheDocument();
-    expect(screen.getByText('Hidden')).toBeInTheDocument();
+    expect(screen.getByText('Gone')).toBeInTheDocument();
+    expect(screen.queryByText('Hidden')).not.toBeInTheDocument();
+    // Both render in the same list container
+    const items = container.querySelectorAll('.session-list__items');
+    expect(items).toHaveLength(1);
   });
 });

@@ -216,7 +216,6 @@ describe('App', () => {
     const sessions = [
       createSessionInfo({ id: 'sess-rename', projectName: 'Rename Project', title: 'Old Title' }),
     ];
-    const promptSpy = vi.spyOn(window, 'prompt').mockReturnValue('New Title');
     const refresh = vi.fn();
     vi.mocked(useSessionList).mockReturnValue({ sessions, loading: false, error: null, refresh, isSearching: false });
 
@@ -225,11 +224,16 @@ describe('App', () => {
     await user.click(screen.getByTitle('Session actions'));
     await user.click(screen.getByText('Rename'));
 
-    expect(promptSpy).toHaveBeenCalledWith('Rename session', 'Old Title');
+    // Inline input should appear pre-filled with current title
+    const input = screen.getByDisplayValue('Old Title');
+    expect(input).toBeInTheDocument();
+
+    // Clear and type new title, then press Enter
+    await user.clear(input);
+    await user.type(input, 'New Title{Enter}');
+
     expect(vi.mocked(updateMetadata)).toHaveBeenCalledWith('sess-rename', { title: 'New Title' });
     expect(refresh).toHaveBeenCalled();
     expect(screen.getByText('Session renamed')).toBeInTheDocument();
-
-    promptSpy.mockRestore();
   });
 });

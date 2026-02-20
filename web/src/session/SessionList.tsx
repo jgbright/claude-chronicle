@@ -8,7 +8,7 @@ interface Props {
   onSelect: (id: string) => void;
   onDelete?: (id: string) => void;
   onRestore?: (id: string) => void;
-  onRename?: (id: string) => void;
+  onRename?: (id: string, newTitle: string) => void;
   onExport?: (id: string) => void;
 }
 
@@ -17,7 +17,7 @@ function SessionMenu({ sessionId, isDeleted, onDelete, onRestore, onRename, onEx
   isDeleted?: boolean;
   onDelete?: (id: string) => void;
   onRestore?: (id: string) => void;
-  onRename?: (id: string) => void;
+  onRename?: () => void;
   onExport?: (id: string) => void;
   onClose: () => void;
 }) {
@@ -51,7 +51,7 @@ function SessionMenu({ sessionId, isDeleted, onDelete, onRestore, onRename, onEx
             <button
               className="session-menu__item"
               role="menuitem"
-              onClick={(e) => { e.stopPropagation(); onRename(sessionId); onClose(); }}
+              onClick={(e) => { e.stopPropagation(); onRename(); onClose(); }}
             >
               Rename
             </button>
@@ -82,9 +82,32 @@ function SessionMenu({ sessionId, isDeleted, onDelete, onRestore, onRename, onEx
 
 export function SessionList({ sessions, selectedId, onSelect, onDelete, onRestore, onRename, onExport }: Props) {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renameDraft, setRenameDraft] = useState('');
+  const renameInputRef = useRef<HTMLInputElement>(null);
 
-  const activeSessions = sessions.filter((s) => !s.deleted);
-  const archivedSessions = sessions.filter((s) => s.deleted);
+  useEffect(() => {
+    if (renamingId && renameInputRef.current) {
+      renameInputRef.current.focus();
+      renameInputRef.current.select();
+    }
+  }, [renamingId]);
+
+  const handleRenameStart = (s: SessionInfo) => {
+    setRenamingId(s.id);
+    setRenameDraft(s.title || s.projectName || '');
+  };
+
+  const handleRenameSave = () => {
+    if (renamingId && onRename) {
+      onRename(renamingId, renameDraft.trim());
+    }
+    setRenamingId(null);
+  };
+
+  const handleRenameCancel = () => {
+    setRenamingId(null);
+  };
 
   const renderItem = (s: SessionInfo) => (
     <div
@@ -95,7 +118,20 @@ export function SessionList({ sessions, selectedId, onSelect, onDelete, onRestor
         className={`session-list__item ${s.id === selectedId ? 'session-list__item--selected' : ''}`}
         onClick={() => onSelect(s.id)}
       >
-        {s.title ? (
+        {renamingId === s.id ? (
+          <input
+            ref={renameInputRef}
+            className="session-list__rename-input"
+            value={renameDraft}
+            onChange={(e) => setRenameDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleRenameSave();
+              else if (e.key === 'Escape') handleRenameCancel();
+            }}
+            onBlur={handleRenameSave}
+            onClick={(e) => e.stopPropagation()}
+          />
+        ) : s.title ? (
           <>
             <div className="session-list__session-title">{s.title}</div>
             <div className="session-list__project-secondary">{s.projectName}</div>
@@ -129,7 +165,7 @@ export function SessionList({ sessions, selectedId, onSelect, onDelete, onRestor
             isDeleted={s.deleted}
             onDelete={onDelete}
             onRestore={onRestore}
-            onRename={onRename}
+            onRename={onRename ? () => handleRenameStart(s) : undefined}
             onExport={onExport}
             onClose={() => setOpenMenuId(null)}
           />
@@ -144,33 +180,10 @@ export function SessionList({ sessions, selectedId, onSelect, onDelete, onRestor
       {sessions.length === 0 ? (
         <div className="session-list__empty">No sessions found</div>
       ) : (
-        <>
-          <div className="session-list__items">
-            {activeSessions.map(renderItem)}
-          </div>
-          {archivedSessions.length > 0 && (
-            <ArchivedSection>
-              {archivedSessions.map(renderItem)}
-            </ArchivedSection>
-          )}
-        </>
+        <div className="session-list__items">
+          {sessions.map(renderItem)}
+        </div>
       )}
-    </div>
-  );
-}
-
-function ArchivedSection({ children }: { children: React.ReactNode }) {
-  const [expanded, setExpanded] = useState(false);
-  return (
-    <div className="session-list__archived">
-      <button
-        className="session-list__archived-toggle"
-        onClick={() => setExpanded(!expanded)}
-      >
-        <span className="session-list__archived-icon">{expanded ? '\u25BE' : '\u25B8'}</span>
-        Hidden
-      </button>
-      {expanded && <div className="session-list__items">{children}</div>}
     </div>
   );
 }
