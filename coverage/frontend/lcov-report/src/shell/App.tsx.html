@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">62.5% </span>
+                <span class="strong">61.85% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>65/104</span>
+                <span class='fraction'>60/97</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">57.97% </span>
+                <span class="strong">62.5% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>40/69</span>
+                <span class='fraction'>40/64</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">29.62% </span>
+                <span class="strong">30.76% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>8/27</span>
+                <span class='fraction'>8/26</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">68.47% </span>
+                <span class="strong">67.81% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>63/92</span>
+                <span class='fraction'>59/87</span>
             </div>
         
             
@@ -304,13 +304,7 @@
 <a name='L239'></a><a href='#L239'>239</a>
 <a name='L240'></a><a href='#L240'>240</a>
 <a name='L241'></a><a href='#L241'>241</a>
-<a name='L242'></a><a href='#L242'>242</a>
-<a name='L243'></a><a href='#L243'>243</a>
-<a name='L244'></a><a href='#L244'>244</a>
-<a name='L245'></a><a href='#L245'>245</a>
-<a name='L246'></a><a href='#L246'>246</a>
-<a name='L247'></a><a href='#L247'>247</a>
-<a name='L248'></a><a href='#L248'>248</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L242'></a><a href='#L242'>242</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -368,7 +362,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">23x</span>
 <span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -431,12 +425,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">23x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -614,8 +602,8 @@ export default function App() {
   );
 &nbsp;
   useEffect(() =&gt; {
-    const handler = <span class="fstat-no" title="function not covered" >(e</span>: KeyboardEvent) =&gt; {
-<span class="cstat-no" title="statement not covered" >      if (e.key === 'Escape' &amp;&amp; isCollapsed) {</span>
+    const handler = (e: KeyboardEvent) =&gt; {
+      <span class="missing-if-branch" title="if path not taken" >I</span>if (e.key === 'Escape' &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >isCollapsed) {</span>
 <span class="cstat-no" title="statement not covered" >        toggleCollapsed();</span>
       }
     };
@@ -677,13 +665,7 @@ export default function App() {
     }
   }, [selectedId, theme, showToast]);
 &nbsp;
-  const handleRenameSession = useCallback(async (id: string) =&gt; {
-    const target = sessions.find((s) =&gt; s.id === id);
-    const currentTitle = target?.title || <span class="branch-1 cbranch-no" title="branch not covered" >target?.projectName || <span class="branch-2 cbranch-no" title="branch not covered" >'</span>';</span>
-    const input = window.prompt('Rename session', currentTitle);
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (input === null) <span class="cstat-no" title="statement not covered" >return;</span>
-&nbsp;
-    const title = input.trim();
+  const handleRenameSession = useCallback(async (id: string, title: string) =&gt; {
     try {
       await updateMetadata(id, { title });
       <span class="missing-if-branch" title="if path not taken" >I</span>if (id === selectedId) <span class="cstat-no" title="statement not covered" >patchTitle(title);</span>
@@ -692,7 +674,7 @@ export default function App() {
     } catch {
 <span class="cstat-no" title="statement not covered" >      showToast('Rename failed');</span>
     }
-  }, [sessions, selectedId, patchTitle, refreshSessions, showToast]);
+  }, [selectedId, patchTitle, refreshSessions, showToast]);
 &nbsp;
   return (
     &lt;ThemeComponentProvider value={themeComponents}&gt;
@@ -811,7 +793,7 @@ export default function App() {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-02-18T14:30:10.436Z
+                at 2026-02-20T19:08:29.115Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

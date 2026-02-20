@@ -87,7 +87,7 @@
 				
 				<option value="file15">github.com/jgbright/claude-chronicle/internal/session/search.go (100.0%)</option>
 				
-				<option value="file16">github.com/jgbright/claude-chronicle/internal/watcher/watcher.go (86.1%)</option>
+				<option value="file16">github.com/jgbright/claude-chronicle/internal/watcher/watcher.go (88.9%)</option>
 				
 				</select>
 			</div>
@@ -2689,11 +2689,11 @@ func (w *Watcher) loop() <span class="cov6" title="6">{
 
         for </span><span class="cov10" title="22">{
                 select </span>{
-                case &lt;-w.done:<span class="cov6" title="6">
+                case &lt;-w.done:<span class="cov5" title="5">
                         if timer != nil </span><span class="cov0" title="0">{
                                 timer.Stop()
                         }</span>
-                        <span class="cov6" title="6">return</span>
+                        <span class="cov5" title="5">return</span>
 
                 case ev, ok := &lt;-w.fsw.Events:<span class="cov7" title="11">
                         if !ok </span><span class="cov0" title="0">{
@@ -2721,8 +2721,8 @@ func (w *Watcher) loop() <span class="cov6" title="6">{
                         timer = nil
                         timerC = nil</span>
 
-                case err, ok := &lt;-w.fsw.Errors:<span class="cov0" title="0">
-                        if !ok </span><span class="cov0" title="0">{
+                case err, ok := &lt;-w.fsw.Errors:<span class="cov1" title="1">
+                        if !ok </span><span class="cov1" title="1">{
                                 return
                         }</span>
                         <span class="cov0" title="0">log.Printf("watcher error: %v", err)</span>
