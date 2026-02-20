@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.6](https://github.com/jgbright/claude-chronicle/compare/v0.1.5...v0.1.6) (2026-02-20)
+
+
+### Features
+
+* inline rename and simplified hidden sessions in sidebar ([b4da023](https://github.com/jgbright/claude-chronicle/commit/b4da023b9e713d439098aa6d23b0b63a20f87028))
+
+
+### Bug Fixes
+
+* make session rename action persist title from context menu ([2da8d80](https://github.com/jgbright/claude-chronicle/commit/2da8d80767c216727edb328f4adb7f441492b3f6))
+
 ## [0.1.5](https://github.com/jgbright/claude-chronicle/compare/v0.1.4...v0.1.5) (2026-02-15)
 
 
