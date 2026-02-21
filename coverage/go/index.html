@@ -2689,14 +2689,14 @@ func (w *Watcher) loop() <span class="cov6" title="6">{
 
         for </span><span class="cov10" title="22">{
                 select </span>{
-                case &lt;-w.done:<span class="cov5" title="4">
+                case &lt;-w.done:<span class="cov5" title="5">
                         if timer != nil </span><span class="cov0" title="0">{
                                 timer.Stop()
                         }</span>
-                        <span class="cov5" title="4">return</span>
+                        <span class="cov5" title="5">return</span>
 
-                case ev, ok := &lt;-w.fsw.Events:<span class="cov8" title="13">
-                        if !ok </span><span class="cov3" title="2">{
+                case ev, ok := &lt;-w.fsw.Events:<span class="cov8" title="12">
+                        if !ok </span><span class="cov1" title="1">{
                                 return
                         }</span>
                         <span class="cov7" title="11">pending[ev.Name] |= ev.Op
