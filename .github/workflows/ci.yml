@@ -50,7 +50,9 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: web/coverage/lcov.info
           flags: frontend
-          fail_ci_if_error: true
+          # CODECOV_TOKEN is not exposed to pull requests from forks, so the
+          # upload always fails there. Don't fail the whole run over it.
+          fail_ci_if_error: ${{ github.event.pull_request.head.repo.fork != true }}
 
       - name: Upload frontend test results to Codecov
         uses: codecov/test-results-action@v1
@@ -58,7 +60,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: web/coverage/test-results.junit.xml
           flags: frontend
-          fail_ci_if_error: true
+          fail_ci_if_error: ${{ github.event.pull_request.head.repo.fork != true }}
 
       - name: Build web assets
         run: cd web && npm run build && npm run build:export
@@ -80,7 +82,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage.out
           flags: backend
-          fail_ci_if_error: true
+          fail_ci_if_error: ${{ github.event.pull_request.head.repo.fork != true }}
 
       - name: Generate Go coverage HTML
         run: go tool cover -html=coverage.out -o go-coverage.html
